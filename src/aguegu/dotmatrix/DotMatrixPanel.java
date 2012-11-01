@@ -15,10 +15,16 @@ class DotMatrixPanel extends JPanel
 	{
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
-		g2d.setBackground(Color.black);
+		g2d.setBackground(Color.lightGray);
 		g2d.clearRect(0, 0, this.getWidth(), this.getHeight());
 
-		g2d.drawImage(new DotMatrixImage(), 12, 12, null);
-
+		for (int r = 0; r < 3; r++)
+		{
+			for (int c = 0; c < 8; c++)
+			{
+				DotMatrixImage dmi = new DotMatrixImage();
+				g2d.drawImage(dmi, 13 + (dmi.getWidth() + 13) * c, 13 + (dmi.getWidth() + 13) * r, null);
+			}
+		}
 	}
 }

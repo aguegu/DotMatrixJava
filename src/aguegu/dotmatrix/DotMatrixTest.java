@@ -1,12 +1,15 @@
 package aguegu.dotmatrix;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
@@ -16,6 +19,7 @@ public class DotMatrixTest
 {
 	public static DotMatrixPanel dmp;
 	public static JTextArea textArea;
+	public static JPanel controllerPanel;
 
 	public static void main(String[] args)
 	{
@@ -26,6 +30,9 @@ public class DotMatrixTest
 	public void go()
 	{
 		dmp = new DotMatrixPanel();
+		controllerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 10));
+		// controllerPanel.setLayout(new BoxLayout(controllerPanel,
+		// BoxLayout.X_AXIS ));
 
 		JFrame frame = new JFrame("dot-matrix on Java");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -35,7 +42,7 @@ public class DotMatrixTest
 
 		frame.getContentPane().add(BorderLayout.CENTER, dmp);
 
-		textArea = new JTextArea(8, 20);
+		textArea = new JTextArea(8, 50);
 		textArea.setLineWrap(true);
 		Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 
@@ -47,12 +54,16 @@ public class DotMatrixTest
 		textAreaPane
 				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-		frame.getContentPane().add(BorderLayout.SOUTH, textAreaPane);
+		controllerPanel.add(textAreaPane);
+		JButton button = new JButton("connect");
+		controllerPanel.add(button);
+
+		frame.getContentPane().add(BorderLayout.SOUTH, controllerPanel);
 
 		// frame.setBounds(100, 100, 1000, 400);
 		frame.setLocation(100, 100);
 		// frame.setLocationRelativeTo(null);
-		frame.setSize(dmp.getWidth(), dmp.getHeight() + 120);
+		frame.setSize(dmp.getWidth(), dmp.getHeight() + 144);
 		frame.setResizable(false);
 
 		frame.setVisible(true);
@@ -60,12 +71,9 @@ public class DotMatrixTest
 
 	public class PanelMouseListener implements MouseListener
 	{
-
 		@Override
 		public void mouseClicked(MouseEvent e)
 		{
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
@@ -81,28 +89,21 @@ public class DotMatrixTest
 			}
 
 			textArea.setText(s);
-
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void mouseEntered(MouseEvent e)
 		{
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e)
 		{
-			// TODO Auto-generated method stub
-
 		}
 
 	}

@@ -145,7 +145,8 @@ class DotMatrixPanel extends JPanel
 			for (int c = 0, x = DotMatrixImage.getBlockWidth(); c < 8; c++, x += DotMatrixImage
 					.getBlockWidth() * 9)
 			{
-				g2d.drawImage(dmi[r * 8 + c], x, y, null);
+				int index = r * 8 + c;
+				g2d.drawImage(dmi[index], x, y, null);
 			}
 		}
 	}

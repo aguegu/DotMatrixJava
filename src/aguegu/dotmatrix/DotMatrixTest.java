@@ -10,7 +10,6 @@ public class DotMatrixTest
 	{
 		DotMatrixTest dmt = new DotMatrixTest();
 		dmt.go();
-
 	}
 
 	public void go()
@@ -18,9 +17,12 @@ public class DotMatrixTest
 		JFrame frame = new JFrame("dot-matrix");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setContentPane(new DotMatrixPanel());
-		frame.setBounds(100, 100, 1000, 400);
+		//frame.setBounds(100, 100, 1000, 400);
+		frame.setLocation(100, 100);
 		// frame.setLocationRelativeTo(null);
-		// frame.setSize(800, 600);
+		frame.setSize(frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
+		frame.setResizable(false);
+		
 		frame.setVisible(true);
 	}
 }

@@ -1,6 +1,8 @@
 package aguegu.dotmatrix;
 
 import javax.swing.JPanel;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -25,8 +27,93 @@ class DotMatrixPanel extends JPanel
 			dmi[i] = new DotMatrixImage();
 		}
 
+		this.addMouseListener(new MA());
+		init();
+	}
+
+	class MA implements MouseListener
+	{
+		@Override
+		public void mouseClicked(MouseEvent e)
+		{
+
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e)
+		{
+			if (e.getButton() == MouseEvent.BUTTON1)
+			{
+				int blockX = e.getX() / DotMatrixImage.getBlockWidth();
+				int blockY = e.getY() / DotMatrixImage.getBlockWidth();
+
+				int blockID = blockX / 9;
+				int blockC = blockX % 9 - 1;
+				int blockR = blockY % 9 - 1;
+
+				if (blockID >= 8 || blockC < 0 || blockR < 0)
+					return;
+
+				System.out.printf("(%d, %d)", e.getX(), e.getY());
+				System.out.printf("(%d, %d)", blockX, blockY);
+				System.out.printf("(%d, %d, %d)\n", blockID, blockC, blockR);
+
+				int index = -1;
+				switch (blockY / 9)
+				{
+				case 0:
+					index = blockR * 64 + blockID * 8 + blockC;
+					break;
+				case 1:
+					index = blockR * 64 + (7 - blockC) * 8 + blockID;
+					break;
+				case 2:
+					index = blockID * 64 + (7 - blockR) * 8 + blockC;
+					break;
+				}
+
+				try
+				{
+					dot[index] = !dot[index];
+				}
+				catch (ArrayIndexOutOfBoundsException ex)
+				{
+				}
+
+				update();
+				repaint();
+			}
+
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e)
+		{
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e)
+		{
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e)
+		{
+			// TODO Auto-generated method stub
+
+		}
+
+	}
+
+	private void init()
+	{
 		for (int i = 0; i < dot.length; i++)
-			dot[i] = Math.random() > 0.5;
+			// dot[i] = Math.random() > 0.5;
+			dot[i] = false;
 
 		this.update();
 	}

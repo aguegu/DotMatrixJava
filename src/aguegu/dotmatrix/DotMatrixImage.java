@@ -52,10 +52,23 @@ public class DotMatrixImage extends BufferedImage
 		}
 		catch (ArrayIndexOutOfBoundsException ex)
 		{
-			
-		}		
+		}
 	}
-	
+
+//	public void setDot(int c, int r, boolean value)
+//	{
+//		if (c > 0 && c < 8 && r > 0 && r < 8)
+//		{
+//			try
+//			{
+//				dot[8 * r + c] = value;
+//			}
+//			catch (ArrayIndexOutOfBoundsException ex)
+//			{
+//			}
+//		}
+//	}
+
 	public static int getBlockWidth()
 	{
 		return blockWidth;

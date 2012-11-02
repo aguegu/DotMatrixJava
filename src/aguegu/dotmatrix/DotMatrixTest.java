@@ -14,7 +14,7 @@ public class DotMatrixTest
 
 	public void go()
 	{
-		JFrame frame = new JFrame("dot-matrix");
+		JFrame frame = new JFrame("dot-matrix on Java");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setContentPane(new DotMatrixPanel());
 		//frame.setBounds(100, 100, 1000, 400);

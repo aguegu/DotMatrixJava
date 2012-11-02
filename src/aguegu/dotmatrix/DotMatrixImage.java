@@ -29,7 +29,7 @@ public class DotMatrixImage extends BufferedImage
 		bs = new BasicStroke(blockWidth - 1);
 		g2d.setStroke(bs);
 
-		this.update();
+		this.update();		
 	}
 
 	public void update()
@@ -54,20 +54,6 @@ public class DotMatrixImage extends BufferedImage
 		{
 		}
 	}
-
-//	public void setDot(int c, int r, boolean value)
-//	{
-//		if (c > 0 && c < 8 && r > 0 && r < 8)
-//		{
-//			try
-//			{
-//				dot[8 * r + c] = value;
-//			}
-//			catch (ArrayIndexOutOfBoundsException ex)
-//			{
-//			}
-//		}
-//	}
 
 	public static int getBlockWidth()
 	{

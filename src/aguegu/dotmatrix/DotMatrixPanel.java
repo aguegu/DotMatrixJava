@@ -1,8 +1,8 @@
 package aguegu.dotmatrix;
 
 import javax.swing.JPanel;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -53,9 +53,9 @@ class DotMatrixPanel extends JPanel
 				if (blockID >= 8 || blockC < 0 || blockR < 0)
 					return;
 
-				System.out.printf("(%d, %d)", e.getX(), e.getY());
-				System.out.printf("(%d, %d)", blockX, blockY);
-				System.out.printf("(%d, %d, %d)\n", blockID, blockC, blockR);
+				// System.out.printf("(%d, %d)", e.getX(), e.getY());
+				// System.out.printf("(%d, %d)", blockX, blockY);
+				// System.out.printf("(%d, %d, %d)\n", blockID, blockC, blockR);
 
 				int index = -1;
 				switch (blockY / 9)
@@ -108,7 +108,7 @@ class DotMatrixPanel extends JPanel
 	}
 
 	private void init()
-	{		
+	{
 		this.update();
 	}
 
@@ -148,5 +148,19 @@ class DotMatrixPanel extends JPanel
 				g2d.drawImage(dmi[r * 8 + c], x, y, null);
 			}
 		}
+	}
+
+	public byte[] getCache()
+	{
+		byte[] data = new byte[64];
+
+		for (int i = 0; i < dot.length; i++)
+		{
+			int index = i / 8;
+			if (dot[i])
+				data[index] |= 0x80 >> (i % 8);
+		}		
+
+		return data;
 	}
 }

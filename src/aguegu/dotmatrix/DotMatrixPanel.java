@@ -36,7 +36,6 @@ class DotMatrixPanel extends JPanel
 		@Override
 		public void mouseClicked(MouseEvent e)
 		{
-
 		}
 
 		@Override
@@ -83,7 +82,6 @@ class DotMatrixPanel extends JPanel
 				update();
 				repaint();
 			}
-
 		}
 
 		@Override
@@ -110,11 +108,7 @@ class DotMatrixPanel extends JPanel
 	}
 
 	private void init()
-	{
-		for (int i = 0; i < dot.length; i++)
-			// dot[i] = Math.random() > 0.5;
-			dot[i] = false;
-
+	{		
 		this.update();
 	}
 

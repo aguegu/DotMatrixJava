@@ -17,7 +17,7 @@ import aguegu.dotmatrix.DotMatrixPanel;
 
 public class DotMatrixTest
 {
-	public static DotMatrixPanel dmp;
+	public static DotMatrixPanel dotmatrixPanel;
 	public static JTextArea textArea;
 	public static JPanel controllerPanel;
 
@@ -29,7 +29,7 @@ public class DotMatrixTest
 
 	public void go()
 	{
-		dmp = new DotMatrixPanel();
+		dotmatrixPanel= new DotMatrixPanel();
 		controllerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 10));
 		// controllerPanel.setLayout(new BoxLayout(controllerPanel,
 		// BoxLayout.X_AXIS ));
@@ -38,9 +38,9 @@ public class DotMatrixTest
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// frame.setContentPane(new DotMatrixPanel());
 
-		dmp.addMouseListener(new PanelMouseListener());
+		dotmatrixPanel.addMouseListener(new PanelMouseListener());
 
-		frame.getContentPane().add(BorderLayout.CENTER, dmp);
+		frame.getContentPane().add(BorderLayout.CENTER, dotmatrixPanel);
 
 		textArea = new JTextArea(8, 50);
 		textArea.setLineWrap(true);
@@ -63,7 +63,7 @@ public class DotMatrixTest
 		// frame.setBounds(100, 100, 1000, 400);
 		frame.setLocation(100, 100);
 		// frame.setLocationRelativeTo(null);
-		frame.setSize(dmp.getWidth(), dmp.getHeight() + 144);
+		frame.setSize(dotmatrixPanel.getWidth(), dotmatrixPanel.getHeight() + (int)controllerPanel.getPreferredSize().getHeight());
 		frame.setResizable(false);
 
 		frame.setVisible(true);
@@ -79,7 +79,7 @@ public class DotMatrixTest
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			byte[] data = dmp.getCache();
+			byte[] data = dotmatrixPanel.getCache();
 			String s = new String();
 			for (int i = 0; i < data.length; i++)
 			{

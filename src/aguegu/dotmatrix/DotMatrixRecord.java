@@ -6,19 +6,28 @@ import java.io.IOException;
 
 public class DotMatrixRecord
 {
-	public static void main(String[] args) throws IOException
+	private String filename;
+
+	public DotMatrixRecord(String filename)
 	{
-		FileOutputStream fos = new FileOutputStream("record.dat");
-		DataOutputStream dos = new DataOutputStream(fos);
-		
-		byte[] data = new byte[256];
-		
-		for (int i=0; i<256; i++)
-			data[i] = (byte)i;
-		
-		dos.write(data);
-		dos.close();
-		fos.close();
+		this.filename = filename;
+	}
+
+	public void save(byte[] data)
+	{
+		try
+		{
+			FileOutputStream fos = new FileOutputStream(filename);
+			DataOutputStream dos = new DataOutputStream(fos);
+
+			dos.write(data);
+			dos.close();
+			fos.close();
+		}
+		catch (IOException ex)
+		{
+			System.out.println(ex);
+		}
 	}
 
 }

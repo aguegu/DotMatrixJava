@@ -3,6 +3,8 @@ package aguegu.dotmatrix;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -18,9 +20,9 @@ import aguegu.dotmatrix.DotMatrixPanel;
 public class DotMatrixTest
 {
 	public static DotMatrix dm;
-	public static DotMatrixPanel dotmatrixPanel;
+	public static DotMatrixPanel panelDm;
 	public static JTextArea textArea;
-	public static JPanel controllerPanel;
+	public static JPanel panelController;
 
 	public static void main(String[] args)
 	{
@@ -31,8 +33,8 @@ public class DotMatrixTest
 	public void go()
 	{
 		dm = new DotMatrix();
-		dotmatrixPanel= new DotMatrixPanel(dm);
-		controllerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 10));
+		panelDm = new DotMatrixPanel(dm);
+		panelController = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 10));
 		// controllerPanel.setLayout(new BoxLayout(controllerPanel,
 		// BoxLayout.X_AXIS ));
 
@@ -40,9 +42,9 @@ public class DotMatrixTest
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// frame.setContentPane(new DotMatrixPanel());
 
-		dotmatrixPanel.addMouseListener(new PanelMouseListener());
+		panelDm.addMouseListener(new MouseListenerPanelDotMatrix());
 
-		frame.getContentPane().add(BorderLayout.CENTER, dotmatrixPanel);
+		frame.getContentPane().add(BorderLayout.CENTER, panelDm);
 
 		textArea = new JTextArea(8, 50);
 		textArea.setLineWrap(true);
@@ -56,22 +58,24 @@ public class DotMatrixTest
 		textAreaPane
 				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-		controllerPanel.add(textAreaPane);
-		JButton button = new JButton("connect");
-		controllerPanel.add(button);
+		panelController.add(textAreaPane);
+		JButton buttonSave = new JButton("save");
+		buttonSave.addActionListener(new ListenerButtonSave());
+		panelController.add(buttonSave);
 
-		frame.getContentPane().add(BorderLayout.SOUTH, controllerPanel);
+		frame.getContentPane().add(BorderLayout.SOUTH, panelController);
 
 		// frame.setBounds(100, 100, 1000, 400);
 		frame.setLocation(100, 100);
 		// frame.setLocationRelativeTo(null);
-		frame.setSize(dotmatrixPanel.getWidth(), dotmatrixPanel.getHeight() + (int)controllerPanel.getPreferredSize().getHeight());
+		frame.setSize(panelDm.getWidth(), panelDm.getHeight()
+				+ (int) panelController.getPreferredSize().getHeight());
 		frame.setResizable(false);
 
 		frame.setVisible(true);
 	}
 
-	public class PanelMouseListener implements MouseListener
+	public class MouseListenerPanelDotMatrix implements MouseListener
 	{
 		@Override
 		public void mouseClicked(MouseEvent e)
@@ -107,6 +111,15 @@ public class DotMatrixTest
 		public void mouseExited(MouseEvent e)
 		{
 		}
+	}
 
+	public class ListenerButtonSave implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			DotMatrixRecord dmr = new DotMatrixRecord("record.dat");
+			dmr.save(dm.getCache());
+		}
 	}
 }

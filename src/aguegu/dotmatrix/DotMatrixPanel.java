@@ -108,7 +108,7 @@ class DotMatrixPanel extends JPanel
 
 	public void update()
 	{
-		for (int i = 0; i < DotMatrix.LENGTH; i++)
+		for (int i = 0; i < DotMatrix.DOT_LENGTH; i++)
 		{
 			int x = i % 8;
 			int y = i / 8 % 8;

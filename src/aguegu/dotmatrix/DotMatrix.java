@@ -2,12 +2,13 @@ package aguegu.dotmatrix;
 
 public class DotMatrix
 {
-	public static final int LENGTH = 512; 
+	public static final int DOT_LENGTH = 512;
+	public static final int CACHE_LENGTH = 64;
 	private boolean[] dot;
 
 	public DotMatrix()
 	{
-		dot = new boolean[LENGTH];
+		dot = new boolean[DOT_LENGTH];
 	}
 
 	public boolean[] getDot()
@@ -51,16 +52,15 @@ public class DotMatrix
 
 	public byte[] getCache()
 	{
-		byte[] data = new byte[64];
+		byte[] cache = new byte[64];
 
 		for (int i = 0; i < dot.length; i++)
 		{
 			int index = i / 8;
 			if (dot[i])
-				data[index] |= 0x80 >> (i % 8);
+				cache[index] |= 0x80 >> (i % 8);
 		}
 
-		return data;
+		return cache;
 	}
-
 }

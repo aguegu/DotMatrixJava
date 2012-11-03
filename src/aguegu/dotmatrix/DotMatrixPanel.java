@@ -11,16 +11,16 @@ import java.awt.Graphics2D;
 class DotMatrixPanel extends JPanel
 {
 	private static final long serialVersionUID = -2531292225634588108L;
-	private boolean[] dot;
+	private DotMatrix dm;
 	private DotMatrixImage[] dmi;
 
-	public DotMatrixPanel()
+	public DotMatrixPanel(DotMatrix dm)
 	{
 		super();
 		this.setSize(DotMatrixImage.getBlockWidth() * (9 * 8 + 1),
 				DotMatrixImage.getBlockWidth() * (9 * 3 + 1));
 
-		dot = new boolean[512];
+		this.dm = dm;
 		dmi = new DotMatrixImage[24];
 		for (int i = 0; i < dmi.length; i++)
 		{
@@ -71,13 +71,7 @@ class DotMatrixPanel extends JPanel
 					break;
 				}
 
-				try
-				{
-					dot[index] = !dot[index];
-				}
-				catch (ArrayIndexOutOfBoundsException ex)
-				{
-				}
+				dm.reverseDot(index); 
 
 				update();
 				repaint();
@@ -114,15 +108,17 @@ class DotMatrixPanel extends JPanel
 
 	public void update()
 	{
-		for (int i = 0; i < dot.length; i++)
+		for (int i = 0; i < DotMatrix.LENGTH; i++)
 		{
 			int x = i % 8;
 			int y = i / 8 % 8;
 			int z = i / 64;
 
-			dmi[y].setDot(z * 8 + x, dot[i]);
-			dmi[8 + x].setDot(z * 8 + 7 - y, dot[i]);
-			dmi[16 + z].setDot((7 - y) * 8 + x, dot[i]);
+			boolean val = dm.getDot(i);
+			
+			dmi[y].setDot(z * 8 + x, val);
+			dmi[8 + x].setDot(z * 8 + 7 - y, val);
+			dmi[16 + z].setDot((7 - y) * 8 + x, val);
 		}
 
 		for (DotMatrixImage image : dmi)
@@ -151,17 +147,5 @@ class DotMatrixPanel extends JPanel
 		}
 	}
 
-	public byte[] getCache()
-	{
-		byte[] data = new byte[64];
-
-		for (int i = 0; i < dot.length; i++)
-		{
-			int index = i / 8;
-			if (dot[i])
-				data[index] |= 0x80 >> (i % 8);
-		}		
-
-		return data;
-	}
+	
 }

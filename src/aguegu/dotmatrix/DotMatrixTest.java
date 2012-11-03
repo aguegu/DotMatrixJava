@@ -17,6 +17,7 @@ import aguegu.dotmatrix.DotMatrixPanel;
 
 public class DotMatrixTest
 {
+	public static DotMatrix dm;
 	public static DotMatrixPanel dotmatrixPanel;
 	public static JTextArea textArea;
 	public static JPanel controllerPanel;
@@ -29,7 +30,8 @@ public class DotMatrixTest
 
 	public void go()
 	{
-		dotmatrixPanel= new DotMatrixPanel();
+		dm = new DotMatrix();
+		dotmatrixPanel= new DotMatrixPanel(dm);
 		controllerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 10));
 		// controllerPanel.setLayout(new BoxLayout(controllerPanel,
 		// BoxLayout.X_AXIS ));
@@ -79,7 +81,7 @@ public class DotMatrixTest
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			byte[] data = dotmatrixPanel.getCache();
+			byte[] data = dm.getCache();
 			String s = new String();
 			for (int i = 0; i < data.length; i++)
 			{

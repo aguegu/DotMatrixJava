@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
@@ -24,9 +25,11 @@ import aguegu.dotmatrix.DotMatrixPanel;
 public class DotMatrixTest
 {
 	private static DotMatrix dm;
-	public static DotMatrixPanel panelDm;
-	public static JTextArea textArea;
-	public static JPanel panelController;
+	private static DotMatrixPanel panelDm;
+	private static JTextArea textArea;
+	private static JPanel panelController;
+
+	// private boolean mouse;
 
 	public static void main(String[] args)
 	{
@@ -54,6 +57,9 @@ public class DotMatrixTest
 		textArea.setLineWrap(true);
 		Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 		textArea.setFont(font);
+
+		// textArea.addKeyListener()
+
 		Document doc = textArea.getDocument();
 		doc.addDocumentListener(new DocumentListeneDotMatrixTextArea());
 
@@ -78,8 +84,7 @@ public class DotMatrixTest
 		frame.setResizable(false);
 
 		frame.setVisible(true);
-
-		// System.out.println("text changed.");
+		panelDm.requestFocusInWindow();
 	}
 
 	public class MouseListenerPanelDotMatrix implements MouseListener
@@ -102,6 +107,7 @@ public class DotMatrixTest
 			}
 
 			textArea.setText(s);
+			panelDm.requestFocusInWindow();
 		}
 
 		@Override
@@ -136,13 +142,25 @@ public class DotMatrixTest
 		public void insertUpdate(DocumentEvent e)
 		{
 			String s = textArea.getText();
-			if (s.matches("(0[x|X][a-f0-9A-Z]{2},[\\s]+){64}"))
+			
+			System.out.println(textArea.isFocusOwner());
+			
+			if (textArea.isFocusOwner() && s.matches("(0[x|X][a-f0-9A-Z]{2},[\\s]+){64}"))
 			{
 				Pattern pattern = Pattern.compile("0[x|X][a-f0-9A-Z]{2}");
-				
-				
-				Byte c = Integer.decode("0x80").byteValue();
-				System.out.println(c);
+				Matcher matcher = pattern.matcher(s);
+
+				byte[] cache = new byte[64];
+
+				for (int i = 0; i < cache.length && matcher.find(); i++)
+				{
+					String match = matcher.group();
+					cache[i] = Integer.decode(match).byteValue();
+				}
+
+				dm.setCache(cache);
+				panelDm.update();
+				panelDm.repaint();				
 			}
 		}
 
@@ -155,6 +173,7 @@ public class DotMatrixTest
 		public void changedUpdate(DocumentEvent e)
 		{
 		}
-
 	}
+
+	// public class
 }

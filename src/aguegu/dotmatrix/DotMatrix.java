@@ -66,13 +66,19 @@ public class DotMatrix
 
 	public void setCache(byte[] cache)
 	{
-		for (int i = 0; i < cache.length; i++)
+		try
 		{
-			int index = i * 8;
-			for (int j = 0; j < 8; j++)
+			for (int i = 0; i < cache.length; i++)
 			{
-				dot[index + j] = (cache[i] & (0x80 >> j)) > 0;
+				int index = i * 8;
+				for (int j = 0; j < 8; j++)
+				{
+					dot[index + j] = (cache[i] & (0x80 >> j)) > 0;
+				}
 			}
+		}
+		catch (ArrayIndexOutOfBoundsException ex)
+		{
 		}
 	}
 }

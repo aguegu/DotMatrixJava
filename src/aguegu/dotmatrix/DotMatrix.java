@@ -63,4 +63,16 @@ public class DotMatrix
 
 		return cache;
 	}
+
+	public void setCache(byte[] cache)
+	{
+		for (int i = 0; i < cache.length; i++)
+		{
+			int index = i * 8;
+			for (int j = 0; j < 8; j++)
+			{
+				dot[index + j] = (cache[i] & (0x80 >> j)) > 0;
+			}
+		}
+	}
 }

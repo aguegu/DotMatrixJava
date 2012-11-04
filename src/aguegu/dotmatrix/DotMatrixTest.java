@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -14,12 +15,15 @@ import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
 
 import aguegu.dotmatrix.DotMatrixPanel;
 
 public class DotMatrixTest
 {
-	public static DotMatrix dm;
+	private static DotMatrix dm;
 	public static DotMatrixPanel panelDm;
 	public static JTextArea textArea;
 	public static JPanel panelController;
@@ -46,11 +50,12 @@ public class DotMatrixTest
 
 		frame.getContentPane().add(BorderLayout.CENTER, panelDm);
 
-		textArea = new JTextArea(8, 50);
+		textArea = new JTextArea(8, 56);
 		textArea.setLineWrap(true);
 		Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
-
 		textArea.setFont(font);
+		Document doc = textArea.getDocument();
+		doc.addDocumentListener(new DocumentListeneDotMatrixTextArea());
 
 		JScrollPane textAreaPane = new JScrollPane(textArea);
 		textAreaPane
@@ -73,6 +78,8 @@ public class DotMatrixTest
 		frame.setResizable(false);
 
 		frame.setVisible(true);
+
+		// System.out.println("text changed.");
 	}
 
 	public class MouseListenerPanelDotMatrix implements MouseListener
@@ -121,5 +128,33 @@ public class DotMatrixTest
 			DotMatrixRecord dmr = new DotMatrixRecord("record.dat");
 			dmr.save(dm.getCache());
 		}
+	}
+
+	public class DocumentListeneDotMatrixTextArea implements DocumentListener
+	{
+		@Override
+		public void insertUpdate(DocumentEvent e)
+		{
+			String s = textArea.getText();
+			if (s.matches("(0[x|X][a-f0-9A-Z]{2},[\\s]+){64}"))
+			{
+				Pattern pattern = Pattern.compile("0[x|X][a-f0-9A-Z]{2}");
+				
+				
+				Byte c = Integer.decode("0x80").byteValue();
+				System.out.println(c);
+			}
+		}
+
+		@Override
+		public void removeUpdate(DocumentEvent e)
+		{
+		}
+
+		@Override
+		public void changedUpdate(DocumentEvent e)
+		{
+		}
+
 	}
 }

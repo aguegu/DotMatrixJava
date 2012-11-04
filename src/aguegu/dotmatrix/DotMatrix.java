@@ -81,4 +81,12 @@ public class DotMatrix
 		{
 		}
 	}
+
+	public void clear(boolean val)
+	{
+		for (int i = 0; i < dot.length; i++)
+		{
+			dot[i] = val;
+		}
+	}
 }

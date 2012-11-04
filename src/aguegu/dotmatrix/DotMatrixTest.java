@@ -28,6 +28,9 @@ public class DotMatrixTest
 	private static DotMatrixPanel panelDm;
 	private static JTextArea textArea;
 	private static JPanel panelController;
+	private JButton buttonSave;
+	private JButton buttonAllOn;
+	private JButton buttonAllOff;
 
 	// private boolean mouse;
 
@@ -70,9 +73,15 @@ public class DotMatrixTest
 				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 		panelController.add(textAreaPane);
-		JButton buttonSave = new JButton("save");
-		buttonSave.addActionListener(new ListenerButtonSave());
+		buttonSave = new JButton("save");
+		buttonSave.addActionListener(new ActionListenerButtonSave());
+		buttonAllOn = new JButton("All On");
+		buttonAllOn.addActionListener(new ActionListenerSwitchAll());
+		buttonAllOff = new JButton("All Off");
+		buttonAllOff.addActionListener(new ActionListenerSwitchAll());
 		panelController.add(buttonSave);
+		panelController.add(buttonAllOn);
+		panelController.add(buttonAllOff);
 
 		frame.getContentPane().add(BorderLayout.SOUTH, panelController);
 
@@ -97,16 +106,7 @@ public class DotMatrixTest
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			byte[] data = dm.getCache();
-			String s = new String();
-			for (int i = 0; i < data.length; i++)
-			{
-				if (i % 8 == 0 && i > 0)
-					s = s.concat("\n");
-				s = s.concat(String.format("0x%02x, ", data[i]));
-			}
-
-			textArea.setText(s);
+			textArea.setText(cacheString());
 			panelDm.requestFocusInWindow();
 		}
 
@@ -126,7 +126,7 @@ public class DotMatrixTest
 		}
 	}
 
-	public class ListenerButtonSave implements ActionListener
+	public class ActionListenerButtonSave implements ActionListener
 	{
 		@Override
 		public void actionPerformed(ActionEvent e)
@@ -136,16 +136,32 @@ public class DotMatrixTest
 		}
 	}
 
+	public class ActionListenerSwitchAll implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			if (e.getSource() == buttonAllOn)
+				dm.clear(true);
+			else if (e.getSource() == buttonAllOff)
+				dm.clear(false);
+
+			panelDm.update();
+			panelDm.repaint();
+			textArea.setText(cacheString());
+
+		}
+	}
+
 	public class DocumentListeneDotMatrixTextArea implements DocumentListener
 	{
 		@Override
 		public void insertUpdate(DocumentEvent e)
 		{
 			String s = textArea.getText();
-			
-			System.out.println(textArea.isFocusOwner());
-			
-			if (textArea.isFocusOwner() && s.matches("(0[x|X][a-f0-9A-Z]{2},[\\s]+){64}"))
+
+			if (textArea.isFocusOwner()
+					&& s.matches("(0[x|X][a-f0-9A-Z]{2},[\\s]+){64}"))
 			{
 				Pattern pattern = Pattern.compile("0[x|X][a-f0-9A-Z]{2}");
 				Matcher matcher = pattern.matcher(s);
@@ -160,7 +176,7 @@ public class DotMatrixTest
 
 				dm.setCache(cache);
 				panelDm.update();
-				panelDm.repaint();				
+				panelDm.repaint();
 			}
 		}
 
@@ -176,4 +192,19 @@ public class DotMatrixTest
 	}
 
 	// public class
+
+	private String cacheString()
+	{
+		byte[] data = dm.getCache();
+		String s = new String();
+		for (int i = 0; i < data.length; i++)
+		{
+			if (i % 8 == 0 && i > 0)
+				s = s.concat("\n");
+			s = s.concat(String.format("0x%02x, ", data[i]));
+		}
+
+		return s;
+
+	}
 }

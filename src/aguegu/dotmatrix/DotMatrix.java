@@ -6,6 +6,11 @@ public class DotMatrix
 	public static final int CACHE_LENGTH = 64;
 	private boolean[] dot;
 
+	public static enum Direction
+	{
+		X_POSI, X_NEGA, Y_POSI, Y_NEGA, Z_POSI, Z_NEGA,
+	};
+
 	public DotMatrix()
 	{
 		dot = new boolean[DOT_LENGTH];
@@ -89,4 +94,70 @@ public class DotMatrix
 			dot[i] = val;
 		}
 	}
+
+	private int getIndex(int x, int y, int z)
+	{
+		return (64 * z + 8 * y + x);
+	}
+
+	public void move(Direction direction, boolean recycle)
+	{
+		for (int x = 0; x < 8; x++)
+		{
+			for (int y = 0; y < 8; y++)
+			{
+				int z;
+				boolean temp;
+
+				switch (direction)
+				{
+				case X_POSI:
+					z = 7;
+					temp = dot[getIndex(z, x, y)];
+					for (; z > 0; z--)
+						dot[getIndex(z, x, y)] = dot[getIndex(z - 1, x, y)];
+					dot[getIndex(z, x, y)] = recycle ? temp : false;
+					break;
+				case X_NEGA:
+					z = 7;
+					temp = dot[getIndex(x, y, z)];
+					for (; z > 0; z--)
+						dot[getIndex(x, y, z)] = dot[getIndex(x, y, z - 1)];
+					dot[getIndex(x, y, z)] = recycle ? temp : false;
+					break;
+				case Y_NEGA:
+					z = 0;
+					temp = dot[getIndex(y, z, x)];
+					for (; z < 7; z++)
+						dot[getIndex(y, z, x)] = dot[getIndex(y, z + 1, x)];
+					dot[getIndex(y, z, x)] = recycle ? temp : false;
+					break;
+				case Y_POSI:
+					z = 7;
+					temp = dot[getIndex(y, z, x)];
+					for (; z > 0; z--)
+						dot[getIndex(y, z, x)] = dot[getIndex(y, z - 1, x)];
+					dot[getIndex(y, z, x)] = recycle ? temp : false;
+					break;
+				case Z_NEGA:
+					z = 0;
+					temp = dot[getIndex(x, y, z)];
+					for (; z < 7; z++)
+						dot[getIndex(x, y, z)] = dot[getIndex(x, y, z + 1)];
+					dot[getIndex(x, y, z)] = recycle ? temp : false;
+					break;
+				case Z_POSI:
+					z = 7;
+					temp = dot[getIndex(x, y, z)];
+					for (; z > 0; z--)
+						dot[getIndex(x, y, z)] = dot[getIndex(x, y, z - 1)];
+					dot[getIndex(x, y, z)] = recycle ? temp : false;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+
 }

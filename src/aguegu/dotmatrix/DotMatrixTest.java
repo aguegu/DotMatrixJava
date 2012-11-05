@@ -31,6 +31,12 @@ public class DotMatrixTest
 	private JButton buttonSave;
 	private JButton buttonAllOn;
 	private JButton buttonAllOff;
+	private JButton buttonMoveXPosi;
+	private JButton buttonMoveXNega;
+	private JButton buttonMoveYPosi;
+	private JButton buttonMoveYNega;
+	private JButton buttonMoveZPosi;
+	private JButton buttonMoveZNega;
 
 	// private boolean mouse;
 
@@ -56,7 +62,7 @@ public class DotMatrixTest
 
 		frame.getContentPane().add(BorderLayout.CENTER, panelDm);
 
-		textArea = new JTextArea(8, 56);
+		textArea = new JTextArea(8, 50);
 		textArea.setLineWrap(true);
 		Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 		textArea.setFont(font);
@@ -73,15 +79,38 @@ public class DotMatrixTest
 				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 		panelController.add(textAreaPane);
-		buttonSave = new JButton("save");
+		buttonSave = new JButton("s");
 		buttonSave.addActionListener(new ActionListenerButtonSave());
-		buttonAllOn = new JButton("All On");
+		buttonAllOn = new JButton("On");
 		buttonAllOn.addActionListener(new ActionListenerSwitchAll());
-		buttonAllOff = new JButton("All Off");
+		buttonAllOff = new JButton("Off");
 		buttonAllOff.addActionListener(new ActionListenerSwitchAll());
+
+		buttonMoveXPosi = new JButton("X+");
+		buttonMoveXPosi.addActionListener(new ActionListenerButtonMove());
+		buttonMoveXNega = new JButton("X-");
+		buttonMoveXNega.addActionListener(new ActionListenerButtonMove());
+
+		buttonMoveYPosi = new JButton("Y+");
+		buttonMoveYPosi.addActionListener(new ActionListenerButtonMove());
+		buttonMoveYNega = new JButton("Y-");
+		buttonMoveYNega.addActionListener(new ActionListenerButtonMove());
+
+		buttonMoveZPosi = new JButton("Z+");
+		buttonMoveZPosi.addActionListener(new ActionListenerButtonMove());
+		buttonMoveZNega = new JButton("Z-");
+		buttonMoveZNega.addActionListener(new ActionListenerButtonMove());
+
 		panelController.add(buttonSave);
 		panelController.add(buttonAllOn);
 		panelController.add(buttonAllOff);
+
+		panelController.add(buttonMoveXPosi);
+		panelController.add(buttonMoveXNega);
+		panelController.add(buttonMoveYPosi);
+		panelController.add(buttonMoveYNega);
+		panelController.add(buttonMoveZPosi);
+		panelController.add(buttonMoveZNega);
 
 		frame.getContentPane().add(BorderLayout.SOUTH, panelController);
 
@@ -149,7 +178,42 @@ public class DotMatrixTest
 			panelDm.update();
 			panelDm.repaint();
 			textArea.setText(cacheString());
+		}
+	}
 
+	public class ActionListenerButtonMove implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			if (e.getSource() == buttonMoveXPosi)
+			{
+				dm.move(DotMatrix.Direction.X_POSI, true);
+			}
+			else if (e.getSource() == buttonMoveXNega)
+			{
+				dm.move(DotMatrix.Direction.X_NEGA, true);
+			}
+			else if (e.getSource() == buttonMoveYPosi)
+			{
+				dm.move(DotMatrix.Direction.Y_POSI, true);
+			}
+			else if (e.getSource() == buttonMoveYNega)
+			{
+				dm.move(DotMatrix.Direction.Y_NEGA, true);
+			}
+			else if (e.getSource() == buttonMoveZPosi)
+			{
+				dm.move(DotMatrix.Direction.Z_POSI, true);
+			}
+			else if (e.getSource() == buttonMoveZNega)
+			{
+				dm.move(DotMatrix.Direction.Z_NEGA, true);
+			}
+
+			panelDm.update();
+			panelDm.repaint();
+			textArea.setText(cacheString());
 		}
 	}
 
@@ -203,8 +267,6 @@ public class DotMatrixTest
 				s = s.concat("\n");
 			s = s.concat(String.format("0x%02x, ", data[i]));
 		}
-
 		return s;
-
 	}
 }

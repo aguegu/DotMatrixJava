@@ -16,6 +16,8 @@ import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -50,6 +52,7 @@ public class DotMatrixTest
 	private JButton buttonMoveYNega;
 	private JButton buttonMoveZPosi;
 	private JButton buttonMoveZNega;
+	private JCheckBox checkboxRecycle;
 
 	// private boolean mouse;
 
@@ -83,7 +86,7 @@ public class DotMatrixTest
 		panelMove = new JPanel();
 		panelMove.setLayout(new BoxLayout(panelMove, BoxLayout.Y_AXIS));
 		panelMove.setBorder(BorderFactory.createEmptyBorder(13, 5, 13, 5));
-		
+				
 		panelController = new JPanel();
 		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
 		// panelController.setLayout(new BoxLayout(panelController,
@@ -112,9 +115,13 @@ public class DotMatrixTest
 		panelController.add(textAreaPane);
 		buttonSave = new JButton("Save");
 		buttonSave.addActionListener(new ActionListenerButtonSave());
-		buttonAllOn = new JButton("On");
+
+		panelController.add(buttonSave);
+
+		buttonAllOn = new JButton(new ImageIcon(getClass().getResource("AllOn.png")));		
 		buttonAllOn.addActionListener(new ActionListenerSwitchAll());
-		buttonAllOff = new JButton("Off");
+		
+		buttonAllOff = new JButton(new ImageIcon(getClass().getResource("AllOff.png")));
 		buttonAllOff.addActionListener(new ActionListenerSwitchAll());
 
 		buttonMoveXPosi = new JButton("X+");
@@ -132,13 +139,12 @@ public class DotMatrixTest
 		buttonMoveZNega = new JButton("Z-");
 		buttonMoveZNega.addActionListener(new ActionListenerButtonMove());
 
-		panelController.add(buttonSave);
+		checkboxRecycle = new JCheckBox("loop", true);
 
 		panelMove.add(buttonAllOn);
 		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
-		buttonAllOff.setMargin(new Insets(2, 11, 2, 10));
-		//System.out.println(buttonAllOff.getMargin());
-		
+		// System.out.println(buttonAllOff.getMargin());
+
 		panelMove.add(buttonAllOff);
 		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
 		panelMove.add(buttonMoveXNega);
@@ -152,6 +158,8 @@ public class DotMatrixTest
 		panelMove.add(buttonMoveZNega);
 		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
 		panelMove.add(buttonMoveZPosi);
+		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
+		panelMove.add(checkboxRecycle);
 
 		// frame.getContentPane().add(BorderLayout.SOUTH, panelController);
 		panelMain.add(panelController);
@@ -237,29 +245,31 @@ public class DotMatrixTest
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
+			boolean recycle = checkboxRecycle.isSelected();
+
 			if (e.getSource() == buttonMoveXPosi)
 			{
-				dm.move(DotMatrix.Direction.X_POSI, true);
+				dm.move(DotMatrix.Direction.X_POSI, recycle);
 			}
 			else if (e.getSource() == buttonMoveXNega)
 			{
-				dm.move(DotMatrix.Direction.X_NEGA, true);
+				dm.move(DotMatrix.Direction.X_NEGA, recycle);
 			}
 			else if (e.getSource() == buttonMoveYPosi)
 			{
-				dm.move(DotMatrix.Direction.Y_POSI, true);
+				dm.move(DotMatrix.Direction.Y_POSI, recycle);
 			}
 			else if (e.getSource() == buttonMoveYNega)
 			{
-				dm.move(DotMatrix.Direction.Y_NEGA, true);
+				dm.move(DotMatrix.Direction.Y_NEGA, recycle);
 			}
 			else if (e.getSource() == buttonMoveZPosi)
 			{
-				dm.move(DotMatrix.Direction.Z_POSI, true);
+				dm.move(DotMatrix.Direction.Z_POSI, recycle);
 			}
 			else if (e.getSource() == buttonMoveZNega)
 			{
-				dm.move(DotMatrix.Direction.Z_NEGA, true);
+				dm.move(DotMatrix.Direction.Z_NEGA, recycle);
 			}
 
 			panelDm.update();

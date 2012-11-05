@@ -119,11 +119,11 @@ public class DotMatrix
 					dot[getIndex(z, x, y)] = recycle ? temp : false;
 					break;
 				case X_NEGA:
-					z = 7;
-					temp = dot[getIndex(x, y, z)];
-					for (; z > 0; z--)
-						dot[getIndex(x, y, z)] = dot[getIndex(x, y, z - 1)];
-					dot[getIndex(x, y, z)] = recycle ? temp : false;
+					z = 0;
+					temp = dot[getIndex(z, x, y)];
+					for (; z < 7; z++)
+						dot[getIndex(z, x, y)] = dot[getIndex(z + 1, x, y)];
+					dot[getIndex(z, x, y)] = recycle ? temp : false;
 					break;
 				case Y_NEGA:
 					z = 0;

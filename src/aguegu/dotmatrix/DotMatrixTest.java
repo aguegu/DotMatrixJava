@@ -1,21 +1,30 @@
 package aguegu.dotmatrix;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
@@ -24,10 +33,14 @@ import aguegu.dotmatrix.DotMatrixPanel;
 
 public class DotMatrixTest
 {
-	private static DotMatrix dm;
-	private static DotMatrixPanel panelDm;
-	private static JTextArea textArea;
-	private static JPanel panelController;
+	private DotMatrix dm;
+	private DotMatrixPanel panelDm;
+	private JTextArea textArea;
+	private JPanel panelController;
+	private JPanel panelMove;
+	private JPanel panelMain;
+	private JLabel labelStatus;
+
 	private JButton buttonSave;
 	private JButton buttonAllOn;
 	private JButton buttonAllOff;
@@ -42,32 +55,50 @@ public class DotMatrixTest
 
 	public static void main(String[] args)
 	{
+		setUIFont(new javax.swing.plaf.FontUIResource(Font.MONOSPACED,
+				Font.PLAIN, 12));
 		DotMatrixTest dmt = new DotMatrixTest();
-		dmt.go();
+		dmt.init();
 	}
 
-	public void go()
+	public static void setUIFont(javax.swing.plaf.FontUIResource f)
+	{
+		Enumeration<Object> keys = UIManager.getDefaults().keys();
+		while (keys.hasMoreElements())
+		{
+			Object key = keys.nextElement();
+			Object value = UIManager.get(key);
+			if (value instanceof javax.swing.plaf.FontUIResource)
+				UIManager.put(key, f);
+		}
+	}
+
+	public void init()
 	{
 		dm = new DotMatrix();
 		panelDm = new DotMatrixPanel(dm);
-		panelController = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 10));
-		// controllerPanel.setLayout(new BoxLayout(controllerPanel,
-		// BoxLayout.X_AXIS ));
+		panelMain = new JPanel();
+		panelMain.setLayout(new BoxLayout(panelMain, BoxLayout.Y_AXIS));
+
+		panelMove = new JPanel();
+		panelMove.setLayout(new BoxLayout(panelMove, BoxLayout.Y_AXIS));
+		panelMove.setBorder(BorderFactory.createEmptyBorder(13, 5, 13, 5));
+		
+		panelController = new JPanel();
+		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
+		// panelController.setLayout(new BoxLayout(panelController,
+		// BoxLayout.X_AXIS));
 
 		JFrame frame = new JFrame("dot-matrix on Java");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// frame.setContentPane(new DotMatrixPanel());
 
 		panelDm.addMouseListener(new MouseListenerPanelDotMatrix());
-
-		frame.getContentPane().add(BorderLayout.CENTER, panelDm);
+		// frame.getContentPane().add(BorderLayout.CENTER, panelDm);
+		panelMain.add(panelDm);
 
 		textArea = new JTextArea(8, 50);
 		textArea.setLineWrap(true);
-		Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
-		textArea.setFont(font);
-
-		// textArea.addKeyListener()
 
 		Document doc = textArea.getDocument();
 		doc.addDocumentListener(new DocumentListeneDotMatrixTextArea());
@@ -79,7 +110,7 @@ public class DotMatrixTest
 				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 		panelController.add(textAreaPane);
-		buttonSave = new JButton("s");
+		buttonSave = new JButton("Save");
 		buttonSave.addActionListener(new ActionListenerButtonSave());
 		buttonAllOn = new JButton("On");
 		buttonAllOn.addActionListener(new ActionListenerSwitchAll());
@@ -102,23 +133,43 @@ public class DotMatrixTest
 		buttonMoveZNega.addActionListener(new ActionListenerButtonMove());
 
 		panelController.add(buttonSave);
-		panelController.add(buttonAllOn);
-		panelController.add(buttonAllOff);
 
-		panelController.add(buttonMoveXPosi);
-		panelController.add(buttonMoveXNega);
-		panelController.add(buttonMoveYPosi);
-		panelController.add(buttonMoveYNega);
-		panelController.add(buttonMoveZPosi);
-		panelController.add(buttonMoveZNega);
+		panelMove.add(buttonAllOn);
+		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
+		buttonAllOff.setMargin(new Insets(2, 11, 2, 10));
+		//System.out.println(buttonAllOff.getMargin());
+		
+		panelMove.add(buttonAllOff);
+		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
+		panelMove.add(buttonMoveXNega);
+		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
+		panelMove.add(buttonMoveXPosi);
+		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
+		panelMove.add(buttonMoveYNega);
+		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
+		panelMove.add(buttonMoveYPosi);
+		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
+		panelMove.add(buttonMoveZNega);
+		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
+		panelMove.add(buttonMoveZPosi);
 
-		frame.getContentPane().add(BorderLayout.SOUTH, panelController);
+		// frame.getContentPane().add(BorderLayout.SOUTH, panelController);
+		panelMain.add(panelController);
 
-		// frame.setBounds(100, 100, 1000, 400);
+		frame.getContentPane().add(BorderLayout.CENTER, panelMain);
+
+		frame.getContentPane().add(BorderLayout.WEST, panelMove);
+
+		labelStatus = new JLabel("http://aguegu.net");
+		labelStatus.setBorder(BorderFactory
+				.createBevelBorder(BevelBorder.LOWERED));
+		frame.add(BorderLayout.SOUTH, labelStatus);
+
 		frame.setLocation(100, 100);
-		// frame.setLocationRelativeTo(null);
-		frame.setSize(panelDm.getWidth(), panelDm.getHeight()
-				+ (int) panelController.getPreferredSize().getHeight());
+		frame.setSize(panelDm.getWidth()
+				+ (int) panelMove.getPreferredSize().getWidth(),
+				(int) panelMain.getPreferredSize().getHeight()
+						+ (int) labelStatus.getPreferredSize().getHeight());
 		frame.setResizable(false);
 
 		frame.setVisible(true);

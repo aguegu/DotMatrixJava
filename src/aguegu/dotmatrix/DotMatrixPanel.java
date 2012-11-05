@@ -5,6 +5,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
@@ -20,6 +21,8 @@ class DotMatrixPanel extends JPanel
 		this.setSize(DotMatrixImage.getBlockWidth() * (9 * 8 + 1),
 				DotMatrixImage.getBlockWidth() * (9 * 3 + 1));
 
+		this.setPreferredSize(new Dimension(DotMatrixImage.getBlockWidth()
+				* (9 * 8 + 1), DotMatrixImage.getBlockWidth() * (9 * 3 + 1)));
 		this.dm = dm;
 		dmi = new DotMatrixImage[24];
 		for (int i = 0; i < dmi.length; i++)
@@ -71,7 +74,7 @@ class DotMatrixPanel extends JPanel
 					break;
 				}
 
-				dm.reverseDot(index); 
+				dm.reverseDot(index);
 
 				update();
 				repaint();
@@ -115,7 +118,7 @@ class DotMatrixPanel extends JPanel
 			int z = i / 64;
 
 			boolean val = dm.getDot(i);
-			
+
 			dmi[y].setDot(z * 8 + x, val);
 			dmi[8 + x].setDot(z * 8 + 7 - y, val);
 			dmi[16 + z].setDot((7 - y) * 8 + x, val);
@@ -147,5 +150,4 @@ class DotMatrixPanel extends JPanel
 		}
 	}
 
-	
 }

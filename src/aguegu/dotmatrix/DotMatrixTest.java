@@ -46,6 +46,9 @@ public class DotMatrixTest implements ActionListener
 	private JLabel labelStatus;
 
 	private JButton buttonSave;
+	private JButton buttonAdd;
+	
+	
 	private JButton buttonAllOn;
 	private JButton buttonAllOff;
 	private JButton buttonMoveXPosi;
@@ -121,8 +124,11 @@ public class DotMatrixTest implements ActionListener
 		panelController.add(textAreaPane);
 		buttonSave = new JButton("Save");
 		buttonSave.addActionListener(new ActionListenerButtonSave());
-
 		panelController.add(buttonSave);
+		
+		buttonAdd = new JButton("Add");
+		buttonAdd.addActionListener(new ActionListenerButtonAdd());
+		panelController.add(buttonAdd);
 
 		// frame.getContentPane().add(BorderLayout.SOUTH, panelController);
 		panelMain.add(panelController);
@@ -237,7 +243,16 @@ public class DotMatrixTest implements ActionListener
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			dmr.save(dm.getCache());
+			//dmr.save(dm.getCache());
+		}
+	}
+	
+	public class ActionListenerButtonAdd implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			dmr.add(dm.getCache());
 		}
 	}
 

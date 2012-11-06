@@ -27,7 +27,7 @@ public class DotMatrixRecordFrame
 			break;
 		case F2:
 			header = (byte) 0xf2;
-			length = 64;
+			length = 64 + 8;
 			break;
 		}
 
@@ -91,7 +91,7 @@ public class DotMatrixRecordFrame
 	{
 		return data;
 	}
-	
+
 	public int getLength()
 	{
 		return data.length;

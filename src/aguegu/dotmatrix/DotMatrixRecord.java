@@ -10,22 +10,26 @@ import java.util.ArrayList;
 public class DotMatrixRecord
 {
 	private String filename;
-	//private ArrayList<byte[]> record;
+	private ArrayList<DotMatrixRecordFrame> record;
 
 	public DotMatrixRecord(String filename)
 	{
 		this.filename = filename;
-	//	record = new ArrayList<byte[]>(); 
+		record = new ArrayList<DotMatrixRecordFrame>();
 	}
 
-	public void save(byte[] data)
+	public void save()
 	{
 		try
 		{
 			FileOutputStream fos = new FileOutputStream(filename);
 			DataOutputStream dos = new DataOutputStream(fos);
 
-			dos.write(data);
+			for (DotMatrixRecordFrame f : record)
+			{
+				dos.write(f.getData());
+			}
+
 			dos.close();
 			fos.close();
 		}
@@ -39,30 +43,48 @@ public class DotMatrixRecord
 	{
 		ArrayList<String> frames = new ArrayList<String>();
 
-		byte[] data = new byte[4];
-
 		try
 		{
 			FileInputStream fis = new FileInputStream(filename);
 			DataInputStream dis = new DataInputStream(fis);
 
 			int i = 0;
+			int head;
 
-			while (dis.read(data) != -1)
+			while ((head = dis.read()) != -1)
 			{
+				if (head == 0xf2)
+				{
+					byte[] val = new byte[7 + 64];
+					dis.read(val);
+				}
+				else
+				{
+					byte[] val = new byte[7];
+					dis.read(val);					
+				}
 				frames.add(String.format("%d", i++));
 			}
-			
+
 			dis.close();
 			fis.close();
 		}
 		catch (IOException e)
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();			
+			e.printStackTrace();
 		}
 
 		return frames;
+	}
+
+	public void add(byte[] cache)
+	{
+		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(
+				DotMatrixRecordFrame.Type.F2, 0);
+		newFrame.setBatch(cache);
+		record.add(newFrame);
+		save();
 	}
 
 }

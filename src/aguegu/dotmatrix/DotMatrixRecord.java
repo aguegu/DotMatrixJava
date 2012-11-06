@@ -10,10 +10,12 @@ import java.util.ArrayList;
 public class DotMatrixRecord
 {
 	private String filename;
+	//private ArrayList<byte[]> record;
 
 	public DotMatrixRecord(String filename)
 	{
 		this.filename = filename;
+	//	record = new ArrayList<byte[]>(); 
 	}
 
 	public void save(byte[] data)

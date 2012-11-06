@@ -1,8 +1,11 @@
 package aguegu.dotmatrix;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class DotMatrixRecord
 {
@@ -28,6 +31,36 @@ public class DotMatrixRecord
 		{
 			System.out.println(ex);
 		}
+	}
+
+	public ArrayList<String> getFrames()
+	{
+		ArrayList<String> frames = new ArrayList<String>();
+
+		byte[] data = new byte[4];
+
+		try
+		{
+			FileInputStream fis = new FileInputStream(filename);
+			DataInputStream dis = new DataInputStream(fis);
+
+			int i = 0;
+
+			while (dis.read(data) != -1)
+			{
+				frames.add(String.format("%d", i++));
+			}
+			
+			dis.close();
+			fis.close();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();			
+		}
+
+		return frames;
 	}
 
 }

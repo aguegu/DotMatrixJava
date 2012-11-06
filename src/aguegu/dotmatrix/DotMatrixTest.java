@@ -4,11 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+
 import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
@@ -30,16 +31,17 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
+import javax.swing.Timer;
 
 import aguegu.dotmatrix.DotMatrixPanel;
 
-public class DotMatrixTest
+public class DotMatrixTest implements ActionListener
 {
 	private DotMatrix dm;
 	private DotMatrixPanel panelDm;
 	private JTextArea textArea;
 	private JPanel panelController;
-	private JPanel panelMove;
+
 	private JPanel panelMain;
 	private JLabel labelStatus;
 
@@ -53,6 +55,11 @@ public class DotMatrixTest
 	private JButton buttonMoveZPosi;
 	private JButton buttonMoveZNega;
 	private JCheckBox checkboxRecycle;
+	private DotMatrixRecord dmr;
+
+	private JList<String> listFrame;
+
+	private Timer timer;
 
 	// private boolean mouse;
 
@@ -79,20 +86,19 @@ public class DotMatrixTest
 	public void init()
 	{
 		dm = new DotMatrix();
+		timer = new Timer(50, this);
+		dmr = new DotMatrixRecord("record.dat");
+		
 		panelDm = new DotMatrixPanel(dm);
 		panelMain = new JPanel();
 		panelMain.setLayout(new BoxLayout(panelMain, BoxLayout.Y_AXIS));
 
-		panelMove = new JPanel();
-		panelMove.setLayout(new BoxLayout(panelMove, BoxLayout.Y_AXIS));
-		panelMove.setBorder(BorderFactory.createEmptyBorder(13, 5, 13, 5));
-				
 		panelController = new JPanel();
 		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
 		// panelController.setLayout(new BoxLayout(panelController,
 		// BoxLayout.X_AXIS));
 
-		JFrame frame = new JFrame("dot-matrix on Java");
+		JFrame frame = new JFrame("dot-matrix (Java) | aGuegu.net");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// frame.setContentPane(new DotMatrixPanel());
 
@@ -118,10 +124,42 @@ public class DotMatrixTest
 
 		panelController.add(buttonSave);
 
-		buttonAllOn = new JButton(new ImageIcon(getClass().getResource("AllOn.png")));		
+		// frame.getContentPane().add(BorderLayout.SOUTH, panelController);
+		panelMain.add(panelController);
+		frame.getContentPane().add(BorderLayout.CENTER, panelMain);
+
+		frame.getContentPane().add(BorderLayout.WEST, initPanelMove());
+
+		labelStatus = new JLabel("http://aguegu.net");
+		labelStatus.setBorder(BorderFactory
+				.createBevelBorder(BevelBorder.LOWERED));
+		frame.add(BorderLayout.SOUTH, labelStatus);
+
+		listFrame = new JList<String>(dmr.getFrames().toArray(new String[0]));
+		listFrame.setPreferredSize(new Dimension(48, 0));
+		frame.getContentPane().add(BorderLayout.EAST, listFrame);
+
+		frame.setLocation(100, 100);
+		frame.setSize(frame.getPreferredSize());
+		frame.setResizable(false);
+
+		frame.setVisible(true);
+		panelDm.requestFocusInWindow();
+		timer.isRunning();
+	}
+
+	private JPanel initPanelMove()
+	{
+		JPanel panelMove = new JPanel();
+		panelMove.setLayout(new BoxLayout(panelMove, BoxLayout.Y_AXIS));
+		panelMove.setBorder(BorderFactory.createEmptyBorder(13, 5, 13, 5));
+
+		buttonAllOn = new JButton(new ImageIcon(getClass().getResource(
+				"AllOn.png")));
 		buttonAllOn.addActionListener(new ActionListenerSwitchAll());
-		
-		buttonAllOff = new JButton(new ImageIcon(getClass().getResource("AllOff.png")));
+
+		buttonAllOff = new JButton(new ImageIcon(getClass().getResource(
+				"AllOff.png")));
 		buttonAllOff.addActionListener(new ActionListenerSwitchAll());
 
 		buttonMoveXPosi = new JButton("X+");
@@ -161,27 +199,7 @@ public class DotMatrixTest
 		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
 		panelMove.add(checkboxRecycle);
 
-		// frame.getContentPane().add(BorderLayout.SOUTH, panelController);
-		panelMain.add(panelController);
-
-		frame.getContentPane().add(BorderLayout.CENTER, panelMain);
-
-		frame.getContentPane().add(BorderLayout.WEST, panelMove);
-
-		labelStatus = new JLabel("http://aguegu.net");
-		labelStatus.setBorder(BorderFactory
-				.createBevelBorder(BevelBorder.LOWERED));
-		frame.add(BorderLayout.SOUTH, labelStatus);
-
-		frame.setLocation(100, 100);
-		frame.setSize(panelDm.getWidth()
-				+ (int) panelMove.getPreferredSize().getWidth(),
-				(int) panelMain.getPreferredSize().getHeight()
-						+ (int) labelStatus.getPreferredSize().getHeight());
-		frame.setResizable(false);
-
-		frame.setVisible(true);
-		panelDm.requestFocusInWindow();
+		return panelMove;
 	}
 
 	public class MouseListenerPanelDotMatrix implements MouseListener
@@ -219,7 +237,6 @@ public class DotMatrixTest
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			DotMatrixRecord dmr = new DotMatrixRecord("record.dat");
 			dmr.save(dm.getCache());
 		}
 	}
@@ -329,5 +346,14 @@ public class DotMatrixTest
 			s = s.concat(String.format("0x%02x, ", data[i]));
 		}
 		return s;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e)
+	{
+		dm.move(DotMatrix.Direction.Z_NEGA, true);
+		panelDm.update();
+		panelDm.repaint();
+		textArea.setText(cacheString());
 	}
 }

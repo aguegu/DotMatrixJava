@@ -94,6 +94,7 @@ public class DotMatrixTest implements ActionListener
 		dmr = new DotMatrixRecord("record.dat");
 
 		panelDm = new DotMatrixPanel(dm);
+		panelDm.setMode(DotMatrixPanel.Mode.ZXY);
 		panelMain = new JPanel();
 		panelMain.setLayout(new BoxLayout(panelMain, BoxLayout.Y_AXIS));
 
@@ -271,9 +272,7 @@ public class DotMatrixTest implements ActionListener
 			else if (e.getSource() == buttonAllOff)
 				dm.clear(false);
 
-			panelDm.update();
-			panelDm.repaint();
-			textArea.setText(cacheString());
+			refresh();
 		}
 	}
 
@@ -309,9 +308,7 @@ public class DotMatrixTest implements ActionListener
 				dm.move(DotMatrix.Direction.Z_NEGA, recycle);
 			}
 
-			panelDm.update();
-			panelDm.repaint();
-			textArea.setText(cacheString());
+			refresh();
 		}
 	}
 

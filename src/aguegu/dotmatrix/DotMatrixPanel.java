@@ -11,9 +11,15 @@ import java.awt.Graphics2D;
 
 class DotMatrixPanel extends JPanel
 {
+	enum Mode
+	{
+		XYZ, YZX, ZXY,
+	};
+
 	private static final long serialVersionUID = -2531292225634588108L;
 	private DotMatrix dm;
 	private DotMatrixImage[] dmi;
+	private Mode mode;
 
 	public DotMatrixPanel(DotMatrix dm)
 	{
@@ -23,12 +29,16 @@ class DotMatrixPanel extends JPanel
 
 		this.setPreferredSize(new Dimension(DotMatrixImage.getBlockWidth()
 				* (9 * 8 + 1), DotMatrixImage.getBlockWidth() * (9 * 3 + 1)));
+
 		this.dm = dm;
+
 		dmi = new DotMatrixImage[24];
 		for (int i = 0; i < dmi.length; i++)
 		{
 			dmi[i] = new DotMatrixImage();
 		}
+
+		mode = Mode.XYZ;
 
 		this.addMouseListener(new MA());
 		init();
@@ -55,10 +65,6 @@ class DotMatrixPanel extends JPanel
 
 				if (blockID >= 8 || blockC < 0 || blockR < 0)
 					return;
-
-				// System.out.printf("(%d, %d)", e.getX(), e.getY());
-				// System.out.printf("(%d, %d)", blockX, blockY);
-				// System.out.printf("(%d, %d, %d)\n", blockID, blockC, blockR);
 
 				int index = -1;
 				switch (blockY / 9)
@@ -113,9 +119,27 @@ class DotMatrixPanel extends JPanel
 	{
 		for (int i = 0; i < DotMatrix.DOT_LENGTH; i++)
 		{
-			int x = i % 8;
-			int y = i / 8 % 8;
-			int z = i / 64;
+			int x, y, z;
+			switch (mode)
+			{
+
+			case YZX:
+				z = i % 8;
+				x = i / 8 % 8;
+				y = i / 64;
+				break;
+			case ZXY:
+				y = i % 8;
+				z = i / 8 % 8;
+				x = i / 64;
+				break;
+			case XYZ:
+			default:
+				x = i % 8;
+				y = i / 8 % 8;
+				z = i / 64;
+				break;
+			}
 
 			boolean val = dm.getDot(i);
 
@@ -148,6 +172,11 @@ class DotMatrixPanel extends JPanel
 				g2d.drawImage(dmi[index], x, y, null);
 			}
 		}
+	}
+
+	public void setMode(Mode mode)
+	{
+		this.mode = mode;
 	}
 
 }

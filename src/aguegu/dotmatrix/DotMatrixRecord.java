@@ -39,31 +39,29 @@ public class DotMatrixRecord
 		}
 	}
 
-	public ArrayList<String> getFrames()
+	public void readRecord()
 	{
-		ArrayList<String> frames = new ArrayList<String>();
-
 		try
 		{
 			FileInputStream fis = new FileInputStream(filename);
 			DataInputStream dis = new DataInputStream(fis);
 
-			int i = 0;
 			int head;
+			int index = 0;
 
 			while ((head = dis.read()) != -1)
 			{
-				if (head == 0xf2)
-				{
-					byte[] val = new byte[7 + 64];
-					dis.read(val);
-				}
-				else
-				{
-					byte[] val = new byte[7];
-					dis.read(val);					
-				}
-				frames.add(String.format("%d", i++));
+				int length = 7;
+				length += head == 0xf2 ? 64 : 0;
+
+				byte[] val = new byte[length];
+
+				dis.read(val);
+				DotMatrixRecordFrame dmrf = new DotMatrixRecordFrame(
+						DotMatrixRecordFrame.Type.values()[head - 0xf0], index);
+				dmrf.setBody(val);
+				record.add(index, dmrf);
+				index++;
 			}
 
 			dis.close();
@@ -74,8 +72,17 @@ public class DotMatrixRecord
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
 
-		return frames;
+	public ArrayList<String> getList()
+	{
+		ArrayList<String> list = new ArrayList<String>();
+
+		for (int i = 0; i < record.size(); i++)
+		{
+			list.add(Integer.toString(i));
+		}
+		return list;
 	}
 
 	public void add(byte[] cache)
@@ -85,6 +92,11 @@ public class DotMatrixRecord
 		newFrame.setBatch(cache);
 		record.add(newFrame);
 		save();
+	}
+
+	public DotMatrixRecordFrame getFrame(int index)
+	{
+		return record.get(index);
 	}
 
 }

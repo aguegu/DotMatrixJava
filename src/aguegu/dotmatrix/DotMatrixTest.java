@@ -30,6 +30,8 @@ import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.text.Document;
 import javax.swing.Timer;
 
@@ -47,8 +49,7 @@ public class DotMatrixTest implements ActionListener
 
 	private JButton buttonSave;
 	private JButton buttonAdd;
-	
-	
+
 	private JButton buttonAllOn;
 	private JButton buttonAllOff;
 	private JButton buttonMoveXPosi;
@@ -91,7 +92,7 @@ public class DotMatrixTest implements ActionListener
 		dm = new DotMatrix();
 		timer = new Timer(50, this);
 		dmr = new DotMatrixRecord("record.dat");
-		
+
 		panelDm = new DotMatrixPanel(dm);
 		panelMain = new JPanel();
 		panelMain.setLayout(new BoxLayout(panelMain, BoxLayout.Y_AXIS));
@@ -125,7 +126,7 @@ public class DotMatrixTest implements ActionListener
 		buttonSave = new JButton("Save");
 		buttonSave.addActionListener(new ActionListenerButtonSave());
 		panelController.add(buttonSave);
-		
+
 		buttonAdd = new JButton("Add");
 		buttonAdd.addActionListener(new ActionListenerButtonAdd());
 		panelController.add(buttonAdd);
@@ -141,8 +142,11 @@ public class DotMatrixTest implements ActionListener
 				.createBevelBorder(BevelBorder.LOWERED));
 		frame.add(BorderLayout.SOUTH, labelStatus);
 
-		listFrame = new JList<String>(dmr.getFrames().toArray(new String[0]));
+		dmr.readRecord();
+		listFrame = new JList<String>(dmr.getList().toArray(new String[0]));
 		listFrame.setPreferredSize(new Dimension(48, 0));
+		listFrame
+				.addListSelectionListener(new ListSelectionListenerListFrame());
 		frame.getContentPane().add(BorderLayout.EAST, listFrame);
 
 		frame.setLocation(100, 100);
@@ -186,6 +190,7 @@ public class DotMatrixTest implements ActionListener
 		checkboxRecycle = new JCheckBox("loop", true);
 
 		panelMove.add(buttonAllOn);
+
 		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
 		// System.out.println(buttonAllOff.getMargin());
 
@@ -208,7 +213,7 @@ public class DotMatrixTest implements ActionListener
 		return panelMove;
 	}
 
-	public class MouseListenerPanelDotMatrix implements MouseListener
+	private class MouseListenerPanelDotMatrix implements MouseListener
 	{
 		@Override
 		public void mouseClicked(MouseEvent e)
@@ -238,16 +243,16 @@ public class DotMatrixTest implements ActionListener
 		}
 	}
 
-	public class ActionListenerButtonSave implements ActionListener
+	private class ActionListenerButtonSave implements ActionListener
 	{
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			//dmr.save(dm.getCache());
+			// dmr.save(dm.getCache());
 		}
 	}
-	
-	public class ActionListenerButtonAdd implements ActionListener
+
+	private class ActionListenerButtonAdd implements ActionListener
 	{
 		@Override
 		public void actionPerformed(ActionEvent e)
@@ -256,7 +261,7 @@ public class DotMatrixTest implements ActionListener
 		}
 	}
 
-	public class ActionListenerSwitchAll implements ActionListener
+	private class ActionListenerSwitchAll implements ActionListener
 	{
 		@Override
 		public void actionPerformed(ActionEvent e)
@@ -272,7 +277,7 @@ public class DotMatrixTest implements ActionListener
 		}
 	}
 
-	public class ActionListenerButtonMove implements ActionListener
+	private class ActionListenerButtonMove implements ActionListener
 	{
 		@Override
 		public void actionPerformed(ActionEvent e)
@@ -310,7 +315,7 @@ public class DotMatrixTest implements ActionListener
 		}
 	}
 
-	public class DocumentListeneDotMatrixTextArea implements DocumentListener
+	private class DocumentListeneDotMatrixTextArea implements DocumentListener
 	{
 		@Override
 		public void insertUpdate(DocumentEvent e)
@@ -348,7 +353,26 @@ public class DotMatrixTest implements ActionListener
 		}
 	}
 
-	// public class
+	private class ListSelectionListenerListFrame implements
+			ListSelectionListener
+	{
+		@Override
+		public void valueChanged(ListSelectionEvent e)
+		{
+			if (e.getValueIsAdjusting())
+				return;
+
+			int index = listFrame.getSelectedIndex();
+			System.out.println(index);
+			DotMatrixRecordFrame dmrf = dmr.getFrame(index);
+
+			byte[] cache = new byte[64];
+			System.arraycopy(dmrf.getData(), 8, cache, 0, 64);
+
+			dm.setCache(cache);
+			refresh();
+		}
+	}
 
 	private String cacheString()
 	{
@@ -367,6 +391,11 @@ public class DotMatrixTest implements ActionListener
 	public void actionPerformed(ActionEvent e)
 	{
 		dm.move(DotMatrix.Direction.Z_NEGA, true);
+		refresh();
+	}
+
+	private void refresh()
+	{
 		panelDm.update();
 		panelDm.repaint();
 		textArea.setText(cacheString());

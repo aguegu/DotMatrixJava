@@ -37,6 +37,12 @@ public class DotMatrixRecordFrame
 		this.index = index;
 	}
 
+	public void setBody(byte[] data)
+	{
+		int length = Math.min(this.data.length, data.length) - 1;
+		System.arraycopy(data, 0, this.data, 1, length);		
+	}
+
 	public int getIndex()
 	{
 		return index;
@@ -96,4 +102,5 @@ public class DotMatrixRecordFrame
 	{
 		return data.length;
 	}
+
 }

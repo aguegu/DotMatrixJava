@@ -22,6 +22,12 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+//import javax.swing.JMenu;
+//import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
@@ -36,10 +42,12 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.text.Document;
 import javax.swing.Timer;
 
-import aguegu.dotmatrix.DotMatrixPanel;
+//import aguegu.dotmatrix.DotMatrixPanel;
 
-public class DotMatrixTest implements ActionListener
+public class DotMatrixTest extends JFrame
 {
+	private static final long serialVersionUID = 5805285424717739698L;
+
 	private DotMatrix dm;
 	private DotMatrixPanel panelDm;
 	private JTextArea textArea;
@@ -57,8 +65,6 @@ public class DotMatrixTest implements ActionListener
 	private JList<String> listFrame;
 
 	private Timer timer;
-
-	// private boolean mouse;
 
 	public static void main(String[] args)
 	{
@@ -82,8 +88,11 @@ public class DotMatrixTest implements ActionListener
 
 	public void init()
 	{
+		this.setTitle("dot-matrix (Java) | aGuegu.net");
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		dm = new DotMatrix();
-		timer = new Timer(50, this);
+		timer = new Timer(50, new TimerActionListener());
 		dmr = new DotMatrixRecord("record.dat");
 
 		panelDm = new DotMatrixPanel(dm);
@@ -93,11 +102,6 @@ public class DotMatrixTest implements ActionListener
 
 		panelController = new JPanel();
 		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
-		// panelController.setLayout(new BoxLayout(panelController,
-		// BoxLayout.X_AXIS));
-
-		JFrame frame = new JFrame("dot-matrix (Java) | aGuegu.net");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		panelDm.addMouseListener(new MouseListenerPanelDotMatrix());
 		panelMain.add(panelDm);
@@ -125,30 +129,32 @@ public class DotMatrixTest implements ActionListener
 
 		// frame.getContentPane().add(BorderLayout.SOUTH, panelController);
 		panelMain.add(panelController);
-		frame.getContentPane().add(BorderLayout.CENTER, panelMain);
+		this.getContentPane().add(BorderLayout.CENTER, panelMain);
 
-		frame.getContentPane().add(BorderLayout.WEST, initPanelMove());
+		this.getContentPane().add(BorderLayout.WEST, initPanelMove());
 
 		labelStatus = new JLabel("http://aguegu.net");
 		labelStatus.setBorder(BorderFactory
 				.createBevelBorder(BevelBorder.LOWERED));
-		frame.add(BorderLayout.SOUTH, labelStatus);
+		this.add(BorderLayout.SOUTH, labelStatus);
 
 		dmr.readRecord();
 		listFrame = new JList<String>(dmr.getList().toArray(new String[0]));
 		listFrame.setPreferredSize(new Dimension(48, 0));
 		listFrame
 				.addListSelectionListener(new ListSelectionListenerListFrame());
-		frame.getContentPane().add(BorderLayout.EAST, listFrame);
+		this.getContentPane().add(BorderLayout.EAST, listFrame);
 
-		frame.setLocation(100, 100);
-		frame.setSize(frame.getPreferredSize());
-		frame.setResizable(false);
+		this.setJMenuBar(new DotMatrixTestMenuBar());
 
-		frame.setVisible(true);
+		this.setLocation(100, 100);
+		this.setSize(this.getPreferredSize());
+		this.setResizable(false);
+
+		this.setVisible(true);
 		panelDm.requestFocusInWindow();
 		timer.isRunning();
-		// timer.start();
+		timer.start();
 	}
 
 	private JPanel initPanelMove()
@@ -161,19 +167,20 @@ public class DotMatrixTest implements ActionListener
 
 		String[] movements = new String[] { "on", "off", "X+", "X-", "Y+",
 				"Y-", "Z+", "Z-" };
-		
+
 		for (String s : movements)
-		{			
+		{
 			JButton button = new JButton(s);
 			button.setActionCommand(s);
 			button.addActionListener(new ActionListenerButtonMove());
-			
+
 			if (s.equals("on") || s.equals("off"))
 			{
 				button.setText(null);
-				button.setIcon(new ImageIcon(getClass().getResource(s.concat(".png"))));
-			}		
-			
+				button.setIcon(new ImageIcon(getClass().getResource(
+						s.concat(".png"))));
+			}
+
 			panelMove.add(button);
 			panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
 		}
@@ -238,9 +245,7 @@ public class DotMatrixTest implements ActionListener
 		{
 			boolean recycle = checkboxRecycle.isSelected();
 
-			String s = e.getActionCommand();
-
-			switch (s)
+			switch (e.getActionCommand())
 			{
 			case "on":
 				dm.clear(true);
@@ -265,6 +270,13 @@ public class DotMatrixTest implements ActionListener
 				break;
 			case "Z-":
 				dm.move(DotMatrix.Direction.Z_NEGA, recycle);
+				break;
+			case "About":
+				JOptionPane.showMessageDialog(null, "For more info, check\nhttp://aguegu.net", "About",
+						JOptionPane.OK_OPTION | JOptionPane.INFORMATION_MESSAGE);
+				break;
+			case "Exit":
+				System.exit(0);
 				break;
 			}
 			refresh(true);
@@ -342,12 +354,16 @@ public class DotMatrixTest implements ActionListener
 		return s;
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e)
+	private class TimerActionListener implements ActionListener
 	{
-		System.out.println(e.getActionCommand());
-		dm.move(DotMatrix.Direction.Z_NEGA, true);
-		refresh(true);
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			System.out.println(e.getSource());
+			System.out.println(e.getActionCommand());
+			dm.move(DotMatrix.Direction.Z_NEGA, true);
+			refresh(true);
+		}
 	}
 
 	private void refresh(boolean updateString)
@@ -357,4 +373,42 @@ public class DotMatrixTest implements ActionListener
 		if (updateString)
 			textArea.setText(cacheString());
 	}
+	
+	private class DotMatrixTestMenuBar extends JMenuBar implements ActionListener
+	{
+		private static final long serialVersionUID = -6873734389340066641L;
+
+		public DotMatrixTestMenuBar()
+		{
+			JMenu mnFile = new JMenu("File");
+			JMenu mnHelp = new JMenu("Help");
+			JMenu mnEdit = new JMenu("Edit");
+			
+			JMenuItem miExit = new JMenuItem("Exit");
+			miExit.setActionCommand("Exit");
+			miExit.addActionListener(new ActionListenerButtonMove());
+			mnFile.add(miExit);
+			
+			JMenuItem miAbout = new JMenuItem("About");
+			miAbout.setActionCommand("About");
+			miAbout.addActionListener(new ActionListenerButtonMove());
+			mnHelp.add(miAbout);
+			
+			JMenuItem miXPlus = new JMenuItem("X+");
+			miXPlus.setActionCommand("X+");
+
+			mnEdit.add(miXPlus);
+			
+			this.add(mnFile);
+			this.add(mnEdit);
+			this.add(mnHelp);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+
+		}
+	}
+
 }

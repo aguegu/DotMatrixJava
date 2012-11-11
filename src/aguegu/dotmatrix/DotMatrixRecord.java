@@ -91,7 +91,6 @@ public class DotMatrixRecord
 				DotMatrixRecordFrame.Type.F2, 0);
 		newFrame.setBatch(cache);
 		record.add(newFrame);
-		save();
 	}
 
 	public DotMatrixRecordFrame getFrame(int index)

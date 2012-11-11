@@ -50,20 +50,6 @@ class DotMatrixPanel extends JPanel
 
 		switch (this.mode)
 		{
-		case XYZ:
-			switch (row)
-			{
-			case 0:
-				index = blockR * 64 + blockID * 8 + blockC;
-				break;
-			case 1:
-				index = blockR * 64 + (7 - blockC) * 8 + blockID;
-				break;
-			case 2:
-				index = blockID * 64 + (7 - blockR) * 8 + blockC;
-				break;
-			}
-			break;
 		case YZX:
 			switch (row)
 			{
@@ -92,7 +78,20 @@ class DotMatrixPanel extends JPanel
 				break;
 			}
 			break;
+		case XYZ:
 		default:
+			switch (row)
+			{
+			case 0:
+				index = blockR * 64 + blockID * 8 + blockC;
+				break;
+			case 1:
+				index = blockR * 64 + (7 - blockC) * 8 + blockID;
+				break;
+			case 2:
+				index = blockID * 64 + (7 - blockR) * 8 + blockC;
+				break;
+			}
 			break;
 		}
 

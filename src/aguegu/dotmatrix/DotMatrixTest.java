@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+//import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,14 +51,6 @@ public class DotMatrixTest implements ActionListener
 	private JButton buttonSave;
 	private JButton buttonAdd;
 
-	private JButton buttonAllOn;
-	private JButton buttonAllOff;
-	private JButton buttonMoveXPosi;
-	private JButton buttonMoveXNega;
-	private JButton buttonMoveYPosi;
-	private JButton buttonMoveYNega;
-	private JButton buttonMoveZPosi;
-	private JButton buttonMoveZNega;
 	private JCheckBox checkboxRecycle;
 	private DotMatrixRecord dmr;
 
@@ -94,7 +87,7 @@ public class DotMatrixTest implements ActionListener
 		dmr = new DotMatrixRecord("record.dat");
 
 		panelDm = new DotMatrixPanel(dm);
-		panelDm.setMode(DotMatrixPanel.Mode.ZXY);
+		panelDm.setMode(DotMatrixPanel.Mode.XYZ);
 		panelMain = new JPanel();
 		panelMain.setLayout(new BoxLayout(panelMain, BoxLayout.Y_AXIS));
 
@@ -105,10 +98,8 @@ public class DotMatrixTest implements ActionListener
 
 		JFrame frame = new JFrame("dot-matrix (Java) | aGuegu.net");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// frame.setContentPane(new DotMatrixPanel());
 
 		panelDm.addMouseListener(new MouseListenerPanelDotMatrix());
-		// frame.getContentPane().add(BorderLayout.CENTER, panelDm);
 		panelMain.add(panelDm);
 
 		textArea = new JTextArea(8, 50);
@@ -157,6 +148,7 @@ public class DotMatrixTest implements ActionListener
 		frame.setVisible(true);
 		panelDm.requestFocusInWindow();
 		timer.isRunning();
+		// timer.start();
 	}
 
 	private JPanel initPanelMove()
@@ -165,50 +157,27 @@ public class DotMatrixTest implements ActionListener
 		panelMove.setLayout(new BoxLayout(panelMove, BoxLayout.Y_AXIS));
 		panelMove.setBorder(BorderFactory.createEmptyBorder(13, 5, 13, 5));
 
-		buttonAllOn = new JButton(new ImageIcon(getClass().getResource(
-				"AllOn.png")));
-		buttonAllOn.addActionListener(new ActionListenerSwitchAll());
-
-		buttonAllOff = new JButton(new ImageIcon(getClass().getResource(
-				"AllOff.png")));
-		buttonAllOff.addActionListener(new ActionListenerSwitchAll());
-
-		buttonMoveXPosi = new JButton("X+");
-		buttonMoveXPosi.addActionListener(new ActionListenerButtonMove());
-		buttonMoveXNega = new JButton("X-");
-		buttonMoveXNega.addActionListener(new ActionListenerButtonMove());
-
-		buttonMoveYPosi = new JButton("Y+");
-		buttonMoveYPosi.addActionListener(new ActionListenerButtonMove());
-		buttonMoveYNega = new JButton("Y-");
-		buttonMoveYNega.addActionListener(new ActionListenerButtonMove());
-
-		buttonMoveZPosi = new JButton("Z+");
-		buttonMoveZPosi.addActionListener(new ActionListenerButtonMove());
-		buttonMoveZNega = new JButton("Z-");
-		buttonMoveZNega.addActionListener(new ActionListenerButtonMove());
-
 		checkboxRecycle = new JCheckBox("loop", true);
 
-		panelMove.add(buttonAllOn);
+		String[] movements = new String[] { "on", "off", "X+", "X-", "Y+",
+				"Y-", "Z+", "Z-" };
+		
+		for (String s : movements)
+		{			
+			JButton button = new JButton(s);
+			button.setActionCommand(s);
+			button.addActionListener(new ActionListenerButtonMove());
+			
+			if (s.equals("on") || s.equals("off"))
+			{
+				button.setText(null);
+				button.setIcon(new ImageIcon(getClass().getResource(s.concat(".png"))));
+			}		
+			
+			panelMove.add(button);
+			panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
+		}
 
-		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
-		// System.out.println(buttonAllOff.getMargin());
-
-		panelMove.add(buttonAllOff);
-		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
-		panelMove.add(buttonMoveXNega);
-		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
-		panelMove.add(buttonMoveXPosi);
-		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
-		panelMove.add(buttonMoveYNega);
-		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
-		panelMove.add(buttonMoveYPosi);
-		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
-		panelMove.add(buttonMoveZNega);
-		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
-		panelMove.add(buttonMoveZPosi);
-		panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
 		panelMove.add(checkboxRecycle);
 
 		return panelMove;
@@ -262,20 +231,6 @@ public class DotMatrixTest implements ActionListener
 		}
 	}
 
-	private class ActionListenerSwitchAll implements ActionListener
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			if (e.getSource() == buttonAllOn)
-				dm.clear(true);
-			else if (e.getSource() == buttonAllOff)
-				dm.clear(false);
-
-			refresh();
-		}
-	}
-
 	private class ActionListenerButtonMove implements ActionListener
 	{
 		@Override
@@ -283,32 +238,36 @@ public class DotMatrixTest implements ActionListener
 		{
 			boolean recycle = checkboxRecycle.isSelected();
 
-			if (e.getSource() == buttonMoveXPosi)
-			{
-				dm.move(DotMatrix.Direction.X_POSI, recycle);
-			}
-			else if (e.getSource() == buttonMoveXNega)
-			{
-				dm.move(DotMatrix.Direction.X_NEGA, recycle);
-			}
-			else if (e.getSource() == buttonMoveYPosi)
-			{
-				dm.move(DotMatrix.Direction.Y_POSI, recycle);
-			}
-			else if (e.getSource() == buttonMoveYNega)
-			{
-				dm.move(DotMatrix.Direction.Y_NEGA, recycle);
-			}
-			else if (e.getSource() == buttonMoveZPosi)
-			{
-				dm.move(DotMatrix.Direction.Z_POSI, recycle);
-			}
-			else if (e.getSource() == buttonMoveZNega)
-			{
-				dm.move(DotMatrix.Direction.Z_NEGA, recycle);
-			}
+			String s = e.getActionCommand();
 
-			refresh();
+			switch (s)
+			{
+			case "on":
+				dm.clear(true);
+				break;
+			case "off":
+				dm.clear(false);
+				break;
+			case "X+":
+				dm.move(DotMatrix.Direction.X_POSI, recycle);
+				break;
+			case "X-":
+				dm.move(DotMatrix.Direction.X_NEGA, recycle);
+				break;
+			case "Y+":
+				dm.move(DotMatrix.Direction.Y_POSI, recycle);
+				break;
+			case "Y-":
+				dm.move(DotMatrix.Direction.Y_NEGA, recycle);
+				break;
+			case "Z+":
+				dm.move(DotMatrix.Direction.Z_POSI, recycle);
+				break;
+			case "Z-":
+				dm.move(DotMatrix.Direction.Z_NEGA, recycle);
+				break;
+			}
+			refresh(true);
 		}
 	}
 
@@ -334,8 +293,7 @@ public class DotMatrixTest implements ActionListener
 				}
 
 				dm.setCache(cache);
-				panelDm.update();
-				panelDm.repaint();
+				refresh(false);
 			}
 		}
 
@@ -367,7 +325,7 @@ public class DotMatrixTest implements ActionListener
 			System.arraycopy(dmrf.getData(), 8, cache, 0, 64);
 
 			dm.setCache(cache);
-			refresh();
+			refresh(true);
 		}
 	}
 
@@ -387,14 +345,16 @@ public class DotMatrixTest implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
+		System.out.println(e.getActionCommand());
 		dm.move(DotMatrix.Direction.Z_NEGA, true);
-		refresh();
+		refresh(true);
 	}
 
-	private void refresh()
+	private void refresh(boolean updateString)
 	{
 		panelDm.update();
 		panelDm.repaint();
-		textArea.setText(cacheString());
+		if (updateString)
+			textArea.setText(cacheString());
 	}
 }

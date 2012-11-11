@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -69,6 +70,7 @@ public class DotMatrixTest extends JFrame
 			"X-", "Y+", "Y-", "Z+", "Z-" };
 	private Timer timer;
 	private boolean inLoop = true;
+	private DotMatrixPanel.Mode mode = DotMatrixPanel.Mode.XYZ;
 
 	public static void main(String[] args)
 	{
@@ -100,7 +102,8 @@ public class DotMatrixTest extends JFrame
 		dmr = new DotMatrixRecord("record.dat");
 
 		panelDm = new DotMatrixPanel(dm);
-		panelDm.setMode(DotMatrixPanel.Mode.XYZ);
+		panelDm.setMode(mode);
+
 		panelMain = new JPanel();
 		panelMain.setLayout(new BoxLayout(panelMain, BoxLayout.Y_AXIS));
 
@@ -199,16 +202,38 @@ public class DotMatrixTest extends JFrame
 		public void actionPerformed(ActionEvent e)
 		{
 			if (e.getSource() instanceof JCheckBox)
-			{				
+			{
 				inLoop = ((JCheckBox) e.getSource()).isSelected();
 			}
 			else if (e.getSource() instanceof JCheckBoxMenuItem)
 			{
 				inLoop = ((JCheckBoxMenuItem) e.getSource()).isSelected();
 			}
-			
+
 			checkboxInLoop.setSelected(inLoop);
 			miLoop.setSelected(inLoop);
+		}
+	}
+
+	private class ActionListenerMode implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			switch (e.getActionCommand())
+			{
+			case "XYZ":
+				mode = DotMatrixPanel.Mode.XYZ;
+				break;
+			case "YZX":
+				mode = DotMatrixPanel.Mode.YZX;
+				break;
+			case "ZXY":
+				mode = DotMatrixPanel.Mode.ZXY;
+				break;
+			}
+			panelDm.setMode(mode);
+			refresh(true);
 		}
 	}
 
@@ -398,6 +423,10 @@ public class DotMatrixTest extends JFrame
 			JMenu mnHelp = new JMenu("Help");
 			JMenu mnEdit = new JMenu("Edit");
 
+			mnFile.setMnemonic(KeyEvent.VK_F);
+			mnEdit.setMnemonic(KeyEvent.VK_E);
+			mnHelp.setMnemonic(KeyEvent.VK_H);
+
 			JMenuItem miExit = new JMenuItem("Exit");
 			miExit.setActionCommand("Exit");
 			miExit.addActionListener(this);
@@ -407,6 +436,17 @@ public class DotMatrixTest extends JFrame
 			miAbout.setActionCommand("About");
 			miAbout.addActionListener(this);
 			mnHelp.add(miAbout);
+
+			String[] Modes = new String[] { "XYZ", "YZX", "ZXY" };
+			for (String s : Modes)
+			{
+				JMenuItem button = new JMenuItem(s);
+				button.setActionCommand(s);
+				button.addActionListener(new ActionListenerMode());
+				mnEdit.add(button);
+			}
+
+			mnEdit.addSeparator();
 
 			miLoop = new JCheckBoxMenuItem("loop", inLoop);
 			miLoop.addActionListener(new ActionListenerInLoop());

@@ -28,8 +28,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-//import javax.swing.JMenu;
-//import javax.swing.JMenuBar;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
@@ -438,13 +438,20 @@ public class DotMatrixTest extends JFrame
 			mnHelp.add(miAbout);
 
 			String[] Modes = new String[] { "XYZ", "YZX", "ZXY" };
+			ButtonGroup bgMode = new ButtonGroup();
+			
 			for (String s : Modes)
 			{
-				JMenuItem button = new JMenuItem(s);
-				button.setActionCommand(s);
+				JRadioButtonMenuItem button = new JRadioButtonMenuItem(s);
+				button.setActionCommand(s);				
 				button.addActionListener(new ActionListenerMode());
+				bgMode.add(button);
+				
+				if (s.equals("XYZ"))
+					button.setSelected(true);
+				
 				mnEdit.add(button);
-			}
+			}			
 
 			mnEdit.addSeparator();
 

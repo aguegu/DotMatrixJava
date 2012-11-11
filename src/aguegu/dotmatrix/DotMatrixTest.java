@@ -19,6 +19,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -59,12 +60,15 @@ public class DotMatrixTest extends JFrame
 	private JButton buttonSave;
 	private JButton buttonAdd;
 
-	private JCheckBox checkboxRecycle;
+	private JCheckBox checkboxInLoop;
+	private JCheckBoxMenuItem miLoop;
 	private DotMatrixRecord dmr;
 
 	private JList<String> listFrame;
-
+	private static final String[] movements = new String[] { "on", "off", "X+",
+			"X-", "Y+", "Y-", "Z+", "Z-" };
 	private Timer timer;
+	private boolean inLoop = true;
 
 	public static void main(String[] args)
 	{
@@ -154,7 +158,9 @@ public class DotMatrixTest extends JFrame
 		this.setVisible(true);
 		panelDm.requestFocusInWindow();
 		timer.isRunning();
-		timer.start();
+		// timer.start();
+
+		refresh(true);
 	}
 
 	private JPanel initPanelMove()
@@ -162,11 +168,6 @@ public class DotMatrixTest extends JFrame
 		JPanel panelMove = new JPanel();
 		panelMove.setLayout(new BoxLayout(panelMove, BoxLayout.Y_AXIS));
 		panelMove.setBorder(BorderFactory.createEmptyBorder(13, 5, 13, 5));
-
-		checkboxRecycle = new JCheckBox("loop", true);
-
-		String[] movements = new String[] { "on", "off", "X+", "X-", "Y+",
-				"Y-", "Z+", "Z-" };
 
 		for (String s : movements)
 		{
@@ -185,9 +186,30 @@ public class DotMatrixTest extends JFrame
 			panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
 		}
 
-		panelMove.add(checkboxRecycle);
+		checkboxInLoop = new JCheckBox("loop", inLoop);
+		checkboxInLoop.addActionListener(new ActionListenerInLoop());
+		panelMove.add(checkboxInLoop);
 
 		return panelMove;
+	}
+
+	private class ActionListenerInLoop implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			if (e.getSource() instanceof JCheckBox)
+			{				
+				inLoop = ((JCheckBox) e.getSource()).isSelected();
+			}
+			else if (e.getSource() instanceof JCheckBoxMenuItem)
+			{
+				inLoop = ((JCheckBoxMenuItem) e.getSource()).isSelected();
+			}
+			
+			checkboxInLoop.setSelected(inLoop);
+			miLoop.setSelected(inLoop);
+		}
 	}
 
 	private class MouseListenerPanelDotMatrix implements MouseListener
@@ -225,7 +247,7 @@ public class DotMatrixTest extends JFrame
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			// dmr.save(dm.getCache());
+			dmr.save();
 		}
 	}
 
@@ -243,7 +265,7 @@ public class DotMatrixTest extends JFrame
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			boolean recycle = checkboxRecycle.isSelected();
+			boolean recycle = inLoop;
 
 			switch (e.getActionCommand())
 			{
@@ -270,13 +292,6 @@ public class DotMatrixTest extends JFrame
 				break;
 			case "Z-":
 				dm.move(DotMatrix.Direction.Z_NEGA, recycle);
-				break;
-			case "About":
-				JOptionPane.showMessageDialog(null, "For more info, check\nhttp://aguegu.net", "About",
-						JOptionPane.OK_OPTION | JOptionPane.INFORMATION_MESSAGE);
-				break;
-			case "Exit":
-				System.exit(0);
 				break;
 			}
 			refresh(true);
@@ -359,8 +374,6 @@ public class DotMatrixTest extends JFrame
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			System.out.println(e.getSource());
-			System.out.println(e.getActionCommand());
 			dm.move(DotMatrix.Direction.Z_NEGA, true);
 			refresh(true);
 		}
@@ -373,8 +386,9 @@ public class DotMatrixTest extends JFrame
 		if (updateString)
 			textArea.setText(cacheString());
 	}
-	
-	private class DotMatrixTestMenuBar extends JMenuBar implements ActionListener
+
+	private class DotMatrixTestMenuBar extends JMenuBar implements
+			ActionListener
 	{
 		private static final long serialVersionUID = -6873734389340066641L;
 
@@ -383,22 +397,29 @@ public class DotMatrixTest extends JFrame
 			JMenu mnFile = new JMenu("File");
 			JMenu mnHelp = new JMenu("Help");
 			JMenu mnEdit = new JMenu("Edit");
-			
+
 			JMenuItem miExit = new JMenuItem("Exit");
 			miExit.setActionCommand("Exit");
-			miExit.addActionListener(new ActionListenerButtonMove());
+			miExit.addActionListener(this);
 			mnFile.add(miExit);
-			
+
 			JMenuItem miAbout = new JMenuItem("About");
 			miAbout.setActionCommand("About");
-			miAbout.addActionListener(new ActionListenerButtonMove());
+			miAbout.addActionListener(this);
 			mnHelp.add(miAbout);
-			
-			JMenuItem miXPlus = new JMenuItem("X+");
-			miXPlus.setActionCommand("X+");
 
-			mnEdit.add(miXPlus);
-			
+			miLoop = new JCheckBoxMenuItem("loop", inLoop);
+			miLoop.addActionListener(new ActionListenerInLoop());
+			mnEdit.add(miLoop);
+
+			for (String s : movements)
+			{
+				JMenuItem button = new JMenuItem(s);
+				button.setActionCommand(s);
+				button.addActionListener(new ActionListenerButtonMove());
+				mnEdit.add(button);
+			}
+
 			this.add(mnFile);
 			this.add(mnEdit);
 			this.add(mnHelp);
@@ -407,7 +428,19 @@ public class DotMatrixTest extends JFrame
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-
+			switch (e.getActionCommand())
+			{
+			case "About":
+				JOptionPane
+						.showMessageDialog(this,
+								"For more info, check\nhttp://aguegu.net",
+								"About", JOptionPane.OK_OPTION
+										| JOptionPane.INFORMATION_MESSAGE);
+				break;
+			case "Exit":
+				System.exit(0);
+				break;
+			}
 		}
 	}
 

@@ -13,7 +13,7 @@ class DotMatrixPanel extends JPanel
 {
 	enum Mode
 	{
-		XYZ, YZX, ZXY,
+		XYZ, YZX, ZXY
 	};
 
 	private static final long serialVersionUID = -2531292225634588108L;
@@ -44,7 +44,63 @@ class DotMatrixPanel extends JPanel
 		init();
 	}
 
-	class MA implements MouseListener
+	private int getIndex(int row, int blockID, int blockC, int blockR)
+	{
+		int index = -1;
+
+		switch (this.mode)
+		{
+		case XYZ:
+			switch (row)
+			{
+			case 0:
+				index = blockR * 64 + blockID * 8 + blockC;
+				break;
+			case 1:
+				index = blockR * 64 + (7 - blockC) * 8 + blockID;
+				break;
+			case 2:
+				index = blockID * 64 + (7 - blockR) * 8 + blockC;
+				break;
+			}
+			break;
+		case YZX:
+			switch (row)
+			{
+			case 0:
+				index = blockID * 64 + blockC * 8 + blockR;
+				break;
+			case 1:
+				index = (7 - blockC) * 64 + blockID * 8 + blockR;
+				break;
+			case 2:
+				index = (7 - blockR) * 64 + blockC * 8 + blockID;
+				break;
+			}
+			break;
+		case ZXY:
+			switch (row)
+			{
+			case 0:
+				index = blockC * 64 + blockR * 8 + blockID;
+				break;
+			case 1:
+				index = blockID * 64 + blockR * 8 + 7 - blockC;
+				break;
+			case 2:
+				index = blockC * 64 + blockID * 8 + 7 - blockR;
+				break;
+			}
+			break;
+		default:
+			break;
+		}
+
+		return index;
+
+	}
+
+	private class MA implements MouseListener
 	{
 		@Override
 		public void mouseClicked(MouseEvent e)
@@ -66,19 +122,7 @@ class DotMatrixPanel extends JPanel
 				if (blockID >= 8 || blockC < 0 || blockR < 0)
 					return;
 
-				int index = -1;
-				switch (blockY / 9)
-				{
-				case 0:
-					index = blockR * 64 + blockID * 8 + blockC;
-					break;
-				case 1:
-					index = blockR * 64 + (7 - blockC) * 8 + blockID;
-					break;
-				case 2:
-					index = blockID * 64 + (7 - blockR) * 8 + blockC;
-					break;
-				}
+				int index = getIndex(blockY / 9, blockID, blockC, blockR);
 
 				dm.reverseDot(index);
 

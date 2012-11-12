@@ -57,7 +57,7 @@ public class DotMatrix
 
 	public byte[] getCache()
 	{
-		byte[] cache = new byte[64];
+		byte[] cache = new byte[CACHE_LENGTH];
 
 		for (int i = 0; i < dot.length; i++)
 		{

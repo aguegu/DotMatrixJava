@@ -39,13 +39,18 @@ public class DotMatrixRecordFrame
 
 	public void setBody(byte[] data)
 	{
-		int length = Math.min(this.data.length, data.length) - 1;
-		System.arraycopy(data, 0, this.data, 1, length);		
+		int length = Math.min(this.data.length - 1, data.length);
+		System.arraycopy(data, 0, this.data, 1, length);
 	}
 
 	public int getIndex()
 	{
 		return index;
+	}
+
+	public void setIndex(int index)
+	{
+		this.index = index;
 	}
 
 	public void setMode(byte mode)

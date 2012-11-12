@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class DotMatrixRecord
 {
@@ -18,11 +20,12 @@ public class DotMatrixRecord
 		this.filename = filename;
 		record = new ArrayList<DotMatrixRecordFrame>();
 	}
-	
+
 	public DotMatrixRecordFrame[] getFrames()
 	{
-		return record.toArray((DotMatrixRecordFrame[]) Array.newInstance(record.get(0).getClass(), record.size()));
-	}	
+		return record.toArray((DotMatrixRecordFrame[]) Array.newInstance(record
+				.get(0).getClass(), record.size()));
+	}
 
 	public void save()
 	{
@@ -63,9 +66,11 @@ public class DotMatrixRecord
 				byte[] val = new byte[length];
 
 				dis.read(val);
+
 				DotMatrixRecordFrame dmrf = new DotMatrixRecordFrame(
 						DotMatrixRecordFrame.Type.values()[head - 0xf0], index);
 				dmrf.setBody(val);
+
 				record.add(index, dmrf);
 				index++;
 			}
@@ -75,7 +80,6 @@ public class DotMatrixRecord
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -91,12 +95,36 @@ public class DotMatrixRecord
 		return list;
 	}
 
-	public void add(byte[] cache)
+	public void add(byte[] cache, int index)
 	{
+		if (index == -1)
+		{
+			index = record.size();
+		}
+
+		for (int i = index; i < record.size(); i++)
+		{
+			record.get(i).setIndex(i + 1);
+		}
+
 		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(
-				DotMatrixRecordFrame.Type.F2, 0);
+				DotMatrixRecordFrame.Type.F2, index);
 		newFrame.setBatch(cache);
 		record.add(newFrame);
+		
+		for (DotMatrixRecordFrame f:record)
+		{
+			System.out.print(f.getIndex());
+		}
+		System.out.println();
+		
+		this.sortRecord();
+		
+		for (DotMatrixRecordFrame f:record)
+		{
+			System.out.print(f.getIndex());
+		}
+		System.out.println();
 	}
 
 	public DotMatrixRecordFrame getFrame(int index)
@@ -104,4 +132,28 @@ public class DotMatrixRecord
 		return record.get(index);
 	}
 
+	public void remove(int index)
+	{
+		record.remove(index);
+
+		for (int i = 0; i < record.size(); i++)
+		{
+			record.get(i).setIndex(i);
+		}
+	}
+
+	private void sortRecord()
+	{
+		Collections.sort(record, new FrameComparator());
+	}
+
+	public class FrameComparator implements Comparator<DotMatrixRecordFrame>
+	{
+		@Override
+		public int compare(DotMatrixRecordFrame o1, DotMatrixRecordFrame o2)
+		{
+			return o1.getIndex() - o2.getIndex();
+			
+		}
+	}
 }

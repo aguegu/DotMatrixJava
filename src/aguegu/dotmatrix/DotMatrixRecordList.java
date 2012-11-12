@@ -26,7 +26,17 @@ public class DotMatrixRecordList extends JList<DotMatrixRecordFrame>
 
 		this.setModel(lm);
 		this.setCellRenderer(new DotMatrixRecordCellRender());
-		this.setListData(this.dmr.getFrames());
+
+		syncToReocrd();
+	}
+
+	public void syncToReocrd()
+	{
+		lm.removeAllElements();
+		for (DotMatrixRecordFrame dmrf : this.dmr.getFrames())
+		{
+			lm.addElement(dmrf);
+		}
 	}
 
 	class DotMatrixRecordCellRender extends JLabel implements
@@ -37,7 +47,6 @@ public class DotMatrixRecordList extends JList<DotMatrixRecordFrame>
 		public DotMatrixRecordCellRender()
 		{
 			setOpaque(true);
-			setIconTextGap(12);
 		}
 
 		@Override
@@ -61,7 +70,8 @@ public class DotMatrixRecordList extends JList<DotMatrixRecordFrame>
 			}
 			return this;
 		}
-
 	}
+
+	
 
 }

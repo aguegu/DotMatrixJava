@@ -58,8 +58,6 @@ public class DotMatrixTest extends JFrame
 	private JLabel labelStatus;
 
 	private JButton buttonSave;
-	private JButton buttonAdd;
-	private JButton buttonDelete;
 
 	private JCheckBox checkboxInLoop;
 	private JCheckBoxMenuItem miLoop;
@@ -68,6 +66,7 @@ public class DotMatrixTest extends JFrame
 	private DotMatrixRecordList listFrame;
 	private static final String[] movements = new String[] { "on", "off", "X+",
 			"X-", "Y+", "Y-", "Z+", "Z-" };
+	private static final String[] recordOperations = new String[] {"Insert", "Append", "Update", "Delete"};
 	private Timer timer;
 	private boolean inLoop = true;
 	private DotMatrixPanel.Mode mode = DotMatrixPanel.Mode.XYZ;
@@ -127,16 +126,8 @@ public class DotMatrixTest extends JFrame
 
 		panelController.add(textAreaPane);
 		buttonSave = new JButton("Save");
-		buttonSave.addActionListener(new ActionListenerButtonSave());
+		buttonSave.addActionListener(new ActionListenerRocordFrameSave());
 		panelController.add(buttonSave);
-
-		buttonAdd = new JButton("Add");
-		buttonAdd.addActionListener(new ActionListenerButtonAdd());
-		panelController.add(buttonAdd);
-		
-		buttonDelete = new JButton("Delete");
-		buttonDelete.addActionListener(new ActionListenerRocordFrameDelete());
-		panelController.add(buttonDelete);
 
 		// frame.getContentPane().add(BorderLayout.SOUTH, panelController);
 		panelMain.add(panelController);
@@ -271,7 +262,7 @@ public class DotMatrixTest extends JFrame
 		}
 	}
 
-	private class ActionListenerButtonSave implements ActionListener
+	private class ActionListenerRocordFrameSave implements ActionListener
 	{
 		@Override
 		public void actionPerformed(ActionEvent e)
@@ -280,23 +271,29 @@ public class DotMatrixTest extends JFrame
 		}
 	}
 
-	private class ActionListenerButtonAdd implements ActionListener
+	private class ActionListenerRocordOperation implements ActionListener
 	{
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			dmr.add(dm.getCache());
-		}
-	}
-	
-	private class ActionListenerRocordFrameDelete implements ActionListener
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
+			int index = listFrame.getSelectedIndex();
 			
-		}		
-	}
+			switch (e.getActionCommand())
+			{
+			case "Insert":				
+				dmr.add(dm.getCache(), index);
+				listFrame.syncToReocrd();
+				listFrame.setSelectedIndex(index);
+				break;
+			case "Delete":
+				if (index == -1)
+					return;
+				dmr.remove(index);
+				listFrame.syncToReocrd();
+				break;
+			}
+		}
+	}	
 
 	private class ActionListenerButtonMove implements ActionListener
 	{
@@ -383,11 +380,20 @@ public class DotMatrixTest extends JFrame
 				return;
 
 			int index = listFrame.getSelectedIndex();
+
+			if (index == -1)
+				return;
+
 			System.out.println(index);
 			DotMatrixRecordFrame dmrf = dmr.getFrame(index);
 
 			byte[] cache = new byte[64];
 			System.arraycopy(dmrf.getData(), 8, cache, 0, 64);
+
+			// for (int i=0; i<dmrf.getData().length; i++)
+			// {
+			// System.out.print(String.format("%02x, ", dmrf.getData()[i]));
+			// }
 
 			dm.setCache(cache);
 			refresh(true);
@@ -433,12 +439,21 @@ public class DotMatrixTest extends JFrame
 		public DotMatrixTestMenuBar()
 		{
 			JMenu mnFile = new JMenu("File");
-			JMenu mnHelp = new JMenu("Help");
 			JMenu mnEdit = new JMenu("Edit");
+			JMenu mnRecord = new JMenu("Record");
+			JMenu mnHelp = new JMenu("Help");
 
 			mnFile.setMnemonic(KeyEvent.VK_F);
 			mnEdit.setMnemonic(KeyEvent.VK_E);
+			mnRecord.setMnemonic(KeyEvent.VK_R);
 			mnHelp.setMnemonic(KeyEvent.VK_H);
+
+			JMenuItem miSave = new JMenuItem("Save");
+			miSave.setActionCommand("Exit");
+			miSave.setMnemonic(KeyEvent.VK_S);
+			miSave.addActionListener(new ActionListenerRocordFrameSave());
+			mnFile.add(miSave);
+			mnFile.addSeparator();
 
 			JMenuItem miExit = new JMenuItem("Exit");
 			miExit.setActionCommand("Exit");
@@ -452,19 +467,19 @@ public class DotMatrixTest extends JFrame
 
 			String[] Modes = new String[] { "XYZ", "YZX", "ZXY" };
 			ButtonGroup bgMode = new ButtonGroup();
-			
+
 			for (String s : Modes)
 			{
 				JRadioButtonMenuItem button = new JRadioButtonMenuItem(s);
-				button.setActionCommand(s);				
+				button.setActionCommand(s);
 				button.addActionListener(new ActionListenerMode());
 				bgMode.add(button);
-				
+
 				if (s.equals("XYZ"))
 					button.setSelected(true);
-				
+
 				mnEdit.add(button);
-			}			
+			}
 
 			mnEdit.addSeparator();
 
@@ -480,8 +495,16 @@ public class DotMatrixTest extends JFrame
 				mnEdit.add(button);
 			}
 
+			for (String s : recordOperations)
+			{
+				JMenuItem button = new JMenuItem(s);
+				button.setActionCommand(s);
+				button.addActionListener(new ActionListenerRocordOperation());
+				mnRecord.add(button);
+			}
 			this.add(mnFile);
 			this.add(mnEdit);
+			this.add(mnRecord);
 			this.add(mnHelp);
 		}
 

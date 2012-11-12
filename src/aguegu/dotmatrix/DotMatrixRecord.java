@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class DotMatrixRecord
@@ -17,6 +18,11 @@ public class DotMatrixRecord
 		this.filename = filename;
 		record = new ArrayList<DotMatrixRecordFrame>();
 	}
+	
+	public DotMatrixRecordFrame[] getFrames()
+	{
+		return record.toArray((DotMatrixRecordFrame[]) Array.newInstance(record.get(0).getClass(), record.size()));
+	}	
 
 	public void save()
 	{

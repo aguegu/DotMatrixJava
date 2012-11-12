@@ -23,7 +23,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -60,12 +59,13 @@ public class DotMatrixTest extends JFrame
 
 	private JButton buttonSave;
 	private JButton buttonAdd;
+	private JButton buttonDelete;
 
 	private JCheckBox checkboxInLoop;
 	private JCheckBoxMenuItem miLoop;
 	private DotMatrixRecord dmr;
 
-	private JList<String> listFrame;
+	private DotMatrixRecordList listFrame;
 	private static final String[] movements = new String[] { "on", "off", "X+",
 			"X-", "Y+", "Y-", "Z+", "Z-" };
 	private Timer timer;
@@ -133,6 +133,10 @@ public class DotMatrixTest extends JFrame
 		buttonAdd = new JButton("Add");
 		buttonAdd.addActionListener(new ActionListenerButtonAdd());
 		panelController.add(buttonAdd);
+		
+		buttonDelete = new JButton("Delete");
+		buttonDelete.addActionListener(new ActionListenerRocordFrameDelete());
+		panelController.add(buttonDelete);
 
 		// frame.getContentPane().add(BorderLayout.SOUTH, panelController);
 		panelMain.add(panelController);
@@ -146,8 +150,8 @@ public class DotMatrixTest extends JFrame
 		this.add(BorderLayout.SOUTH, labelStatus);
 
 		dmr.readRecord();
-		listFrame = new JList<String>(dmr.getList().toArray(new String[0]));
-		listFrame.setPreferredSize(new Dimension(48, 0));
+		listFrame = new DotMatrixRecordList(dmr);
+
 		listFrame
 				.addListSelectionListener(new ListSelectionListenerListFrame());
 		this.getContentPane().add(BorderLayout.EAST, listFrame);
@@ -283,6 +287,15 @@ public class DotMatrixTest extends JFrame
 		{
 			dmr.add(dm.getCache());
 		}
+	}
+	
+	private class ActionListenerRocordFrameDelete implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			
+		}		
 	}
 
 	private class ActionListenerButtonMove implements ActionListener

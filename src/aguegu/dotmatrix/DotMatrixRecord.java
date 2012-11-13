@@ -17,14 +17,34 @@ public class DotMatrixRecord
 
 	public DotMatrixRecord(String filename)
 	{
-		this.filename = filename;
+		setFileName(filename);
 		record = new ArrayList<DotMatrixRecordFrame>();
 	}
 
 	public DotMatrixRecordFrame[] getFrames()
 	{
-		return record.toArray((DotMatrixRecordFrame[]) Array.newInstance(record
-				.get(0).getClass(), record.size()));
+		return record.toArray((DotMatrixRecordFrame[]) Array.newInstance(
+				DotMatrixRecordFrame.class, record.size()));
+	}
+	
+	public void setFileName(String filename)
+	{
+		this.filename = filename;
+	}
+	
+	public void create()
+	{		
+		try
+		{
+			FileOutputStream fos = new FileOutputStream(filename);
+			fos.close();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	public void save()
@@ -134,7 +154,7 @@ public class DotMatrixRecord
 
 		this.sortRecord();
 	}
-	
+
 	public void update(byte[] cache, int index)
 	{
 		record.get(index).setBatch(cache);

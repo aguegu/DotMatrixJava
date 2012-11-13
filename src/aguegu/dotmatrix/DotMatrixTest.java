@@ -10,7 +10,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-//import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,6 +20,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -40,6 +40,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.Document;
 import javax.swing.Timer;
 
@@ -50,27 +51,35 @@ public class DotMatrixTest extends JFrame
 	private static final long serialVersionUID = 5805285424717739698L;
 
 	private DotMatrix dm;
+	private DotMatrixRecord dmr;
 	private DotMatrixPanel panelDm;
+	private DotMatrixRecordList listFrame;
+
+	private Timer timer;
+
 	private JTextArea textArea;
 	private JPanel panelController;
 
 	private JPanel panelMain;
 	private JLabel labelStatus;
 
-	private JButton buttonSave;
-
 	private JCheckBox checkboxInLoop;
 	private JCheckBoxMenuItem miLoop;
-	private DotMatrixRecord dmr;
 
-	private DotMatrixRecordList listFrame;
-	private static final String[] movements = new String[] { "on", "off", "X+",
+	// Menu
+	private static final String[] FILE_OPERATIONS = new String[] { "New",
+			"Open", "Save", "Exit" };
+	private static final String[] MOVEMENTS = new String[] { "on", "off", "X+",
 			"X-", "Y+", "Y-", "Z+", "Z-" };
-	private static final String[] recordOperations = new String[] { "Append",
+	private static final String[] RECORD_OPERACTIONS = new String[] { "Append",
 			"Insert", "Update", "Delete" };
-	private Timer timer;
+
+	private static final String PROGRAME_NAME = new String("dot-matrix (Java)");
+
+	// Status
 	private boolean inLoop = true;
 	private DotMatrixPanel.Mode mode = DotMatrixPanel.Mode.XYZ;
+	private boolean isCreated = false;
 
 	public static void main(String[] args)
 	{
@@ -94,12 +103,11 @@ public class DotMatrixTest extends JFrame
 
 	public void init()
 	{
-		this.setTitle("dot-matrix (Java) | aGuegu.net");
+		this.setTitle(PROGRAME_NAME + " | aGuegu.net");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		dm = new DotMatrix();
 		timer = new Timer(50, new TimerActionListener());
-		dmr = new DotMatrixRecord("record.dat");
 
 		panelDm = new DotMatrixPanel(dm);
 		panelDm.setMode(mode);
@@ -126,9 +134,6 @@ public class DotMatrixTest extends JFrame
 				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 		panelController.add(textAreaPane);
-		buttonSave = new JButton("Save");
-		buttonSave.addActionListener(new ActionListenerRocordFrameSave());
-		panelController.add(buttonSave);
 
 		// frame.getContentPane().add(BorderLayout.SOUTH, panelController);
 		panelMain.add(panelController);
@@ -141,14 +146,16 @@ public class DotMatrixTest extends JFrame
 				.createBevelBorder(BevelBorder.LOWERED));
 		this.add(BorderLayout.SOUTH, labelStatus);
 
-		dmr.readRecord();
+		dmr = new DotMatrixRecord("record.dat");
+		dmr.create();
 		listFrame = new DotMatrixRecordList(dmr);
 
 		listFrame
 				.addListSelectionListener(new ListSelectionListenerListFrame());
 		this.getContentPane().add(BorderLayout.EAST, listFrame);
 
-		this.setJMenuBar(new DotMatrixTestMenuBar());
+		DotMatrixTestMenuBar bar = new DotMatrixTestMenuBar();
+		this.setJMenuBar(bar);
 
 		this.setLocation(100, 100);
 		this.setSize(this.getPreferredSize());
@@ -160,6 +167,8 @@ public class DotMatrixTest extends JFrame
 		// timer.start();
 
 		refresh(true);
+
+		// System.out.println(Arrays.asList(FILE_OPERATIONS).indexOf("Save"));
 	}
 
 	private JPanel initPanelMove()
@@ -168,7 +177,7 @@ public class DotMatrixTest extends JFrame
 		panelMove.setLayout(new BoxLayout(panelMove, BoxLayout.Y_AXIS));
 		panelMove.setBorder(BorderFactory.createEmptyBorder(13, 5, 13, 5));
 
-		for (String s : movements)
+		for (String s : MOVEMENTS)
 		{
 			JButton button = new JButton(s);
 			button.setActionCommand(s);
@@ -263,12 +272,50 @@ public class DotMatrixTest extends JFrame
 		}
 	}
 
-	private class ActionListenerRocordFrameSave implements ActionListener
+	private class ActionListenerFileOperation implements ActionListener
 	{
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			dmr.save();
+			JFileChooser fs = new JFileChooser();
+			FileNameExtensionFilter filter = new FileNameExtensionFilter(
+					"3D8 animation record (*.dat)", "dat");
+			fs.setFileFilter(filter);
+
+			switch (e.getActionCommand())
+			{
+			case "New":
+				break;
+			case "Open":
+
+				fs.showOpenDialog(null);
+
+				if (fs.getSelectedFile() != null)
+				{
+					dmr.setFileName(fs.getSelectedFile().getAbsolutePath());
+					dmr.readRecord();
+					listFrame.syncToReocrd();					
+				}
+				break;
+			case "Save":
+				if (isCreated)
+				{
+				}
+				else
+				{
+					fs.showSaveDialog(null);
+
+					if (fs.getSelectedFile() != null)
+						dmr.setFileName(fs.getSelectedFile().getAbsolutePath());
+				}
+				dmr.save();
+				isCreated = true;
+				break;
+
+			case "Exit":
+				System.exit(0);
+				break;
+			}
 		}
 	}
 
@@ -303,6 +350,7 @@ public class DotMatrixTest extends JFrame
 				listFrame.syncToReocrd();
 				break;
 			}
+			// setTitle("*");
 		}
 	}
 
@@ -395,16 +443,10 @@ public class DotMatrixTest extends JFrame
 			if (index == -1)
 				return;
 
-			System.out.println(index);
 			DotMatrixRecordFrame dmrf = dmr.getFrame(index);
 
 			byte[] cache = new byte[64];
 			System.arraycopy(dmrf.getData(), 8, cache, 0, 64);
-
-			// for (int i=0; i<dmrf.getData().length; i++)
-			// {
-			// System.out.print(String.format("%02x, ", dmrf.getData()[i]));
-			// }
 
 			dm.setCache(cache);
 			refresh(true);
@@ -459,22 +501,13 @@ public class DotMatrixTest extends JFrame
 			mnRecord.setMnemonic(KeyEvent.VK_R);
 			mnHelp.setMnemonic(KeyEvent.VK_H);
 
-			JMenuItem miSave = new JMenuItem("Save");
-			miSave.setActionCommand("Exit");
-			miSave.setMnemonic(KeyEvent.VK_S);
-			miSave.addActionListener(new ActionListenerRocordFrameSave());
-			mnFile.add(miSave);
-			mnFile.addSeparator();
-
-			JMenuItem miExit = new JMenuItem("Exit");
-			miExit.setActionCommand("Exit");
-			miExit.addActionListener(this);
-			mnFile.add(miExit);
-
-			JMenuItem miAbout = new JMenuItem("About");
-			miAbout.setActionCommand("About");
-			miAbout.addActionListener(this);
-			mnHelp.add(miAbout);
+			for (String s : FILE_OPERATIONS)
+			{
+				JMenuItem button = new JMenuItem(s);
+				button.setActionCommand(s);
+				button.addActionListener(new ActionListenerFileOperation());
+				mnFile.add(button);
+			}
 
 			String[] Modes = new String[] { "XYZ", "YZX", "ZXY" };
 			ButtonGroup bgMode = new ButtonGroup();
@@ -498,7 +531,7 @@ public class DotMatrixTest extends JFrame
 			miLoop.addActionListener(new ActionListenerInLoop());
 			mnEdit.add(miLoop);
 
-			for (String s : movements)
+			for (String s : MOVEMENTS)
 			{
 				JMenuItem button = new JMenuItem(s);
 				button.setActionCommand(s);
@@ -506,13 +539,19 @@ public class DotMatrixTest extends JFrame
 				mnEdit.add(button);
 			}
 
-			for (String s : recordOperations)
+			for (String s : RECORD_OPERACTIONS)
 			{
 				JMenuItem button = new JMenuItem(s);
 				button.setActionCommand(s);
 				button.addActionListener(new ActionListenerRocordOperation());
 				mnRecord.add(button);
 			}
+
+			JMenuItem miAbout = new JMenuItem("About");
+			miAbout.setActionCommand("About");
+			miAbout.addActionListener(this);
+			mnHelp.add(miAbout);
+
 			this.add(mnFile);
 			this.add(mnEdit);
 			this.add(mnRecord);
@@ -530,9 +569,6 @@ public class DotMatrixTest extends JFrame
 								"For more info, check\nhttp://aguegu.net",
 								"About", JOptionPane.OK_OPTION
 										| JOptionPane.INFORMATION_MESSAGE);
-				break;
-			case "Exit":
-				System.exit(0);
 				break;
 			}
 		}

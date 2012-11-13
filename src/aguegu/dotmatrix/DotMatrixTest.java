@@ -66,7 +66,8 @@ public class DotMatrixTest extends JFrame
 	private DotMatrixRecordList listFrame;
 	private static final String[] movements = new String[] { "on", "off", "X+",
 			"X-", "Y+", "Y-", "Z+", "Z-" };
-	private static final String[] recordOperations = new String[] {"Insert", "Append", "Update", "Delete"};
+	private static final String[] recordOperations = new String[] { "Append",
+			"Insert", "Update", "Delete" };
 	private Timer timer;
 	private boolean inLoop = true;
 	private DotMatrixPanel.Mode mode = DotMatrixPanel.Mode.XYZ;
@@ -277,23 +278,33 @@ public class DotMatrixTest extends JFrame
 		public void actionPerformed(ActionEvent e)
 		{
 			int index = listFrame.getSelectedIndex();
-			
+
 			switch (e.getActionCommand())
 			{
-			case "Insert":				
-				dmr.add(dm.getCache(), index);
+			case "Insert":
+				dmr.insert(dm.getCache(), index);
 				listFrame.syncToReocrd();
 				listFrame.setSelectedIndex(index);
 				break;
+			case "Append":
+				dmr.append(dm.getCache(), index);
+				listFrame.syncToReocrd();
+				listFrame.setSelectedIndex(index + 1);
+				break;
+			case "Update":
+				if (index == -1)
+					break;
+				dmr.update(dm.getCache(), index);
+				break;
 			case "Delete":
 				if (index == -1)
-					return;
+					break;
 				dmr.remove(index);
 				listFrame.syncToReocrd();
 				break;
 			}
 		}
-	}	
+	}
 
 	private class ActionListenerButtonMove implements ActionListener
 	{

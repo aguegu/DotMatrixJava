@@ -95,7 +95,7 @@ public class DotMatrixRecord
 		return list;
 	}
 
-	public void add(byte[] cache, int index)
+	public void insert(byte[] cache, int index)
 	{
 		if (index == -1)
 		{
@@ -111,20 +111,33 @@ public class DotMatrixRecord
 				DotMatrixRecordFrame.Type.F2, index);
 		newFrame.setBatch(cache);
 		record.add(newFrame);
-		
-		for (DotMatrixRecordFrame f:record)
-		{
-			System.out.print(f.getIndex());
-		}
-		System.out.println();
-		
+
 		this.sortRecord();
-		
-		for (DotMatrixRecordFrame f:record)
+	}
+
+	public void append(byte[] cache, int index)
+	{
+		if (index == -1)
 		{
-			System.out.print(f.getIndex());
+			index = record.size() - 1;
 		}
-		System.out.println();
+
+		for (int i = index + 1; i < record.size(); i++)
+		{
+			record.get(i).setIndex(i + 1);
+		}
+
+		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(
+				DotMatrixRecordFrame.Type.F2, index + 1);
+		newFrame.setBatch(cache);
+		record.add(newFrame);
+
+		this.sortRecord();
+	}
+	
+	public void update(byte[] cache, int index)
+	{
+		record.get(index).setBatch(cache);
 	}
 
 	public DotMatrixRecordFrame getFrame(int index)
@@ -153,7 +166,7 @@ public class DotMatrixRecord
 		public int compare(DotMatrixRecordFrame o1, DotMatrixRecordFrame o2)
 		{
 			return o1.getIndex() - o2.getIndex();
-			
+
 		}
 	}
 }

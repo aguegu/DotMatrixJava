@@ -46,24 +46,18 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.Document;
 import javax.swing.Timer;
 
-//import aguegu.dotmatrix.DotMatrixPanel;
-
 public class DotMatrixTest extends JFrame
 {
 	private static final long serialVersionUID = 5805285424717739698L;
 
-	private DotMatrix dm;
-	private DotMatrixRecord dmr;
-	private DotMatrixPanel panelDm;
+	private DotMatrixRecord dmr;	
 	private DotMatrixRecordList listFrame;
-
 	private Timer timer;
+	private DotMatrix dm;
 
+	DotMatrixRecordPanel panelRecord;
 	DotMatrixTestMenuBar bar;
-	private JTextArea textArea;
-	private JPanel panelController;
-
-	private JPanel panelMain;
+	
 	private JLabel labelStatus;
 
 	private JCheckBox checkboxInLoop;
@@ -82,8 +76,7 @@ public class DotMatrixTest extends JFrame
 	private static final String PROGRAME_NAME = new String("dot-matrix (Java)");
 
 	// Status
-	private boolean inLoop = true;
-	private DotMatrixPanel.Mode mode = DotMatrixPanel.Mode.XYZ;
+	private boolean inLoop = true;	
 	private File fileRecord = null;
 	private String message;
 	private boolean isSaved = true;
@@ -112,38 +105,11 @@ public class DotMatrixTest extends JFrame
 	{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		dm = new DotMatrix();
-		timer = new Timer(50, new TimerActionListener());
-
-		panelDm = new DotMatrixPanel(dm);
-		panelDm.setMode(mode);
-
-		panelMain = new JPanel();
-		panelMain.setLayout(new BoxLayout(panelMain, BoxLayout.Y_AXIS));
-
-		panelController = new JPanel();
-		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
-
-		panelDm.addMouseListener(new MouseListenerPanelDotMatrix());
-		panelMain.add(panelDm);
-
-		textArea = new JTextArea(8, 50);
-		textArea.setLineWrap(true);
-
-		Document doc = textArea.getDocument();
-		doc.addDocumentListener(new DocumentListeneDotMatrixTextArea());
-
-		JScrollPane textAreaPane = new JScrollPane(textArea);
-		textAreaPane
-				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		textAreaPane
-				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-		panelController.add(textAreaPane);
-
-		// frame.getContentPane().add(BorderLayout.SOUTH, panelController);
-		panelMain.add(panelController);
-		this.getContentPane().add(BorderLayout.CENTER, panelMain);
+		timer = new Timer(50, new TimerActionListener());		
+		panelRecord = new DotMatrixRecordPanel();
+		dm = panelRecord.getDotMatrix();
+		
+		this.getContentPane().add(BorderLayout.CENTER, panelRecord);
 
 		this.getContentPane().add(BorderLayout.WEST, initPanelMove());
 
@@ -172,7 +138,7 @@ public class DotMatrixTest extends JFrame
 		this.setResizable(false);
 
 		this.setVisible(true);
-		panelDm.requestFocusInWindow();
+		
 		timer.isRunning();
 		// timer.start();
 
@@ -226,58 +192,7 @@ public class DotMatrixTest extends JFrame
 			miLoop.setSelected(inLoop);
 		}
 	}
-
-	private class ActionListenerMode implements ActionListener
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			switch (e.getActionCommand())
-			{
-			case "XYZ":
-				mode = DotMatrixPanel.Mode.XYZ;
-				break;
-			case "YZX":
-				mode = DotMatrixPanel.Mode.YZX;
-				break;
-			case "ZXY":
-				mode = DotMatrixPanel.Mode.ZXY;
-				break;
-			}
-			panelDm.setMode(mode);
-			refresh(true);
-		}
-	}
-
-	private class MouseListenerPanelDotMatrix implements MouseListener
-	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-			textArea.setText(dm.cacheString());
-			panelDm.requestFocusInWindow();
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-	}
+	
 
 	private class ActionListenerFileOperation implements ActionListener
 	{
@@ -432,46 +347,11 @@ public class DotMatrixTest extends JFrame
 				dm.move(DotMatrix.Direction.Z_NEGA, recycle);
 				break;
 			}
-			refresh(true);
+			panelRecord.refresh(true);
 		}
 	}
 
-	private class DocumentListeneDotMatrixTextArea implements DocumentListener
-	{
-		@Override
-		public void insertUpdate(DocumentEvent e)
-		{
-			String s = textArea.getText();
-
-			if (textArea.isFocusOwner()
-					&& s.matches("(0[x|X][a-f0-9A-Z]{2},[\\s]+){64}"))
-			{
-				Pattern pattern = Pattern.compile("0[x|X][a-f0-9A-Z]{2}");
-				Matcher matcher = pattern.matcher(s);
-
-				byte[] cache = new byte[64];
-
-				for (int i = 0; i < cache.length && matcher.find(); i++)
-				{
-					String match = matcher.group();
-					cache[i] = Integer.decode(match).byteValue();
-				}
-
-				dm.setCache(cache);
-				refresh(false);
-			}
-		}
-
-		@Override
-		public void removeUpdate(DocumentEvent e)
-		{
-		}
-
-		@Override
-		public void changedUpdate(DocumentEvent e)
-		{
-		}
-	}
+	
 
 	private class ListSelectionListenerListFrame implements
 			ListSelectionListener
@@ -493,7 +373,7 @@ public class DotMatrixTest extends JFrame
 			System.arraycopy(dmrf.getData(), 8, cache, 0, 64);
 
 			dm.setCache(cache);
-			refresh(true);
+			panelRecord.refresh(true);
 			refreshFrame();
 		}
 	}
@@ -504,7 +384,7 @@ public class DotMatrixTest extends JFrame
 		public void actionPerformed(ActionEvent e)
 		{
 			dm.move(DotMatrix.Direction.Z_NEGA, true);
-			refresh(true);
+			panelRecord.refresh(true);
 		}
 	}
 
@@ -516,12 +396,12 @@ public class DotMatrixTest extends JFrame
 		public DotMatrixTestMenuBar()
 		{
 			JMenu mnFile = new JMenu("File");
-			JMenu mnEdit = new JMenu("Frame");
+			
 			JMenu mnRecord = new JMenu("Record");
 			JMenu mnHelp = new JMenu("Help");
 
 			mnFile.setMnemonic(KeyEvent.VK_F);
-			mnEdit.setMnemonic(KeyEvent.VK_E);
+			
 			mnRecord.setMnemonic(KeyEvent.VK_R);
 			mnHelp.setMnemonic(KeyEvent.VK_H);
 
@@ -534,36 +414,7 @@ public class DotMatrixTest extends JFrame
 				mnFile.add(button);
 			}
 
-			String[] Modes = new String[] { "XYZ", "YZX", "ZXY" };
-			ButtonGroup bgMode = new ButtonGroup();
-
-			for (String s : Modes)
-			{
-				JRadioButtonMenuItem button = new JRadioButtonMenuItem(s);
-				button.setActionCommand(s);
-				button.addActionListener(new ActionListenerMode());
-				bgMode.add(button);
-
-				if (s.equals("XYZ"))
-					button.setSelected(true);
-
-				mnEdit.add(button);
-			}
-
-			mnEdit.addSeparator();
-
-			miLoop = new JCheckBoxMenuItem("loop", inLoop);
-			miLoop.addActionListener(new ActionListenerInLoop());
-			mnEdit.add(miLoop);
-
-			for (String s : MOVEMENTS)
-			{
-				JMenuItem button = new JMenuItem(s);
-				button.setActionCommand(s);
-				button.addActionListener(new ActionListenerButtonMove());
-				mnEdit.add(button);
-			}
-
+			
 			for (String s : RECORD_OPERACTIONS)
 			{
 				JMenuItem button = new JMenuItem(s);
@@ -578,7 +429,7 @@ public class DotMatrixTest extends JFrame
 			mnHelp.add(miAbout);
 
 			this.add(mnFile);
-			this.add(mnEdit);
+			this.add(panelRecord.getMenu());
 			this.add(mnRecord);
 			this.add(mnHelp);
 		}
@@ -605,7 +456,7 @@ public class DotMatrixTest extends JFrame
 		listFrame.syncToReocrd();
 		dm.clear(false);
 
-		refresh(true);
+		panelRecord.refresh(true);
 		fileRecord = null;
 		isSaved = true;
 	}
@@ -618,13 +469,7 @@ public class DotMatrixTest extends JFrame
 		isSaved = true;
 	}
 
-	private void refresh(boolean updateString)
-	{
-		panelDm.update();
-		panelDm.repaint();
-		if (updateString)
-			textArea.setText(dm.cacheString());
-	}
+
 
 	private void refreshFrame()
 	{

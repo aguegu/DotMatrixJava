@@ -68,6 +68,19 @@ public class DotMatrix
 
 		return cache;
 	}
+	
+	public String cacheString()
+	{
+		byte[] data = this.getCache();
+		String s = new String();
+		for (int i = 0; i < data.length; i++)
+		{
+			if (i % 8 == 0 && i > 0)
+				s = s.concat("\n");
+			s = s.concat(String.format("0x%02x, ", data[i]));
+		}
+		return s;
+	}
 
 	public void setCache(byte[] cache)
 	{

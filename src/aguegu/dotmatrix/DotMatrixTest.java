@@ -152,7 +152,6 @@ public class DotMatrixTest extends JFrame
 				.createBevelBorder(BevelBorder.LOWERED));
 		this.add(BorderLayout.SOUTH, labelStatus);
 
-		fileRecord = null;
 		dmr = new DotMatrixRecord();
 		listFrame = new DotMatrixRecordList(dmr);
 
@@ -163,6 +162,11 @@ public class DotMatrixTest extends JFrame
 		bar = new DotMatrixTestMenuBar();
 		this.setJMenuBar(bar);
 
+		message = "http://aGuegu.net";
+
+		begin();
+		refreshFrame();
+
 		this.setLocation(100, 100);
 		this.setSize(this.getPreferredSize());
 		this.setResizable(false);
@@ -172,10 +176,6 @@ public class DotMatrixTest extends JFrame
 		timer.isRunning();
 		// timer.start();
 
-		message = "http://aGuegu.net";
-
-		refresh(true);
-		refreshFrame();
 	}
 
 	private JPanel initPanelMove()
@@ -259,7 +259,7 @@ public class DotMatrixTest extends JFrame
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			textArea.setText(cacheString());
+			textArea.setText(dm.cacheString());
 			panelDm.requestFocusInWindow();
 		}
 
@@ -289,30 +289,45 @@ public class DotMatrixTest extends JFrame
 					"3D8 animation record (*.dat)", "dat");
 			fs.setFileFilter(filter);
 			File file = null;
-			
+			int result;
+
 			switch (e.getActionCommand())
 			{
 			case "new":
+				if (fileRecord != null && !isSaved)
+				{
+					result = JOptionPane.showConfirmDialog(null,
+							"Save changes to " + fileRecord.getName() + "?",
+							"warning", JOptionPane.YES_NO_CANCEL_OPTION,
+							JOptionPane.QUESTION_MESSAGE);
+
+					if (result == JOptionPane.CANCEL_OPTION)
+						break;
+
+					if (result == JOptionPane.YES_OPTION)
+						save();
+
+				}
+				begin();
 				break;
 			case "open":
-				fs.showOpenDialog(null);
-
+				result = fs.showOpenDialog(null);
 				file = fs.getSelectedFile();
-				if (file == null)
+				if (file == null || result != JFileChooser.APPROVE_OPTION)
 					break;
 
 				fileRecord = file;
 				dmr.readRecord(fileRecord);
 				listFrame.syncToReocrd();
-				message = fileRecord.getName() + " opened, " + fileRecord.length()
-						+ " bytes.";
+				message = fileRecord.getName() + " opened, "
+						+ fileRecord.length() + " bytes.";
 				break;
 			case "save":
 				save();
 				break;
 			case "saveAs":
 				fs.setSelectedFile(new File("record.dat"));
-				int result = fs.showSaveDialog(null);
+				result = fs.showSaveDialog(null);
 				file = fs.getSelectedFile();
 				if (file == null || result != JFileChooser.APPROVE_OPTION)
 					break;
@@ -326,13 +341,6 @@ public class DotMatrixTest extends JFrame
 
 			refreshFrame();
 		}
-	}
-
-	private void save()
-	{
-		dmr.save(fileRecord);
-		message = fileRecord.getName() + " saved, " + fileRecord.length()
-				+ " bytes.";
 	}
 
 	private class ActionListenerRocordOperation implements ActionListener
@@ -472,19 +480,6 @@ public class DotMatrixTest extends JFrame
 		}
 	}
 
-	private String cacheString()
-	{
-		byte[] data = dm.getCache();
-		String s = new String();
-		for (int i = 0; i < data.length; i++)
-		{
-			if (i % 8 == 0 && i > 0)
-				s = s.concat("\n");
-			s = s.concat(String.format("0x%02x, ", data[i]));
-		}
-		return s;
-	}
-
 	private class TimerActionListener implements ActionListener
 	{
 		@Override
@@ -495,12 +490,31 @@ public class DotMatrixTest extends JFrame
 		}
 	}
 
+	private void begin()
+	{
+		dmr.clear();
+		listFrame.syncToReocrd();
+		dm.clear(false);
+
+		refresh(true);
+		fileRecord = null;
+		isSaved = true;
+	}
+
+	private void save()
+	{
+		dmr.save(fileRecord);
+		message = fileRecord.getName() + " saved, " + fileRecord.length()
+				+ " bytes.";
+		isSaved = true;
+	}
+
 	private void refresh(boolean updateString)
 	{
 		panelDm.update();
 		panelDm.repaint();
 		if (updateString)
-			textArea.setText(cacheString());
+			textArea.setText(dm.cacheString());
 	}
 
 	private class DotMatrixTestMenuBar extends JMenuBar implements

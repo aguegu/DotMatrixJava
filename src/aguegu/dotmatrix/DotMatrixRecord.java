@@ -156,6 +156,11 @@ public class DotMatrixRecord
 			record.get(i).setIndex(i);
 		}
 	}
+	
+	public void clear()
+	{
+		record.clear();
+	}
 
 	private void sortRecord()
 	{

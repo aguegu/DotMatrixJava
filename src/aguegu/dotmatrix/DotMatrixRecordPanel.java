@@ -1,5 +1,6 @@
 package aguegu.dotmatrix;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,8 +10,13 @@ import java.awt.event.MouseListener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -28,33 +34,36 @@ public class DotMatrixRecordPanel extends JPanel
 	private static final long serialVersionUID = 1L;
 	private DotMatrixPanel panelDm;
 	private JTextArea textArea;
-	private JPanel panelController;	
+	private JPanel panelController;
 	private DotMatrix dm;
-	
+
+	private JCheckBox checkboxInLoop;
+	private JCheckBoxMenuItem miInLoop;
+
 	private DotMatrixPanel.Mode mode = DotMatrixPanel.Mode.XYZ;
-	
+
 	private static final String[] MOVEMENTS = new String[] { "on", "off", "X+",
-		"X-", "Y+", "Y-", "Z+", "Z-" };
-	
+			"X-", "Y+", "Y-", "Z+", "Z-" };
+
+	private boolean inLoop = true;
+
 	public DotMatrixRecordPanel()
 	{
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		dm = new DotMatrix();
-		
+
 		panelController = new JPanel();
 		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
 
-
-
 		panelDm = new DotMatrixPanel(dm);
 		panelDm.setMode(mode);
-		
+
 		panelDm.addMouseListener(new MouseListenerPanelDotMatrix());
 		this.add(panelDm);
-		
-		textArea = new JTextArea(8, 50);
-		textArea.setLineWrap(true);
-		
+
+		textArea = new JTextArea(8, 30);
+		textArea.setLineWrap(true);		
+
 		Document doc = textArea.getDocument();
 		doc.addDocumentListener(new DocumentListeneDotMatrixTextArea());
 
@@ -66,10 +75,10 @@ public class DotMatrixRecordPanel extends JPanel
 
 		panelController.add(textAreaPane);
 		this.add(panelController);
-		
+
 		panelDm.requestFocusInWindow();
 	}
-	
+
 	private class MouseListenerPanelDotMatrix implements MouseListener
 	{
 		@Override
@@ -99,7 +108,7 @@ public class DotMatrixRecordPanel extends JPanel
 		{
 		}
 	}
-	
+
 	private class DocumentListeneDotMatrixTextArea implements DocumentListener
 	{
 		@Override
@@ -136,7 +145,7 @@ public class DotMatrixRecordPanel extends JPanel
 		{
 		}
 	}
-	
+
 	private class ActionListenerMode implements ActionListener
 	{
 		@Override
@@ -158,7 +167,7 @@ public class DotMatrixRecordPanel extends JPanel
 			refresh(true);
 		}
 	}
-	
+
 	public void refresh(boolean updateString)
 	{
 		panelDm.update();
@@ -166,17 +175,17 @@ public class DotMatrixRecordPanel extends JPanel
 		if (updateString)
 			textArea.setText(dm.cacheString());
 	}
-	
+
 	public DotMatrix getDotMatrix()
 	{
 		return dm;
 	}
-	
+
 	public JMenuItem getMenu()
 	{
 		JMenu mnEdit = new JMenu("Frame");
 		mnEdit.setMnemonic(KeyEvent.VK_E);
-		
+
 		String[] Modes = new String[] { "XYZ", "YZX", "ZXY" };
 		ButtonGroup bgMode = new ButtonGroup();
 
@@ -195,19 +204,107 @@ public class DotMatrixRecordPanel extends JPanel
 
 		mnEdit.addSeparator();
 
-		JCheckBoxMenuItem miLoop = new JCheckBoxMenuItem("loop", true);
-		//miLoop.addActionListener(new ActionListenerInLoop());
-		mnEdit.add(miLoop);
+		miInLoop = new JCheckBoxMenuItem("loop", true);
+		miInLoop.addActionListener(new ActionListenerInLoop());
+		mnEdit.add(miInLoop);
 
 		for (String s : MOVEMENTS)
 		{
 			JMenuItem button = new JMenuItem(s);
 			button.setActionCommand(s);
-			//button.addActionListener(new ActionListenerButtonMove());
+			// button.addActionListener(new ActionListenerButtonMove());
 			mnEdit.add(button);
 		}
-		
+
 		return mnEdit;
 
+	}
+
+	public JPanel getPanelFrameOperation()
+	{
+		JPanel panelMove = new JPanel();
+		panelMove.setLayout(new BoxLayout(panelMove, BoxLayout.Y_AXIS));
+		panelMove.setBorder(BorderFactory.createEmptyBorder(13, 5, 13, 5));
+
+		for (String s : MOVEMENTS)
+		{
+			JButton button = new JButton(s);
+			button.setActionCommand(s);
+			button.addActionListener(new ActionListenerFrameOperation());
+
+			if (s.equals("on") || s.equals("off"))
+			{
+				button.setText(null);
+				button.setIcon(new ImageIcon(getClass().getResource(
+						s.concat(".png"))));
+			}
+
+			panelMove.add(button);
+			panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
+		}
+
+		checkboxInLoop = new JCheckBox("loop", inLoop);
+		checkboxInLoop.addActionListener(new ActionListenerInLoop());
+		panelMove.add(checkboxInLoop);
+
+		return panelMove;
+	}
+
+	private class ActionListenerFrameOperation implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			boolean recycle = inLoop;
+
+			switch (e.getActionCommand())
+			{
+			case "on":
+				dm.clear(true);
+				break;
+			case "off":
+				dm.clear(false);
+				break;
+			case "X+":
+				dm.move(DotMatrix.Direction.X_POSI, recycle);
+				break;
+			case "X-":
+				dm.move(DotMatrix.Direction.X_NEGA, recycle);
+				break;
+			case "Y+":
+				dm.move(DotMatrix.Direction.Y_POSI, recycle);
+				break;
+			case "Y-":
+				dm.move(DotMatrix.Direction.Y_NEGA, recycle);
+				break;
+			case "Z+":
+				dm.move(DotMatrix.Direction.Z_POSI, recycle);
+				break;
+			case "Z-":
+				dm.move(DotMatrix.Direction.Z_NEGA, recycle);
+				break;
+			}
+			refresh(true);
+		}
+	}
+
+	private class ActionListenerInLoop implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			if (e.getSource() instanceof JCheckBox)
+			{
+				inLoop = ((JCheckBox) e.getSource()).isSelected();
+			}
+			else if (e.getSource() instanceof JCheckBoxMenuItem)
+			{
+				inLoop = ((JCheckBoxMenuItem) e.getSource()).isSelected();
+			}
+
+			checkboxInLoop.setSelected(inLoop);
+			miInLoop.setSelected(inLoop);
+
+		}
 	}
 }

@@ -2,6 +2,7 @@ package aguegu.dotmatrix;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,12 +13,10 @@ import java.util.Comparator;
 
 public class DotMatrixRecord
 {
-	private String filename;
 	private ArrayList<DotMatrixRecordFrame> record;
 
-	public DotMatrixRecord(String filename)
+	public DotMatrixRecord()
 	{
-		setFileName(filename);
 		record = new ArrayList<DotMatrixRecordFrame>();
 	}
 
@@ -26,32 +25,12 @@ public class DotMatrixRecord
 		return record.toArray((DotMatrixRecordFrame[]) Array.newInstance(
 				DotMatrixRecordFrame.class, record.size()));
 	}
-	
-	public void setFileName(String filename)
-	{
-		this.filename = filename;
-	}
-	
-	public void create()
-	{		
-		try
-		{
-			FileOutputStream fos = new FileOutputStream(filename);
-			fos.close();
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
 
-	public void save()
+	public void save(File file)
 	{
 		try
 		{
-			FileOutputStream fos = new FileOutputStream(filename);
+			FileOutputStream fos = new FileOutputStream(file);
 			DataOutputStream dos = new DataOutputStream(fos);
 
 			for (DotMatrixRecordFrame f : record)
@@ -68,27 +47,30 @@ public class DotMatrixRecord
 		}
 	}
 
-	public void readRecord()
+	public void readRecord(File file)
 	{
 		try
 		{
-			FileInputStream fis = new FileInputStream(filename);
+			FileInputStream fis = new FileInputStream(file);
 			DataInputStream dis = new DataInputStream(fis);
 
-			int head;
+			record.clear();
+
+			int header;
 			int index = 0;
 
-			while ((head = dis.read()) != -1)
+			while ((header = dis.read()) != -1)
 			{
 				int length = 7;
-				length += head == 0xf2 ? 64 : 0;
+				length += header == 0xf2 ? 64 : 0;
 
 				byte[] val = new byte[length];
 
 				dis.read(val);
 
 				DotMatrixRecordFrame dmrf = new DotMatrixRecordFrame(
-						DotMatrixRecordFrame.Type.values()[head - 0xf0], index);
+						DotMatrixRecordFrame.Type.values()[header - 0xf0],
+						index);
 				dmrf.setBody(val);
 
 				record.add(index, dmrf);

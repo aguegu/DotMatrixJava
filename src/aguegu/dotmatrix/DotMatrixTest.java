@@ -9,7 +9,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,6 +59,7 @@ public class DotMatrixTest extends JFrame
 
 	private Timer timer;
 
+	DotMatrixTestMenuBar bar;
 	private JTextArea textArea;
 	private JPanel panelController;
 
@@ -67,8 +70,10 @@ public class DotMatrixTest extends JFrame
 	private JCheckBoxMenuItem miLoop;
 
 	// Menu
-	private static final String[] FILE_OPERATIONS = new String[] { "New",
-			"Open", "Save", "Exit" };
+	private static final String[] FILE_OPERATIONS_LABEL = { "New", "Open",
+			"Save", "Save As...", "Exit" };
+	private static final String[] FILE_OPERATIONS_COMMAND = { "new", "open",
+			"save", "saveAs", "exit" };
 	private static final String[] MOVEMENTS = new String[] { "on", "off", "X+",
 			"X-", "Y+", "Y-", "Z+", "Z-" };
 	private static final String[] RECORD_OPERACTIONS = new String[] { "Append",
@@ -79,7 +84,9 @@ public class DotMatrixTest extends JFrame
 	// Status
 	private boolean inLoop = true;
 	private DotMatrixPanel.Mode mode = DotMatrixPanel.Mode.XYZ;
-	private boolean isCreated = false;
+	private File fileRecord = null;
+	private String message;
+	private boolean isSaved = true;
 
 	public static void main(String[] args)
 	{
@@ -103,7 +110,6 @@ public class DotMatrixTest extends JFrame
 
 	public void init()
 	{
-		this.setTitle(PROGRAME_NAME + " | aGuegu.net");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		dm = new DotMatrix();
@@ -141,20 +147,20 @@ public class DotMatrixTest extends JFrame
 
 		this.getContentPane().add(BorderLayout.WEST, initPanelMove());
 
-		labelStatus = new JLabel("http://aguegu.net");
+		labelStatus = new JLabel(message);
 		labelStatus.setBorder(BorderFactory
 				.createBevelBorder(BevelBorder.LOWERED));
 		this.add(BorderLayout.SOUTH, labelStatus);
 
-		dmr = new DotMatrixRecord("record.dat");
-		dmr.create();
+		fileRecord = null;
+		dmr = new DotMatrixRecord();
 		listFrame = new DotMatrixRecordList(dmr);
 
 		listFrame
 				.addListSelectionListener(new ListSelectionListenerListFrame());
 		this.getContentPane().add(BorderLayout.EAST, listFrame);
 
-		DotMatrixTestMenuBar bar = new DotMatrixTestMenuBar();
+		bar = new DotMatrixTestMenuBar();
 		this.setJMenuBar(bar);
 
 		this.setLocation(100, 100);
@@ -166,9 +172,10 @@ public class DotMatrixTest extends JFrame
 		timer.isRunning();
 		// timer.start();
 
-		refresh(true);
+		message = "http://aGuegu.net";
 
-		// System.out.println(Arrays.asList(FILE_OPERATIONS).indexOf("Save"));
+		refresh(true);
+		refreshFrame();
 	}
 
 	private JPanel initPanelMove()
@@ -281,42 +288,51 @@ public class DotMatrixTest extends JFrame
 			FileNameExtensionFilter filter = new FileNameExtensionFilter(
 					"3D8 animation record (*.dat)", "dat");
 			fs.setFileFilter(filter);
-
+			File file = null;
+			
 			switch (e.getActionCommand())
 			{
-			case "New":
+			case "new":
 				break;
-			case "Open":
-
+			case "open":
 				fs.showOpenDialog(null);
 
-				if (fs.getSelectedFile() != null)
-				{
-					dmr.setFileName(fs.getSelectedFile().getAbsolutePath());
-					dmr.readRecord();
-					listFrame.syncToReocrd();					
-				}
-				break;
-			case "Save":
-				if (isCreated)
-				{
-				}
-				else
-				{
-					fs.showSaveDialog(null);
+				file = fs.getSelectedFile();
+				if (file == null)
+					break;
 
-					if (fs.getSelectedFile() != null)
-						dmr.setFileName(fs.getSelectedFile().getAbsolutePath());
-				}
-				dmr.save();
-				isCreated = true;
+				fileRecord = file;
+				dmr.readRecord(fileRecord);
+				listFrame.syncToReocrd();
+				message = fileRecord.getName() + " opened, " + fileRecord.length()
+						+ " bytes.";
 				break;
-
-			case "Exit":
+			case "save":
+				save();
+				break;
+			case "saveAs":
+				fs.setSelectedFile(new File("record.dat"));
+				int result = fs.showSaveDialog(null);
+				file = fs.getSelectedFile();
+				if (file == null || result != JFileChooser.APPROVE_OPTION)
+					break;
+				fileRecord = file;
+				save();
+				break;
+			case "exit":
 				System.exit(0);
 				break;
 			}
+
+			refreshFrame();
 		}
+	}
+
+	private void save()
+	{
+		dmr.save(fileRecord);
+		message = fileRecord.getName() + " saved, " + fileRecord.length()
+				+ " bytes.";
 	}
 
 	private class ActionListenerRocordOperation implements ActionListener
@@ -350,7 +366,9 @@ public class DotMatrixTest extends JFrame
 				listFrame.syncToReocrd();
 				break;
 			}
-			// setTitle("*");
+
+			isSaved = false;
+			refreshFrame();
 		}
 	}
 
@@ -450,6 +468,7 @@ public class DotMatrixTest extends JFrame
 
 			dm.setCache(cache);
 			refresh(true);
+			refreshFrame();
 		}
 	}
 
@@ -501,10 +520,11 @@ public class DotMatrixTest extends JFrame
 			mnRecord.setMnemonic(KeyEvent.VK_R);
 			mnHelp.setMnemonic(KeyEvent.VK_H);
 
-			for (String s : FILE_OPERATIONS)
+			for (String s : FILE_OPERATIONS_LABEL)
 			{
 				JMenuItem button = new JMenuItem(s);
-				button.setActionCommand(s);
+				button.setActionCommand(FILE_OPERATIONS_COMMAND[Arrays.asList(
+						FILE_OPERATIONS_LABEL).indexOf(s)]);
 				button.addActionListener(new ActionListenerFileOperation());
 				mnFile.add(button);
 			}
@@ -572,6 +592,39 @@ public class DotMatrixTest extends JFrame
 				break;
 			}
 		}
+	}
+
+	private void refreshFrame()
+	{
+		bar.getMenu(0)
+				.getMenuComponent(
+						Arrays.asList(FILE_OPERATIONS_LABEL).indexOf("Save"))
+				.setEnabled(fileRecord != null);
+
+		int selectedIndex = listFrame.getSelectedIndex();
+
+		bar.getMenu(2)
+				.getMenuComponent(
+						Arrays.asList(RECORD_OPERACTIONS).indexOf("Update"))
+				.setEnabled(selectedIndex != -1);
+
+		bar.getMenu(2)
+				.getMenuComponent(
+						Arrays.asList(RECORD_OPERACTIONS).indexOf("Delete"))
+				.setEnabled(selectedIndex != -1);
+
+		labelStatus.setText(message);
+
+		if (fileRecord == null)
+		{
+			this.setTitle(PROGRAME_NAME);
+		}
+		else
+		{
+			this.setTitle(PROGRAME_NAME + " | " + fileRecord.getName() + " "
+					+ (isSaved ? "" : "*"));
+		}
+
 	}
 
 }

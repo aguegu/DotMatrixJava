@@ -70,7 +70,7 @@ public class DotMatrixTest extends JFrame
 	private JCheckBoxMenuItem miLoop;
 
 	// Menu
-	private static final String[] FILE_OPERATIONS_LABEL = { "New", "Open",
+	private static final String[] FILE_OPERATIONS_LABEL = { "New", "Open...",
 			"Save", "Save As...", "Exit" };
 	private static final String[] FILE_OPERATIONS_COMMAND = { "new", "open",
 			"save", "saveAs", "exit" };
@@ -306,7 +306,6 @@ public class DotMatrixTest extends JFrame
 
 					if (result == JOptionPane.YES_OPTION)
 						save();
-
 				}
 				begin();
 				break;
@@ -319,6 +318,12 @@ public class DotMatrixTest extends JFrame
 				fileRecord = file;
 				dmr.readRecord(fileRecord);
 				listFrame.syncToReocrd();
+
+				if (dmr.getLength() > 0)
+				{
+					listFrame.setSelectedIndex(0);
+				}
+
 				message = fileRecord.getName() + " opened, "
 						+ fileRecord.length() + " bytes.";
 				break;
@@ -335,6 +340,19 @@ public class DotMatrixTest extends JFrame
 				save();
 				break;
 			case "exit":
+				if (fileRecord != null && !isSaved)
+				{
+					result = JOptionPane.showConfirmDialog(null,
+							"Save changes to " + fileRecord.getName() + "?",
+							"warning", JOptionPane.YES_NO_CANCEL_OPTION,
+							JOptionPane.QUESTION_MESSAGE);
+
+					if (result == JOptionPane.CANCEL_OPTION)
+						break;
+
+					if (result == JOptionPane.YES_OPTION)
+						save();
+				}
 				System.exit(0);
 				break;
 			}
@@ -490,33 +508,6 @@ public class DotMatrixTest extends JFrame
 		}
 	}
 
-	private void begin()
-	{
-		dmr.clear();
-		listFrame.syncToReocrd();
-		dm.clear(false);
-
-		refresh(true);
-		fileRecord = null;
-		isSaved = true;
-	}
-
-	private void save()
-	{
-		dmr.save(fileRecord);
-		message = fileRecord.getName() + " saved, " + fileRecord.length()
-				+ " bytes.";
-		isSaved = true;
-	}
-
-	private void refresh(boolean updateString)
-	{
-		panelDm.update();
-		panelDm.repaint();
-		if (updateString)
-			textArea.setText(dm.cacheString());
-	}
-
 	private class DotMatrixTestMenuBar extends JMenuBar implements
 			ActionListener
 	{
@@ -525,7 +516,7 @@ public class DotMatrixTest extends JFrame
 		public DotMatrixTestMenuBar()
 		{
 			JMenu mnFile = new JMenu("File");
-			JMenu mnEdit = new JMenu("Edit");
+			JMenu mnEdit = new JMenu("Frame");
 			JMenu mnRecord = new JMenu("Record");
 			JMenu mnHelp = new JMenu("Help");
 
@@ -606,6 +597,33 @@ public class DotMatrixTest extends JFrame
 				break;
 			}
 		}
+	}
+
+	private void begin()
+	{
+		dmr.clear();
+		listFrame.syncToReocrd();
+		dm.clear(false);
+
+		refresh(true);
+		fileRecord = null;
+		isSaved = true;
+	}
+
+	private void save()
+	{
+		dmr.save(fileRecord);
+		message = fileRecord.getName() + " saved, " + fileRecord.length()
+				+ " bytes.";
+		isSaved = true;
+	}
+
+	private void refresh(boolean updateString)
+	{
+		panelDm.update();
+		panelDm.repaint();
+		if (updateString)
+			textArea.setText(dm.cacheString());
 	}
 
 	private void refreshFrame()

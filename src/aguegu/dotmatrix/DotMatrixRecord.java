@@ -96,6 +96,11 @@ public class DotMatrixRecord
 		}
 		return list;
 	}
+	
+	public int getLength()
+	{
+		return record.size();
+	}
 
 	public void insert(byte[] cache, int index)
 	{

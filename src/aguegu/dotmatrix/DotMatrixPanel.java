@@ -9,7 +9,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-class DotMatrixPanel extends JPanel
+class DotMatrixPanel extends JPanel implements MouseListener 
 {
 	enum Mode
 	{
@@ -21,15 +21,15 @@ class DotMatrixPanel extends JPanel
 	private DotMatrixImage[] dmi;
 	private Mode mode;
 
-	public DotMatrixPanel(DotMatrix dm)
+	public DotMatrixPanel()
 	{
 		this.setSize(DotMatrixImage.getBlockWidth() * (9 * 8 + 1),
 				DotMatrixImage.getBlockWidth() * (9 * 3 + 1));
 
 		this.setPreferredSize(new Dimension(DotMatrixImage.getBlockWidth()
 				* (9 * 8 + 1), DotMatrixImage.getBlockWidth() * (9 * 3 + 1)));
-
-		this.dm = dm;
+		
+		dm = new DotMatrix();
 		dmi = new DotMatrixImage[24];
 		for (int i = 0; i < dmi.length; i++)
 		{
@@ -38,13 +38,18 @@ class DotMatrixPanel extends JPanel
 
 		mode = Mode.XYZ;
 
-		this.addMouseListener(new MA());
+		this.addMouseListener(this);
 		init();
 	}
 	
 	public void setDotMatrix(DotMatrix dm)
 	{
 		this.dm = dm;
+	}
+	
+	public DotMatrix getDotMatrix()
+	{
+		return this.dm;
 	}
 
 	private int getIndex(int row, int blockID, int blockC, int blockR)
@@ -99,61 +104,6 @@ class DotMatrixPanel extends JPanel
 		}
 
 		return index;
-
-	}
-
-	private class MA implements MouseListener
-	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-			if (e.getButton() == MouseEvent.BUTTON1)
-			{
-				int blockX = e.getX() / DotMatrixImage.getBlockWidth();
-				int blockY = e.getY() / DotMatrixImage.getBlockWidth();
-
-				int blockID = blockX / 9;
-				int blockC = blockX % 9 - 1;
-				int blockR = blockY % 9 - 1;
-
-				if (blockID >= 8 || blockC < 0 || blockR < 0)
-					return;
-
-				int index = getIndex(blockY / 9, blockID, blockC, blockR);
-
-				dm.reverseDot(index);
-
-				update();
-				repaint();
-			}
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e)
-		{
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-			// TODO Auto-generated method stub
-
-		}
-
 	}
 
 	private void init()
@@ -223,6 +173,54 @@ class DotMatrixPanel extends JPanel
 	public void setMode(Mode mode)
 	{
 		this.mode = mode;
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e)
+	{
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e)
+	{
+		if (e.getButton() == MouseEvent.BUTTON1)
+		{
+			int blockX = e.getX() / DotMatrixImage.getBlockWidth();
+			int blockY = e.getY() / DotMatrixImage.getBlockWidth();
+
+			int blockID = blockX / 9;
+			int blockC = blockX % 9 - 1;
+			int blockR = blockY % 9 - 1;
+
+			if (blockID >= 8 || blockC < 0 || blockR < 0)
+				return;
+
+			int index = getIndex(blockY / 9, blockID, blockC, blockR);
+
+			dm.reverseDot(index);
+
+			update();
+			repaint();
+		}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e)
+	{
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e)
+	{
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e)
+	{
+		
 	}
 
 }

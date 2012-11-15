@@ -30,9 +30,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
+
 public class DotMatrixRecordPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
+
 	private DotMatrixPanel panelDm;
 	private JTextArea textAreaCache;
 	private JPanel panelController;
@@ -48,23 +50,21 @@ public class DotMatrixRecordPanel extends JPanel
 
 	private boolean inLoop = true;
 
-	public DotMatrixRecordPanel(DotMatrixRecordFrame dmrf)
+	public DotMatrixRecordPanel()
 	{
-		this.dmrf = dmrf;
-		
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		panelController = new JPanel();
-		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));		
-		
-		panelDm = new DotMatrixPanel(this.dmrf.getDotMatrix());
+		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
+
+		panelDm = new DotMatrixPanel();
 		panelDm.setMode(mode);
-		
+
 		panelDm.addMouseListener(new MouseListenerPanelDotMatrix());
 		this.add(panelDm);
 
 		textAreaCache = new JTextArea(9, 48);
-		textAreaCache.setLineWrap(true);		
+		textAreaCache.setLineWrap(true);
 		textAreaCache.setFont(new Font("monospaced", Font.PLAIN, 12));
 
 		Document doc = textAreaCache.getDocument();
@@ -81,12 +81,37 @@ public class DotMatrixRecordPanel extends JPanel
 
 		panelDm.requestFocusInWindow();
 	}
-	
-	public void setDotMatrixRecordFrame(DotMatrixRecordFrame dmrf)
+
+	public void setFrame(DotMatrixRecordFrame dmrf)
 	{
+		DotMatrix dm = panelDm.getDotMatrix();
+
+		switch (dmrf.getMode())
+		{
+		case 0x01:
+			panelDm.setMode(DotMatrixPanel.Mode.YZX);
+			break;
+		case 0x02:
+			panelDm.setMode(DotMatrixPanel.Mode.ZXY);
+			break;
+		case 0x00:
+		default:
+			panelDm.setMode(DotMatrixPanel.Mode.XYZ);
+			break;
+		}
+
+		if (dmrf.getType() == DotMatrixRecordFrame.Type.All)
+		{
+			dm.setCache(dmrf.getVal());
+		}
+		else
+		{
+			dm.setCache(dmrf.getBatch());
+		}
+		
 		this.dmrf = dmrf;
 	}
-	
+
 	private class MouseListenerPanelDotMatrix implements MouseListener
 	{
 		@Override
@@ -98,7 +123,7 @@ public class DotMatrixRecordPanel extends JPanel
 		public void mousePressed(MouseEvent e)
 		{
 			textAreaCache.setText(dmrf.getCacheString());
-			panelDm.requestFocusInWindow();			
+			panelDm.requestFocusInWindow();
 		}
 
 		@Override
@@ -138,7 +163,7 @@ public class DotMatrixRecordPanel extends JPanel
 					cache[i] = Integer.decode(match).byteValue();
 				}
 
-				//dm.setCache(cache);
+				// dm.setCache(cache);
 				refresh(false);
 			}
 		}
@@ -178,7 +203,6 @@ public class DotMatrixRecordPanel extends JPanel
 
 	public void refresh(boolean updateString)
 	{
-		panelDm.setDotMatrix(this.dmrf.getDotMatrix());
 		panelDm.update();
 		panelDm.repaint();
 		if (updateString)

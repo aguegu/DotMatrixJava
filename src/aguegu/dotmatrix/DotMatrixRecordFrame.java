@@ -66,6 +66,11 @@ public class DotMatrixRecordFrame
 	{
 		data[1] = mode;
 	}
+	
+	public byte getMode()
+	{
+		return data[1];
+	}
 
 	public void setBrightness(byte brightness)
 	{
@@ -88,12 +93,19 @@ public class DotMatrixRecordFrame
 		data[6] = bigSpan;
 	}
 
-	public void setAll(byte val)
+	public void setVal(byte val)
 	{
-		if (data[0] == (byte) 0xf0)
-		{
-			data[7] = val;
-		}
+		data[7] = val;		
+	}
+	
+	public byte getVal()
+	{
+		return data[7];
+	}
+	
+	public byte[] getBatch()
+	{		
+		return Arrays.copyOfRange(data, 8, 72);
 	}
 
 	public void setBatch(byte[] val)
@@ -101,6 +113,14 @@ public class DotMatrixRecordFrame
 		if (data[0] == (byte) 0xf2)
 			System.arraycopy(val, 0, data, 8,
 					Math.min(data.length - 8, val.length));
+	}
+	
+	public Type getType()
+	{
+		Type type = Type.Batch;
+		if (data[0] == (byte) 0xf0)
+			type = Type.All;
+		return type;
 	}
 
 	public byte[] getData()

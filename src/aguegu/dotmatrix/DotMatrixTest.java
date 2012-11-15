@@ -63,7 +63,8 @@ public class DotMatrixTest extends JFrame
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		dmrf = new DotMatrixRecordFrame(DotMatrixRecordFrame.Type.Batch, 0);
-		panelRecord = new DotMatrixRecordPanel(dmrf);
+		panelRecord = new DotMatrixRecordPanel();
+		panelRecord.setFrame(dmrf);
 
 		this.getContentPane().add(BorderLayout.CENTER, panelRecord);
 		this.getContentPane().add(BorderLayout.WEST,
@@ -183,8 +184,9 @@ public class DotMatrixTest extends JFrame
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			int index = listFrame.getSelectedIndex();
 /*
+			int index = listFrame.getSelectedIndex();
+
 			switch (e.getActionCommand())
 			{
 			case "Insert":
@@ -231,9 +233,10 @@ public class DotMatrixTest extends JFrame
 				return;
 
 			dmrf = dmr.getFrame(index);
-			panelRecord.setDotMatrixRecordFrame(dmrf);
+			panelRecord.setFrame(dmrf);
 			panelRecord.refresh(true);
 			refreshFrame();
+			
 		}
 	}
 

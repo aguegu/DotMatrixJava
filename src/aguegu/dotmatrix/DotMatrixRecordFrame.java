@@ -1,52 +1,34 @@
 package aguegu.dotmatrix;
 
-import java.util.Arrays;
-
 public class DotMatrixRecordFrame
 {
 	private DotMatrix dm;
 	private DMMode mode;
 	private byte brightness;
 	private DMAttachment attachment;
+	private int index;
+	private int smallSpan;
+	private int bigSpan;
 
 	public DotMatrixRecordFrame(int index)
 	{
-		int length = 72;
-		byte header = (byte) 0xf2;
-
-		if (type == Type.All)
-		{
-			length = 8;
-			header = (byte) 0xf0;
-		}
-
-		data = new byte[length];
-		data[0] = header;
-
 		this.index = index;
+
+		dm = new DotMatrix();
+		mode = DMMode.XYZ;
+		brightness = (byte) 0xff;
+		attachment = DMAttachment.NONE;
 	}
 
-	public DotMatrixRecordFrame(int header, int index)
+	public void setData(byte[] data)
 	{
-		int length = 72;
-		int head = 0xf2;
+		mode = DMMode.getMode(data[1]);
+		brightness = data[2];
+		attachment = DMAttachment.getDMAttachment(data[3]);
+		smallSpan = (data[4] << 8) | data[5];
+		bigSpan = (data[6] << 8) | data[7];
 
-		if (header == 0xf0)
-		{
-			length = 8;
-			head = header;
-		}
-
-		data = new byte[length];
-		data[0] = (byte) head;
-
-		this.index = index;
-	}
-
-	public void setBody(byte[] data)
-	{
-		int length = Math.min(this.data.length - 1, data.length);
-		System.arraycopy(data, 0, this.data, 1, length);
+		dm.setCache(data, 8);
 	}
 
 	public int getIndex()
@@ -59,90 +41,55 @@ public class DotMatrixRecordFrame
 		this.index = index;
 	}
 
-	public void setMode(byte mode)
+	public void setMode(DMMode mode)
 	{
-		data[1] = mode;
+		this.mode = mode;
 	}
-	
-	public byte getMode()
+
+	public DMMode getMode()
 	{
-		return data[1];
+		return mode;
 	}
 
 	public void setBrightness(byte brightness)
 	{
-		data[2] = brightness;
+		this.brightness = brightness;
 	}
 
-	public void setDecoratedLed(byte decorateLed)
+	public void setAttachment(DMAttachment attachment)
 	{
-		data[3] = decorateLed;
+		this.attachment = attachment;
 	}
 
-	public void setSpan(short span)
+	public void setSmallSpan(short smallSpan)
 	{
-		data[4] = ((Integer) (span >> 8)).byteValue();
-		data[5] = ((Integer) (span & 0xff)).byteValue();
+		this.smallSpan = smallSpan;
 	}
 
 	public void setBigSpan(byte bigSpan)
 	{
-		data[6] = bigSpan;
-	}
-
-	public void setVal(byte val)
-	{
-		data[7] = val;		
-	}
-	
-	public byte getVal()
-	{
-		return data[7];
-	}
-	
-	public byte[] getBatch()
-	{		
-		return Arrays.copyOfRange(data, 8, 72);
-	}
-
-	public void setBatch(byte[] val)
-	{
-		if (data[0] == (byte) 0xf2)
-			System.arraycopy(val, 0, data, 8,
-					Math.min(data.length - 8, val.length));
-	}
-	
-	public Type getType()
-	{
-		Type type = Type.Batch;
-		if (data[0] == (byte) 0xf0)
-			type = Type.All;
-		return type;
+		this.bigSpan = bigSpan;
 	}
 
 	public byte[] getData()
 	{
+		byte[] data = new byte[72];
+
+		data[0] = (byte) 0xf2;
+		data[1] = mode.value();
+		data[2] = brightness;
+		data[3] = attachment.value();
+		data[4] = ((Integer) (smallSpan >> 8)).byteValue();
+		data[5] = ((Integer) (smallSpan & 0xff)).byteValue();
+		data[6] = ((Integer) (bigSpan >> 8)).byteValue();
+		data[7] = ((Integer) (bigSpan & 0xff)).byteValue();		
+		System.arraycopy(dm.getCache(), 0, data, 8, DotMatrix.CACHE_LENGTH);
+		
 		return data;
-	}
-
-	public int getLength()
-	{
-		return data.length;
-	}
-
-	public DotMatrix getDotMatrix()
-	{
-		DotMatrix dm = new DotMatrix();
-		if (data[0] == (byte) 0xf2)
-			dm.setCache(Arrays.copyOfRange(data, 8, data.length));
-		else
-			dm.setCache(data[7]);
-
-		return dm;
 	}
 
 	public String getCacheString()
 	{
-		return DotMatrix.cacheString(data);
+		return DotMatrix.cacheString(getData());
 	}
 }

@@ -2,17 +2,32 @@ package aguegu.dotmatrix;
 
 public enum DMMode
 {
-	XYZ(0x00), YZX(0x01), ZXY(0x02);
+	XYZ((byte) 0x00), YZX((byte) 0x01), ZXY((byte) 0x02);
 
 	private final byte val;
 
-	DMMode(int val)
+	DMMode(byte val)
 	{
-		this.val = (byte) val;
+		this.val = val;
 	}
-	
+
 	byte value()
 	{
 		return val;
+	}
+
+	public static DMMode getMode(byte val)
+	{
+		DMMode mode = XYZ;
+		switch (val)
+		{
+		case 0x01:
+			mode = YZX;
+			break;
+		case 0x02:
+			mode = ZXY;
+			break;
+		}
+		return mode;
 	}
 }

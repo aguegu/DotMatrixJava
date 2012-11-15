@@ -68,11 +68,11 @@ public class DotMatrix
 
 		return cache;
 	}
-	
+
 	static public String cacheString(byte[] cache)
 	{
 		String s = new String();
-		
+
 		for (int i = 0; i < cache.length; i++)
 		{
 			if (i % 8 == 0 && i > 0)
@@ -83,10 +83,10 @@ public class DotMatrix
 	}
 
 	public String cacheString()
-	{		
-		return cacheString(this.getCache());		
+	{
+		return cacheString(this.getCache());
 	}
-	
+
 	public void setCache(byte cache)
 	{
 		for (int i = 0; i < CACHE_LENGTH; i++)
@@ -102,6 +102,21 @@ public class DotMatrix
 		{
 			for (int j = 0; j < 8; j++)
 				dot[i + j] = (cache & (0x80 >> j)) > 0;
+		}
+		catch (ArrayIndexOutOfBoundsException ex)
+		{
+			System.out.println(ex.getStackTrace());
+		}
+	}
+
+	public void setCache(byte[] cache, int from)
+	{
+		try
+		{
+			for (int i = from, j = 0; i < cache.length; i++, j++)
+			{
+				this.setCache(j, cache[i]);
+			}
 		}
 		catch (ArrayIndexOutOfBoundsException ex)
 		{

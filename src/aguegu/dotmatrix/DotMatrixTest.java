@@ -28,7 +28,6 @@ public class DotMatrixTest extends JFrame
 
 	private DotMatrixRecord dmr;
 	private DotMatrixRecordList listFrame;
-	//private DotMatrix dm;
 
 	DotMatrixRecordPanel panelRecord;
 	DotMatrixTestMenuBar bar;
@@ -62,7 +61,7 @@ public class DotMatrixTest extends JFrame
 	{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		dmrf = new DotMatrixRecordFrame(DotMatrixRecordFrame.Type.Batch, 0);
+		dmrf = new DotMatrixRecordFrame(0);
 		panelRecord = new DotMatrixRecordPanel();
 		panelRecord.setFrame(dmrf);
 

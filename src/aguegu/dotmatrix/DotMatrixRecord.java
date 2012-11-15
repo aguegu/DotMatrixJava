@@ -54,24 +54,14 @@ public class DotMatrixRecord
 			FileInputStream fis = new FileInputStream(file);
 			DataInputStream dis = new DataInputStream(fis);
 
-			record.clear();
-
-			int header;
+			record.clear();			
 			int index = 0;
+			byte[] val = new byte[72];
 
-			while ((header = dis.read()) != -1)
+			while (dis.read(val) != -1)
 			{
-				int length = 7;
-				length += header == 0xf2 ? 64 : 0;
-
-				byte[] val = new byte[length];
-
-				dis.read(val);
-
-				DotMatrixRecordFrame dmrf = new DotMatrixRecordFrame(header,
-						index);
-				dmrf.setBody(val);
-
+				DotMatrixRecordFrame dmrf = new DotMatrixRecordFrame(index);
+				dmrf.setData(val);
 				record.add(index, dmrf);
 				index++;
 			}
@@ -113,8 +103,8 @@ public class DotMatrixRecord
 			record.get(i).setIndex(i + 1);
 		}
 
-		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(0xf2, index);
-		newFrame.setBatch(cache);
+		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(index);
+		//newFrame.setBatch(cache);
 		record.add(newFrame);
 
 		this.sortRecord();
@@ -132,9 +122,8 @@ public class DotMatrixRecord
 			record.get(i).setIndex(i + 1);
 		}
 
-		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(0xf2,
-				index + 1);
-		newFrame.setBatch(cache);
+		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(index + 1);
+		//newFrame.setBatch(cache);
 		record.add(newFrame);
 
 		this.sortRecord();
@@ -142,7 +131,7 @@ public class DotMatrixRecord
 
 	public void update(byte[] cache, int index)
 	{
-		record.get(index).setBatch(cache);
+		//record.get(index).setBatch(cache);
 	}
 
 	public DotMatrixRecordFrame getFrame(int index)

@@ -30,15 +30,16 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
-
 public class DotMatrixRecordPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
+	private DotMatrixRecordFrame dmrf;
+	
 	private DotMatrixPanel panelDm;
 	private JTextArea textAreaCache;
 	private JPanel panelController;
-	private DotMatrixRecordFrame dmrf;
+	
 
 	private JCheckBox checkboxInLoop;
 	private JCheckBoxMenuItem miInLoop;
@@ -98,15 +99,6 @@ public class DotMatrixRecordPanel extends JPanel
 		default:
 			panelDm.setMode(DotMatrixPanel.Mode.XYZ);
 			break;
-		}
-
-		if (dmrf.getType() == DotMatrixRecordFrame.Type.All)
-		{
-			dm.setCache(dmrf.getVal());
-		}
-		else
-		{
-			dm.setCache(dmrf.getBatch());
 		}
 		
 		this.dmrf = dmrf;

@@ -4,15 +4,12 @@ import java.util.Arrays;
 
 public class DotMatrixRecordFrame
 {
-	private byte[] data;
-	private int index;
+	private DotMatrix dm;
+	private DMMode mode;
+	private byte brightness;
+	private DMAttachment attachment;
 
-	enum Type
-	{
-		All, Batch
-	};
-
-	public DotMatrixRecordFrame(Type type, int index)
+	public DotMatrixRecordFrame(int index)
 	{
 		int length = 72;
 		byte header = (byte) 0xf2;

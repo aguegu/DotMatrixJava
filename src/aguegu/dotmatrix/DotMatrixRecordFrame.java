@@ -1,38 +1,47 @@
 package aguegu.dotmatrix;
 
+import java.util.Arrays;
+
 public class DotMatrixRecordFrame
 {
-	enum Type
-	{
-		F0, F1, F2
-	};
-
 	private byte[] data;
 	private int index;
 
+	enum Type
+	{
+		All, Batch
+	};
+
 	public DotMatrixRecordFrame(Type type, int index)
 	{
-		byte header = (byte) 0xf0;
-		int length = 8;
+		int length = 72;
+		byte header = (byte) 0xf2;
 
-		switch (type)
+		if (type == Type.All)
 		{
-		case F0:
+			length = 8;
 			header = (byte) 0xf0;
-			length = 8;
-			break;
-		case F1:
-			header = (byte) 0xf1;
-			length = 8;
-			break;
-		case F2:
-			header = (byte) 0xf2;
-			length = 64 + 8;
-			break;
 		}
 
 		data = new byte[length];
 		data[0] = header;
+
+		this.index = index;
+	}
+
+	public DotMatrixRecordFrame(int header, int index)
+	{
+		int length = 72;
+		int head = 0xf2;
+
+		if (header == 0xf0)
+		{
+			length = 8;
+			head = header;
+		}
+
+		data = new byte[length];
+		data[0] = (byte) head;
 
 		this.index = index;
 	}
@@ -74,20 +83,16 @@ public class DotMatrixRecordFrame
 		data[5] = ((Integer) (span & 0xff)).byteValue();
 	}
 
-	public void setCol(byte index, byte val)
+	public void setBigSpan(byte bigSpan)
 	{
-		if (data[0] == (byte) 0xf1)
-		{
-			data[6] = index;
-			data[7] = val;
-		}
+		data[6] = bigSpan;
 	}
 
 	public void setAll(byte val)
 	{
 		if (data[0] == (byte) 0xf0)
 		{
-			data[6] = val;
+			data[7] = val;
 		}
 	}
 
@@ -108,4 +113,19 @@ public class DotMatrixRecordFrame
 		return data.length;
 	}
 
+	public DotMatrix getDotMatrix()
+	{
+		DotMatrix dm = new DotMatrix();
+		if (data[0] == (byte) 0xf2)
+			dm.setCache(Arrays.copyOfRange(data, 8, data.length));
+		else
+			dm.setCache(data[7]);
+
+		return dm;
+	}
+
+	public String getCacheString()
+	{
+		return DotMatrix.cacheString(data);
+	}
 }

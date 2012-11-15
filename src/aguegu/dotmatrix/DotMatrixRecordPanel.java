@@ -2,6 +2,7 @@ package aguegu.dotmatrix;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -33,9 +34,9 @@ public class DotMatrixRecordPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 	private DotMatrixPanel panelDm;
-	private JTextArea textArea;
+	private JTextArea textAreaCache;
 	private JPanel panelController;
-	private DotMatrix dm;
+	private DotMatrixRecordFrame dmrf;
 
 	private JCheckBox checkboxInLoop;
 	private JCheckBoxMenuItem miInLoop;
@@ -47,27 +48,29 @@ public class DotMatrixRecordPanel extends JPanel
 
 	private boolean inLoop = true;
 
-	public DotMatrixRecordPanel()
+	public DotMatrixRecordPanel(DotMatrixRecordFrame dmrf)
 	{
+		this.dmrf = dmrf;
+		
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		dm = new DotMatrix();
 
 		panelController = new JPanel();
-		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
-
-		panelDm = new DotMatrixPanel(dm);
+		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));		
+		
+		panelDm = new DotMatrixPanel(this.dmrf.getDotMatrix());
 		panelDm.setMode(mode);
-
+		
 		panelDm.addMouseListener(new MouseListenerPanelDotMatrix());
 		this.add(panelDm);
 
-		textArea = new JTextArea(8, 30);
-		textArea.setLineWrap(true);		
+		textAreaCache = new JTextArea(9, 48);
+		textAreaCache.setLineWrap(true);		
+		textAreaCache.setFont(new Font("monospaced", Font.PLAIN, 12));
 
-		Document doc = textArea.getDocument();
+		Document doc = textAreaCache.getDocument();
 		doc.addDocumentListener(new DocumentListeneDotMatrixTextArea());
 
-		JScrollPane textAreaPane = new JScrollPane(textArea);
+		JScrollPane textAreaPane = new JScrollPane(textAreaCache);
 		textAreaPane
 				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		textAreaPane
@@ -78,7 +81,12 @@ public class DotMatrixRecordPanel extends JPanel
 
 		panelDm.requestFocusInWindow();
 	}
-
+	
+	public void setDotMatrixRecordFrame(DotMatrixRecordFrame dmrf)
+	{
+		this.dmrf = dmrf;
+	}
+	
 	private class MouseListenerPanelDotMatrix implements MouseListener
 	{
 		@Override
@@ -89,8 +97,8 @@ public class DotMatrixRecordPanel extends JPanel
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			textArea.setText(dm.cacheString());
-			panelDm.requestFocusInWindow();
+			textAreaCache.setText(dmrf.getCacheString());
+			panelDm.requestFocusInWindow();			
 		}
 
 		@Override
@@ -114,10 +122,10 @@ public class DotMatrixRecordPanel extends JPanel
 		@Override
 		public void insertUpdate(DocumentEvent e)
 		{
-			String s = textArea.getText();
+			String s = textAreaCache.getText();
 
-			if (textArea.isFocusOwner()
-					&& s.matches("(0[x|X][a-f0-9A-Z]{2},[\\s]+){64}"))
+			if (textAreaCache.isFocusOwner()
+					&& s.matches("(0[x|X][a-f0-9A-Z]{2},[\\s]+){72}"))
 			{
 				Pattern pattern = Pattern.compile("0[x|X][a-f0-9A-Z]{2}");
 				Matcher matcher = pattern.matcher(s);
@@ -130,7 +138,7 @@ public class DotMatrixRecordPanel extends JPanel
 					cache[i] = Integer.decode(match).byteValue();
 				}
 
-				dm.setCache(cache);
+				//dm.setCache(cache);
 				refresh(false);
 			}
 		}
@@ -170,15 +178,11 @@ public class DotMatrixRecordPanel extends JPanel
 
 	public void refresh(boolean updateString)
 	{
+		panelDm.setDotMatrix(this.dmrf.getDotMatrix());
 		panelDm.update();
 		panelDm.repaint();
 		if (updateString)
-			textArea.setText(dm.cacheString());
-	}
-
-	public DotMatrix getDotMatrix()
-	{
-		return dm;
+			textAreaCache.setText(dmrf.getCacheString());
 	}
 
 	public JMenuItem getMenu()
@@ -257,6 +261,7 @@ public class DotMatrixRecordPanel extends JPanel
 		{
 			boolean recycle = inLoop;
 
+			DotMatrix dm = dmrf.getDotMatrix();
 			switch (e.getActionCommand())
 			{
 			case "on":

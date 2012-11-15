@@ -68,8 +68,7 @@ public class DotMatrixRecord
 
 				dis.read(val);
 
-				DotMatrixRecordFrame dmrf = new DotMatrixRecordFrame(
-						DotMatrixRecordFrame.Type.values()[header - 0xf0],
+				DotMatrixRecordFrame dmrf = new DotMatrixRecordFrame(header,
 						index);
 				dmrf.setBody(val);
 
@@ -96,7 +95,7 @@ public class DotMatrixRecord
 		}
 		return list;
 	}
-	
+
 	public int getLength()
 	{
 		return record.size();
@@ -114,8 +113,7 @@ public class DotMatrixRecord
 			record.get(i).setIndex(i + 1);
 		}
 
-		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(
-				DotMatrixRecordFrame.Type.F2, index);
+		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(0xf2, index);
 		newFrame.setBatch(cache);
 		record.add(newFrame);
 
@@ -134,8 +132,8 @@ public class DotMatrixRecord
 			record.get(i).setIndex(i + 1);
 		}
 
-		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(
-				DotMatrixRecordFrame.Type.F2, index + 1);
+		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(0xf2,
+				index + 1);
 		newFrame.setBatch(cache);
 		record.add(newFrame);
 
@@ -161,7 +159,7 @@ public class DotMatrixRecord
 			record.get(i).setIndex(i);
 		}
 	}
-	
+
 	public void clear()
 	{
 		record.clear();

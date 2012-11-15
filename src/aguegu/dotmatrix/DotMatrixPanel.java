@@ -23,7 +23,6 @@ class DotMatrixPanel extends JPanel
 
 	public DotMatrixPanel(DotMatrix dm)
 	{
-		super();
 		this.setSize(DotMatrixImage.getBlockWidth() * (9 * 8 + 1),
 				DotMatrixImage.getBlockWidth() * (9 * 3 + 1));
 
@@ -31,7 +30,6 @@ class DotMatrixPanel extends JPanel
 				* (9 * 8 + 1), DotMatrixImage.getBlockWidth() * (9 * 3 + 1)));
 
 		this.dm = dm;
-
 		dmi = new DotMatrixImage[24];
 		for (int i = 0; i < dmi.length; i++)
 		{
@@ -42,6 +40,11 @@ class DotMatrixPanel extends JPanel
 
 		this.addMouseListener(new MA());
 		init();
+	}
+	
+	public void setDotMatrix(DotMatrix dm)
+	{
+		this.dm = dm;
 	}
 
 	private int getIndex(int row, int blockID, int blockC, int blockR)

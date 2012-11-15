@@ -28,7 +28,7 @@ public class DotMatrixTest extends JFrame
 
 	private DotMatrixRecord dmr;
 	private DotMatrixRecordList listFrame;
-	private DotMatrix dm;
+	//private DotMatrix dm;
 
 	DotMatrixRecordPanel panelRecord;
 	DotMatrixTestMenuBar bar;
@@ -50,6 +50,7 @@ public class DotMatrixTest extends JFrame
 	private File fileRecord = null;
 	private String message;
 	private boolean isSaved = true;
+	private DotMatrixRecordFrame dmrf;
 
 	public static void main(String[] args)
 	{
@@ -61,8 +62,8 @@ public class DotMatrixTest extends JFrame
 	{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		panelRecord = new DotMatrixRecordPanel();
-		dm = panelRecord.getDotMatrix();
+		dmrf = new DotMatrixRecordFrame(DotMatrixRecordFrame.Type.Batch, 0);
+		panelRecord = new DotMatrixRecordPanel(dmrf);
 
 		this.getContentPane().add(BorderLayout.CENTER, panelRecord);
 		this.getContentPane().add(BorderLayout.WEST,
@@ -140,7 +141,7 @@ public class DotMatrixTest extends JFrame
 					listFrame.setSelectedIndex(0);
 				}
 
-				message = fileRecord.getName() + " opened, "
+				message = fileRecord.getName() + " loaded, "
 						+ fileRecord.length() + " bytes.";
 				break;
 			case "save":
@@ -183,7 +184,7 @@ public class DotMatrixTest extends JFrame
 		public void actionPerformed(ActionEvent e)
 		{
 			int index = listFrame.getSelectedIndex();
-
+/*
 			switch (e.getActionCommand())
 			{
 			case "Insert":
@@ -208,6 +209,7 @@ public class DotMatrixTest extends JFrame
 				listFrame.syncToReocrd();
 				break;
 			}
+*/
 
 			isSaved = false;
 			refreshFrame();
@@ -228,12 +230,8 @@ public class DotMatrixTest extends JFrame
 			if (index == -1)
 				return;
 
-			DotMatrixRecordFrame dmrf = dmr.getFrame(index);
-
-			byte[] cache = new byte[64];
-			System.arraycopy(dmrf.getData(), 8, cache, 0, 64);
-
-			dm.setCache(cache);
+			dmrf = dmr.getFrame(index);
+			panelRecord.setDotMatrixRecordFrame(dmrf);
 			panelRecord.refresh(true);
 			refreshFrame();
 		}
@@ -304,7 +302,7 @@ public class DotMatrixTest extends JFrame
 	{
 		dmr.clear();
 		listFrame.syncToReocrd();
-		dm.clear(false);
+		//dm.clear(false);
 
 		panelRecord.refresh(true);
 		fileRecord = null;

@@ -104,7 +104,7 @@ public class DotMatrixRecord
 		}
 
 		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(index);
-		//newFrame.setBatch(cache);
+		newFrame.setData(cache);
 		record.add(newFrame);
 
 		this.sortRecord();
@@ -123,7 +123,7 @@ public class DotMatrixRecord
 		}
 
 		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(index + 1);
-		//newFrame.setBatch(cache);
+		newFrame.setData(cache);
 		record.add(newFrame);
 
 		this.sortRecord();
@@ -131,7 +131,7 @@ public class DotMatrixRecord
 
 	public void update(byte[] cache, int index)
 	{
-		//record.get(index).setBatch(cache);
+		record.get(index).setData(cache);
 	}
 
 	public DotMatrixRecordFrame getFrame(int index)

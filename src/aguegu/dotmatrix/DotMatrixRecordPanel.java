@@ -51,7 +51,7 @@ public class DotMatrixRecordPanel extends JPanel
 	public DotMatrixRecordPanel()
 	{
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
+		
 		panelController = new JPanel();
 		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
 
@@ -80,7 +80,13 @@ public class DotMatrixRecordPanel extends JPanel
 
 	public void setFrame(DotMatrixRecordFrame dmrf)
 	{		
-		this.dmrf = dmrf;		
+		this.dmrf = new DotMatrixRecordFrame(dmrf.getIndex());
+		this.dmrf.setData(dmrf.getData());		
+	}
+	
+	public byte[] getData()
+	{
+		return this.dmrf.getData();
 	}
 	
 	private class MouseListenerPanelDotMatrix implements MouseListener

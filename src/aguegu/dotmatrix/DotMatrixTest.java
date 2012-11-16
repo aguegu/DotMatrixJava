@@ -183,25 +183,24 @@ public class DotMatrixTest extends JFrame
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-/*
 			int index = listFrame.getSelectedIndex();
 
 			switch (e.getActionCommand())
 			{
 			case "Insert":
-				dmr.insert(dm.getCache(), index);
+				dmr.insert(panelRecord.getData(), index);
 				listFrame.syncToReocrd();
 				listFrame.setSelectedIndex(index);
 				break;
 			case "Append":
-				dmr.append(dm.getCache(), index);
+				dmr.append(panelRecord.getData(), index);
 				listFrame.syncToReocrd();
 				listFrame.setSelectedIndex(index + 1);
 				break;
 			case "Update":
 				if (index == -1)
 					break;
-				dmr.update(dm.getCache(), index);
+				dmr.update(panelRecord.getData(), index);
 				break;
 			case "Delete":
 				if (index == -1)
@@ -210,7 +209,6 @@ public class DotMatrixTest extends JFrame
 				listFrame.syncToReocrd();
 				break;
 			}
-*/
 
 			isSaved = false;
 			refreshFrame();

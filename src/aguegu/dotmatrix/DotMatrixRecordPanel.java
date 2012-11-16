@@ -35,23 +35,24 @@ public class DotMatrixRecordPanel extends JPanel
 	private static final long serialVersionUID = 1L;
 
 	private DotMatrixRecordFrame dmrf;
-	
+
 	private DotMatrixPanel panelDm;
 	private JTextArea textAreaCache;
-	private JPanel panelController;	
+	private JPanel panelController;
 
 	private JCheckBox checkboxInLoop;
-	private JCheckBoxMenuItem miInLoop;	
+	private JCheckBoxMenuItem miInLoop;
 
 	private static final String[] MOVEMENTS = new String[] { "on", "off", "X+",
 			"X-", "Y+", "Y-", "Z+", "Z-" };
 
 	private boolean inLoop = true;
+	private static Font monoFont;
 
 	public DotMatrixRecordPanel()
 	{
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
+
 		panelController = new JPanel();
 		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
 
@@ -59,18 +60,18 @@ public class DotMatrixRecordPanel extends JPanel
 		panelDm.addMouseListener(new MouseListenerPanelDotMatrix());
 		this.add(panelDm);
 
-		textAreaCache = new JTextArea(9, 48);
+		monoFont = new Font("monospaced", Font.PLAIN, 12);
+
+		textAreaCache = new JTextArea(9, 52);
 		textAreaCache.setLineWrap(true);
-		textAreaCache.setFont(new Font("monospaced", Font.PLAIN, 12));
+		textAreaCache.setFont(monoFont);
 
 		Document doc = textAreaCache.getDocument();
 		doc.addDocumentListener(new DocumentListeneDotMatrixTextArea());
 
-		JScrollPane textAreaPane = new JScrollPane(textAreaCache);
-		textAreaPane
-				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		textAreaPane
-				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane textAreaPane = new JScrollPane(textAreaCache,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 		panelController.add(textAreaPane);
 		this.add(panelController);
@@ -79,16 +80,16 @@ public class DotMatrixRecordPanel extends JPanel
 	}
 
 	public void setFrame(DotMatrixRecordFrame dmrf)
-	{		
+	{
 		this.dmrf = new DotMatrixRecordFrame(dmrf.getIndex());
-		this.dmrf.setData(dmrf.getData());		
+		this.dmrf.setData(dmrf.getData());
 	}
-	
+
 	public byte[] getData()
 	{
 		return this.dmrf.getData();
 	}
-	
+
 	private class MouseListenerPanelDotMatrix implements MouseListener
 	{
 		@Override
@@ -139,7 +140,7 @@ public class DotMatrixRecordPanel extends JPanel
 					String match = matcher.group();
 					cache[i] = Integer.decode(match).byteValue();
 				}
-				
+
 				dmrf.setData(cache);
 				refresh(false);
 			}
@@ -160,8 +161,8 @@ public class DotMatrixRecordPanel extends JPanel
 	{
 		@Override
 		public void actionPerformed(ActionEvent e)
-		{			
-			dmrf.setMode(DMMode.getMode(e.getActionCommand()));			
+		{
+			dmrf.setMode(DMMode.getMode(e.getActionCommand()));
 			refresh(true);
 		}
 	}
@@ -172,7 +173,7 @@ public class DotMatrixRecordPanel extends JPanel
 		panelDm.setDotMatrix(dmrf.getDotMatrix());
 		panelDm.update();
 		panelDm.repaint();
-		
+
 		if (updateString)
 			textAreaCache.setText(dmrf.getCacheString());
 	}
@@ -186,7 +187,8 @@ public class DotMatrixRecordPanel extends JPanel
 
 		for (DMMode mode : DMMode.values())
 		{
-			JRadioButtonMenuItem button = new JRadioButtonMenuItem(mode.toString());
+			JRadioButtonMenuItem button = new JRadioButtonMenuItem(
+					mode.toString());
 			button.setActionCommand(mode.toString());
 			button.addActionListener(new ActionListenerMode());
 			bgMode.add(button);
@@ -207,7 +209,7 @@ public class DotMatrixRecordPanel extends JPanel
 		{
 			JMenuItem button = new JMenuItem(s);
 			button.setActionCommand(s);
-			button.addActionListener(new ActionListenerMode());
+			button.addActionListener(new ActionListenerFrameOperation());
 			mnEdit.add(button);
 		}
 
@@ -223,6 +225,7 @@ public class DotMatrixRecordPanel extends JPanel
 		for (String s : MOVEMENTS)
 		{
 			JButton button = new JButton(s);
+			button.setFont(monoFont);
 			button.setActionCommand(s);
 			button.addActionListener(new ActionListenerFrameOperation());
 

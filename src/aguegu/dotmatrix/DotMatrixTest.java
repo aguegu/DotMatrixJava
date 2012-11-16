@@ -16,6 +16,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -79,7 +80,9 @@ public class DotMatrixTest extends JFrame
 
 		listFrame
 				.addListSelectionListener(new ListSelectionListenerListFrame());
-		this.getContentPane().add(BorderLayout.EAST, listFrame);
+		
+		JScrollPane listFramePane = new JScrollPane(listFrame);				
+		this.getContentPane().add(BorderLayout.EAST, listFramePane);
 
 		bar = new DotMatrixTestMenuBar();
 		this.setJMenuBar(bar);

@@ -11,15 +11,10 @@ import java.awt.Graphics2D;
 
 class DotMatrixPanel extends JPanel implements MouseListener 
 {
-	enum Mode
-	{
-		XYZ, YZX, ZXY
-	};
-
 	private static final long serialVersionUID = -2531292225634588108L;
 	private DotMatrix dm;
 	private DotMatrixImage[] dmi;
-	private Mode mode;
+	private DMMode mode;
 
 	public DotMatrixPanel()
 	{
@@ -36,7 +31,7 @@ class DotMatrixPanel extends JPanel implements MouseListener
 			dmi[i] = new DotMatrixImage();
 		}
 
-		mode = Mode.XYZ;
+		mode = DMMode.XYZ;
 
 		this.addMouseListener(this);
 		init();
@@ -170,7 +165,7 @@ class DotMatrixPanel extends JPanel implements MouseListener
 		}
 	}
 
-	public void setMode(Mode mode)
+	public void setMode(DMMode mode)
 	{
 		this.mode = mode;
 	}

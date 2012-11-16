@@ -17,7 +17,7 @@ public class DotMatrixRecordFrame
 		dm = new DotMatrix();
 		mode = DMMode.XYZ;
 		brightness = (byte) 0xff;
-		attachment = DMAttachment.NONE;
+		attachment = DMAttachment.NONE;	
 	}
 
 	public void setData(byte[] data)
@@ -39,6 +39,11 @@ public class DotMatrixRecordFrame
 	public void setIndex(int index)
 	{
 		this.index = index;
+	}
+	
+	public DotMatrix getDotMatrix()
+	{
+		return dm;
 	}
 
 	public void setMode(DMMode mode)

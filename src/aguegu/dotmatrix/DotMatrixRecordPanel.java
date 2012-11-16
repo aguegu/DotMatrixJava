@@ -38,13 +38,10 @@ public class DotMatrixRecordPanel extends JPanel
 	
 	private DotMatrixPanel panelDm;
 	private JTextArea textAreaCache;
-	private JPanel panelController;
-	
+	private JPanel panelController;	
 
 	private JCheckBox checkboxInLoop;
-	private JCheckBoxMenuItem miInLoop;
-
-	private DotMatrixPanel.Mode mode = DotMatrixPanel.Mode.XYZ;
+	private JCheckBoxMenuItem miInLoop;	
 
 	private static final String[] MOVEMENTS = new String[] { "on", "off", "X+",
 			"X-", "Y+", "Y-", "Z+", "Z-" };
@@ -59,8 +56,6 @@ public class DotMatrixRecordPanel extends JPanel
 		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
 
 		panelDm = new DotMatrixPanel();
-		panelDm.setMode(mode);
-
 		panelDm.addMouseListener(new MouseListenerPanelDotMatrix());
 		this.add(panelDm);
 
@@ -84,26 +79,10 @@ public class DotMatrixRecordPanel extends JPanel
 	}
 
 	public void setFrame(DotMatrixRecordFrame dmrf)
-	{
-		DotMatrix dm = panelDm.getDotMatrix();
-
-		switch (dmrf.getMode())
-		{
-		case 0x01:
-			panelDm.setMode(DotMatrixPanel.Mode.YZX);
-			break;
-		case 0x02:
-			panelDm.setMode(DotMatrixPanel.Mode.ZXY);
-			break;
-		case 0x00:
-		default:
-			panelDm.setMode(DotMatrixPanel.Mode.XYZ);
-			break;
-		}
-		
-		this.dmrf = dmrf;
+	{		
+		this.dmrf = dmrf;		
 	}
-
+	
 	private class MouseListenerPanelDotMatrix implements MouseListener
 	{
 		@Override
@@ -147,15 +126,15 @@ public class DotMatrixRecordPanel extends JPanel
 				Pattern pattern = Pattern.compile("0[x|X][a-f0-9A-Z]{2}");
 				Matcher matcher = pattern.matcher(s);
 
-				byte[] cache = new byte[64];
+				byte[] cache = new byte[72];
 
 				for (int i = 0; i < cache.length && matcher.find(); i++)
 				{
 					String match = matcher.group();
 					cache[i] = Integer.decode(match).byteValue();
 				}
-
-				// dm.setCache(cache);
+				
+				dmrf.setData(cache);
 				refresh(false);
 			}
 		}
@@ -175,28 +154,19 @@ public class DotMatrixRecordPanel extends JPanel
 	{
 		@Override
 		public void actionPerformed(ActionEvent e)
-		{
-			switch (e.getActionCommand())
-			{
-			case "XYZ":
-				mode = DotMatrixPanel.Mode.XYZ;
-				break;
-			case "YZX":
-				mode = DotMatrixPanel.Mode.YZX;
-				break;
-			case "ZXY":
-				mode = DotMatrixPanel.Mode.ZXY;
-				break;
-			}
-			panelDm.setMode(mode);
+		{			
+			dmrf.setMode(DMMode.getMode(e.getActionCommand()));			
 			refresh(true);
 		}
 	}
 
 	public void refresh(boolean updateString)
 	{
+		panelDm.setMode(dmrf.getMode());
+		panelDm.setDotMatrix(dmrf.getDotMatrix());
 		panelDm.update();
 		panelDm.repaint();
+		
 		if (updateString)
 			textAreaCache.setText(dmrf.getCacheString());
 	}
@@ -206,17 +176,16 @@ public class DotMatrixRecordPanel extends JPanel
 		JMenu mnEdit = new JMenu("Frame");
 		mnEdit.setMnemonic(KeyEvent.VK_E);
 
-		String[] Modes = new String[] { "XYZ", "YZX", "ZXY" };
 		ButtonGroup bgMode = new ButtonGroup();
 
-		for (String s : Modes)
+		for (DMMode mode : DMMode.values())
 		{
-			JRadioButtonMenuItem button = new JRadioButtonMenuItem(s);
-			button.setActionCommand(s);
+			JRadioButtonMenuItem button = new JRadioButtonMenuItem(mode.toString());
+			button.setActionCommand(mode.toString());
 			button.addActionListener(new ActionListenerMode());
 			bgMode.add(button);
 
-			if (s.equals("XYZ"))
+			if (mode.equals(dmrf.getMode()))
 				button.setSelected(true);
 
 			mnEdit.add(button);
@@ -232,12 +201,11 @@ public class DotMatrixRecordPanel extends JPanel
 		{
 			JMenuItem button = new JMenuItem(s);
 			button.setActionCommand(s);
-			// button.addActionListener(new ActionListenerButtonMove());
+			button.addActionListener(new ActionListenerMode());
 			mnEdit.add(button);
 		}
 
 		return mnEdit;
-
 	}
 
 	public JPanel getPanelFrameOperation()

@@ -304,7 +304,6 @@ public class DotMatrixTest extends JFrame
 	{
 		dmr.clear();
 		listFrame.syncToReocrd();
-		//dm.clear(false);
 
 		panelRecord.refresh(true);
 		fileRecord = null;

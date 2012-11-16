@@ -30,4 +30,19 @@ public enum DMMode
 		}
 		return mode;
 	}
+	
+	public static DMMode getMode(String val)
+	{
+		DMMode mode = XYZ;
+		switch (val)
+		{
+		case "YZX":
+			mode = YZX;
+			break;
+		case "ZXY":
+			mode = ZXY;
+			break;
+		}
+		return mode;
+	}
 }

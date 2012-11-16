@@ -82,8 +82,10 @@ public class DotMatrixTest extends JFrame
 
 		listFrame
 				.addListSelectionListener(new ListSelectionListenerListFrame());
-		
-		JScrollPane listFramePane = new JScrollPane(listFrame, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);				
+
+		JScrollPane listFramePane = new JScrollPane(listFrame,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		listFramePane.setPreferredSize(new Dimension(48, 0));
 		this.getContentPane().add(BorderLayout.EAST, listFramePane);
 
@@ -239,7 +241,7 @@ public class DotMatrixTest extends JFrame
 			panelRecord.setFrame(dmrf);
 			panelRecord.refresh(true);
 			refreshFrame();
-			
+
 		}
 	}
 

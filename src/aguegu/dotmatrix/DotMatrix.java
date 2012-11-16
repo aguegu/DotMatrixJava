@@ -82,6 +82,12 @@ public class DotMatrix
 		return s;
 	}
 
+	static public int byteToInt(byte c)
+	{
+		int i = ((int) c + 256) % 256;
+		return i;
+	}	
+
 	public String cacheString()
 	{
 		return cacheString(this.getCache());

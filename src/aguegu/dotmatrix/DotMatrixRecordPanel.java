@@ -24,8 +24,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
@@ -37,17 +40,25 @@ public class DotMatrixRecordPanel extends JPanel
 	private DotMatrixRecordFrame dmrf;
 
 	private DotMatrixPanel panelDm;
-	private JTextArea textAreaCache;
+
 	private JPanel panelController;
+	private JTextArea textAreaCache;
 
 	private JCheckBox checkboxInLoop;
 	private JCheckBoxMenuItem miInLoop;
+
+	private JSlider sliderBrightness;
+	private JSlider sliderSmallSpan;
+	private JSlider sliderBigSpan;
+
+	private JCheckBox checkboxUpperLed;
 
 	private static final String[] MOVEMENTS = new String[] { "on", "off", "X+",
 			"X-", "Y+", "Y-", "Z+", "Z-" };
 
 	private boolean inLoop = true;
 	private static Font monoFont;
+	private CL cl;
 
 	public DotMatrixRecordPanel()
 	{
@@ -74,6 +85,34 @@ public class DotMatrixRecordPanel extends JPanel
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 		panelController.add(textAreaPane);
+
+		cl = new CL();
+		
+		sliderBrightness = new JSlider(0, 255, 255);
+		sliderBrightness.setMinorTickSpacing(0x20);		
+		sliderBrightness.setPaintTicks(true);
+		sliderBrightness.setSnapToTicks(true);		
+		sliderBrightness.addChangeListener(cl);
+
+		sliderSmallSpan = new JSlider(0, 65535, 65535);
+		sliderSmallSpan.setMinorTickSpacing(0x1000);
+		sliderSmallSpan.setSnapToTicks(true);
+		sliderSmallSpan.setPaintTicks(true);
+		sliderSmallSpan.addChangeListener(cl);
+
+		sliderBigSpan = new JSlider(0, 65535, 0);
+		sliderBigSpan.setMinorTickSpacing(0x1000);
+		sliderBigSpan.setSnapToTicks(true);
+		sliderBigSpan.setPaintTicks(true);
+		sliderBigSpan.addChangeListener(cl);
+
+		panelController.add(sliderBrightness);
+		panelController.add(sliderSmallSpan);
+		panelController.add(sliderBigSpan);
+
+		checkboxUpperLed = new JCheckBox("Upper Led");
+		panelController.add(checkboxUpperLed);
+
 		this.add(panelController);
 
 		panelDm.requestFocusInWindow();
@@ -88,6 +127,30 @@ public class DotMatrixRecordPanel extends JPanel
 	public byte[] getData()
 	{
 		return this.dmrf.getData();
+	}
+
+	private class CL implements ChangeListener
+	{
+		@Override
+		public void stateChanged(ChangeEvent e)
+		{
+			if (e.getSource() instanceof JSlider)
+			{
+				if (e.getSource().equals(sliderBrightness))
+				{
+					dmrf.setBrightness((Integer) sliderBrightness.getValue());
+				 }
+				else if (e.getSource().equals(sliderSmallSpan))
+				{
+					dmrf.setSmallSpan((Integer) sliderSmallSpan.getValue());
+				}
+				else if (e.getSource().equals(sliderBigSpan))
+				{
+					dmrf.setBigSpan((Integer) sliderBigSpan.getValue());
+				}
+				refresh(true);
+			}
+		}
 	}
 
 	private class MouseListenerPanelDotMatrix implements MouseListener
@@ -125,23 +188,26 @@ public class DotMatrixRecordPanel extends JPanel
 		@Override
 		public void insertUpdate(DocumentEvent e)
 		{
+			if (!textAreaCache.isFocusOwner())
+				return;
+
 			String s = textAreaCache.getText();
 
-			if (textAreaCache.isFocusOwner()
-					&& s.matches("(0[x|X][a-f0-9A-Z]{2},[\\s]+){72}"))
+			if (s.matches("(0[x|X][a-f0-9A-Z]{2},[\\s]+){72}"))
 			{
 				Pattern pattern = Pattern.compile("0[x|X][a-f0-9A-Z]{2}");
 				Matcher matcher = pattern.matcher(s);
 
-				byte[] cache = new byte[72];
+				byte[] data = new byte[72];
 
-				for (int i = 0; i < cache.length && matcher.find(); i++)
+				for (int i = 0; i < data.length && matcher.find(); i++)
 				{
 					String match = matcher.group();
-					cache[i] = Integer.decode(match).byteValue();
+					int t = Integer.decode(match);
+					data[i] = (byte) t;
 				}
-
-				dmrf.setData(cache);
+				
+				dmrf.setData(data);
 				refresh(false);
 			}
 		}
@@ -174,8 +240,23 @@ public class DotMatrixRecordPanel extends JPanel
 		panelDm.update();
 		panelDm.repaint();
 
+		sliderBrightness.removeChangeListener(cl);		
+		sliderBrightness.setValue(dmrf.getBrightness());
+		sliderBrightness.addChangeListener(cl);
+
+		sliderSmallSpan.removeChangeListener(cl);		
+		sliderSmallSpan.setValue(dmrf.getSmallSpan());
+		sliderSmallSpan.addChangeListener(cl);		
+
+		sliderBigSpan.removeChangeListener(cl);		
+		sliderBigSpan.setValue(dmrf.getBigSpan());
+		sliderBigSpan.addChangeListener(cl);
+
+		
 		if (updateString)
+		{
 			textAreaCache.setText(dmrf.getCacheString());
+		}
 	}
 
 	public JMenuItem getMenu()

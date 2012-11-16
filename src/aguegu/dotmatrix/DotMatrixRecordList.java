@@ -19,7 +19,7 @@ public class DotMatrixRecordList extends JList<DotMatrixRecordFrame>
 	{
 		this.dmr = dmr;
 		this.lm = new DefaultListModel<DotMatrixRecordFrame>();
-
+		
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		this.setModel(lm);
@@ -30,10 +30,10 @@ public class DotMatrixRecordList extends JList<DotMatrixRecordFrame>
 
 	public void syncToReocrd()
 	{
-		lm.removeAllElements();
+		lm.clear();		
 		for (DotMatrixRecordFrame dmrf : this.dmr.getFrames())
 		{
-			lm.addElement(dmrf);
+			lm.addElement(dmrf);			
 		}
 	}
 

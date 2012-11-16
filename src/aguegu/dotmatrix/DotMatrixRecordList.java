@@ -2,7 +2,6 @@ package aguegu.dotmatrix;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
@@ -21,7 +20,6 @@ public class DotMatrixRecordList extends JList<DotMatrixRecordFrame>
 		this.dmr = dmr;
 		this.lm = new DefaultListModel<DotMatrixRecordFrame>();
 
-		this.setPreferredSize(new Dimension(48, 0));
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		this.setModel(lm);

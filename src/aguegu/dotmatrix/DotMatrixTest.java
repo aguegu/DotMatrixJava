@@ -1,6 +1,7 @@
 package aguegu.dotmatrix;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -17,6 +18,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -81,7 +83,8 @@ public class DotMatrixTest extends JFrame
 		listFrame
 				.addListSelectionListener(new ListSelectionListenerListFrame());
 		
-		JScrollPane listFramePane = new JScrollPane(listFrame);				
+		JScrollPane listFramePane = new JScrollPane(listFrame, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);				
+		listFramePane.setPreferredSize(new Dimension(48, 0));
 		this.getContentPane().add(BorderLayout.EAST, listFramePane);
 
 		bar = new DotMatrixTestMenuBar();

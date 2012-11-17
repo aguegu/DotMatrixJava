@@ -96,9 +96,9 @@ public class DotMatrixTest extends JFrame
 
 		begin();
 		refreshFrame();
-
+		
 		this.setLocation(100, 100);
-		this.setSize(this.getPreferredSize());
+		this.pack();
 		this.setResizable(false);
 
 		this.setVisible(true);

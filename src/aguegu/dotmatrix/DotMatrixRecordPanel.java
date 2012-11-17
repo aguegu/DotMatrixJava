@@ -69,7 +69,7 @@ public class DotMatrixRecordPanel extends JPanel
 
 		monoFont = new Font("monospaced", Font.PLAIN, 12);
 
-		textAreaCache = new JTextArea(9, 52);
+		textAreaCache = new JTextArea(9, 51);
 		textAreaCache.setLineWrap(true);
 		textAreaCache.setFont(monoFont);
 
@@ -194,8 +194,8 @@ public class DotMatrixRecordPanel extends JPanel
 		panelDm.repaint();
 
 		radiobuttonMenuItemModes[dmrf.getMode().ordinal()].setSelected(true);
-		panelHeader.refresh();		
-		
+		panelHeader.refresh();
+
 		if (updateString)
 		{
 			textAreaCache.setText(dmrf.getCacheString());

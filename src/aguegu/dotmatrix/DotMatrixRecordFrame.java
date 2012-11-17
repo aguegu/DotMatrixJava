@@ -73,6 +73,11 @@ public class DotMatrixRecordFrame
 	{
 		this.attachment = attachment;
 	}
+	
+	public DMAttachment getAttachment()
+	{
+		return this.attachment;
+	}
 
 	public void setSmallSpan(int smallSpan)
 	{

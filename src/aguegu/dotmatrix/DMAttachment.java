@@ -2,7 +2,7 @@ package aguegu.dotmatrix;
 
 public enum DMAttachment
 {
-	NONE(0x00), UPPER_LED(0x01), BUTTOM_LED(0x02), BOTH(0x03);
+	NONE(0x00), UPPER_LED(0x01), BOTTOM_LED(0x02), BOTH(0x03);
 
 	private final byte val;
 
@@ -25,9 +25,27 @@ public enum DMAttachment
 			attachment = UPPER_LED;
 			break;
 		case 0x02:
-			attachment = BUTTOM_LED;
+			attachment = BOTTOM_LED;
 			break;
 		case 0x03:
+			attachment = BOTH;
+			break;		
+		}
+		return attachment;
+	}
+	
+	public static DMAttachment getDMAttachment(String val)
+	{
+		DMAttachment attachment = NONE;
+		switch (val)
+		{
+		case "UPPER_LED":
+			attachment = UPPER_LED;
+			break;
+		case "BOTTOM_LED":
+			attachment = BOTTOM_LED;
+			break;
+		case "BOTH":
 			attachment = BOTH;
 			break;		
 		}

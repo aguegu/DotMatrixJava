@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +23,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
@@ -52,6 +54,9 @@ public class DotMatrixRecordPanel extends JPanel
 	private JSlider sliderBigSpan;
 
 	private JCheckBox checkboxUpperLed;
+	private JCheckBox checkboxBottomLed;
+
+	private JRadioButton[] radiobuttonModes;
 
 	private static final String[] MOVEMENTS = new String[] { "on", "off", "X+",
 			"X-", "Y+", "Y-", "Z+", "Z-" };
@@ -87,11 +92,11 @@ public class DotMatrixRecordPanel extends JPanel
 		panelController.add(textAreaPane);
 
 		cl = new CL();
-		
+
 		sliderBrightness = new JSlider(0, 255, 255);
-		sliderBrightness.setMinorTickSpacing(0x20);		
+		sliderBrightness.setMinorTickSpacing(0x20);
 		sliderBrightness.setPaintTicks(true);
-		sliderBrightness.setSnapToTicks(true);		
+		sliderBrightness.setSnapToTicks(true);
 		sliderBrightness.addChangeListener(cl);
 
 		sliderSmallSpan = new JSlider(0, 65535, 65535);
@@ -110,8 +115,26 @@ public class DotMatrixRecordPanel extends JPanel
 		panelController.add(sliderSmallSpan);
 		panelController.add(sliderBigSpan);
 
-		checkboxUpperLed = new JCheckBox("Upper Led");
+		checkboxUpperLed = new JCheckBox("U");
+		checkboxUpperLed.addChangeListener(cl);
 		panelController.add(checkboxUpperLed);
+
+		checkboxBottomLed = new JCheckBox("B");
+		checkboxBottomLed.addChangeListener(cl);
+		panelController.add(checkboxBottomLed);
+
+		radiobuttonModes = new JRadioButton[3];
+		ButtonGroup bgMode = new ButtonGroup();
+		int i = 0;
+		for (DMMode mode : DMMode.values())
+		{
+			radiobuttonModes[i] = new JRadioButton(mode.toString());
+			radiobuttonModes[i].setActionCommand(mode.toString());
+			radiobuttonModes[i].addActionListener(new ActionListenerMode());
+			bgMode.add(radiobuttonModes[i]);
+			panelController.add(radiobuttonModes[i]);
+			i++;
+		}
 
 		this.add(panelController);
 
@@ -139,7 +162,7 @@ public class DotMatrixRecordPanel extends JPanel
 				if (e.getSource().equals(sliderBrightness))
 				{
 					dmrf.setBrightness((Integer) sliderBrightness.getValue());
-				 }
+				}
 				else if (e.getSource().equals(sliderSmallSpan))
 				{
 					dmrf.setSmallSpan((Integer) sliderSmallSpan.getValue());
@@ -148,6 +171,20 @@ public class DotMatrixRecordPanel extends JPanel
 				{
 					dmrf.setBigSpan((Integer) sliderBigSpan.getValue());
 				}
+				refresh(true);
+			}
+			else if (e.getSource() instanceof JCheckBox)
+			{
+				if (checkboxUpperLed.isSelected()
+						&& checkboxBottomLed.isSelected())
+					dmrf.setAttachment(DMAttachment.BOTH);
+				else if (checkboxUpperLed.isSelected())
+					dmrf.setAttachment(DMAttachment.UPPER_LED);
+				else if (checkboxBottomLed.isSelected())
+					dmrf.setAttachment(DMAttachment.BOTTOM_LED);
+				else
+					dmrf.setAttachment(DMAttachment.NONE);
+
 				refresh(true);
 			}
 		}
@@ -206,7 +243,7 @@ public class DotMatrixRecordPanel extends JPanel
 					int t = Integer.decode(match);
 					data[i] = (byte) t;
 				}
-				
+
 				dmrf.setData(data);
 				refresh(false);
 			}
@@ -233,6 +270,17 @@ public class DotMatrixRecordPanel extends JPanel
 		}
 	}
 
+	private class ActionListenerAttachment implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			dmrf.setAttachment(DMAttachment.getDMAttachment(e
+					.getActionCommand()));
+			refresh(true);
+		}
+	}
+
 	public void refresh(boolean updateString)
 	{
 		panelDm.setMode(dmrf.getMode());
@@ -240,19 +288,45 @@ public class DotMatrixRecordPanel extends JPanel
 		panelDm.update();
 		panelDm.repaint();
 
-		sliderBrightness.removeChangeListener(cl);		
+		sliderBrightness.removeChangeListener(cl);
 		sliderBrightness.setValue(dmrf.getBrightness());
 		sliderBrightness.addChangeListener(cl);
 
-		sliderSmallSpan.removeChangeListener(cl);		
+		sliderSmallSpan.removeChangeListener(cl);
 		sliderSmallSpan.setValue(dmrf.getSmallSpan());
-		sliderSmallSpan.addChangeListener(cl);		
+		sliderSmallSpan.addChangeListener(cl);
 
-		sliderBigSpan.removeChangeListener(cl);		
+		sliderBigSpan.removeChangeListener(cl);
 		sliderBigSpan.setValue(dmrf.getBigSpan());
 		sliderBigSpan.addChangeListener(cl);
 
+		checkboxUpperLed.removeChangeListener(cl);
+		checkboxBottomLed.removeChangeListener(cl);
+
+		switch (dmrf.getAttachment())
+		{
+		case BOTH:
+			checkboxUpperLed.setSelected(true);
+			checkboxBottomLed.setSelected(true);
+			break;
+		case BOTTOM_LED:
+			checkboxUpperLed.setSelected(false);
+			checkboxBottomLed.setSelected(true);
+			break;
+		case UPPER_LED:
+			checkboxUpperLed.setSelected(true);
+			checkboxBottomLed.setSelected(false);
+			break;
+		case NONE:
+		default:
+			break;
+		}
+
+		checkboxUpperLed.addChangeListener(cl);
+		checkboxBottomLed.addChangeListener(cl);
 		
+		radiobuttonModes[dmrf.getMode().ordinal()].setSelected(true);
+
 		if (updateString)
 		{
 			textAreaCache.setText(dmrf.getCacheString());
@@ -383,7 +457,6 @@ public class DotMatrixRecordPanel extends JPanel
 
 			checkboxInLoop.setSelected(inLoop);
 			miInLoop.setSelected(inLoop);
-
 		}
 	}
 }

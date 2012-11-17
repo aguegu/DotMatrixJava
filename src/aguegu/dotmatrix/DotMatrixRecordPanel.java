@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Arrays;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,6 +57,7 @@ public class DotMatrixRecordPanel extends JPanel
 	private JCheckBox checkboxBottomLed;
 
 	private JRadioButton[] radiobuttonModes;
+	private JRadioButtonMenuItem[] radiobuttonMenuItemModes;
 
 	private static final String[] MOVEMENTS = new String[] { "on", "off", "X+",
 			"X-", "Y+", "Y-", "Z+", "Z-" };
@@ -64,6 +65,8 @@ public class DotMatrixRecordPanel extends JPanel
 	private boolean inLoop = true;
 	private static Font monoFont;
 	private CL cl;
+
+	private JMenu menu;
 
 	public DotMatrixRecordPanel()
 	{
@@ -116,11 +119,11 @@ public class DotMatrixRecordPanel extends JPanel
 		panelController.add(sliderBigSpan);
 
 		checkboxUpperLed = new JCheckBox("U");
-		checkboxUpperLed.addChangeListener(cl);
+		checkboxUpperLed.addActionListener(new ActionListenerAttachment());
 		panelController.add(checkboxUpperLed);
 
 		checkboxBottomLed = new JCheckBox("B");
-		checkboxBottomLed.addChangeListener(cl);
+		checkboxBottomLed.addActionListener(new ActionListenerAttachment());
 		panelController.add(checkboxBottomLed);
 
 		radiobuttonModes = new JRadioButton[3];
@@ -139,6 +142,9 @@ public class DotMatrixRecordPanel extends JPanel
 		this.add(panelController);
 
 		panelDm.requestFocusInWindow();
+
+		this.dmrf = new DotMatrixRecordFrame(0);
+		initMenu();
 	}
 
 	public void setFrame(DotMatrixRecordFrame dmrf)
@@ -171,20 +177,6 @@ public class DotMatrixRecordPanel extends JPanel
 				{
 					dmrf.setBigSpan((Integer) sliderBigSpan.getValue());
 				}
-				refresh(true);
-			}
-			else if (e.getSource() instanceof JCheckBox)
-			{
-				if (checkboxUpperLed.isSelected()
-						&& checkboxBottomLed.isSelected())
-					dmrf.setAttachment(DMAttachment.BOTH);
-				else if (checkboxUpperLed.isSelected())
-					dmrf.setAttachment(DMAttachment.UPPER_LED);
-				else if (checkboxBottomLed.isSelected())
-					dmrf.setAttachment(DMAttachment.BOTTOM_LED);
-				else
-					dmrf.setAttachment(DMAttachment.NONE);
-
 				refresh(true);
 			}
 		}
@@ -275,8 +267,14 @@ public class DotMatrixRecordPanel extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			dmrf.setAttachment(DMAttachment.getDMAttachment(e
-					.getActionCommand()));
+			if (checkboxUpperLed.isSelected() && checkboxBottomLed.isSelected())
+				dmrf.setAttachment(DMAttachment.BOTH);
+			else if (checkboxUpperLed.isSelected())
+				dmrf.setAttachment(DMAttachment.UPPER_LED);
+			else if (checkboxBottomLed.isSelected())
+				dmrf.setAttachment(DMAttachment.BOTTOM_LED);
+			else
+				dmrf.setAttachment(DMAttachment.NONE);
 			refresh(true);
 		}
 	}
@@ -300,9 +298,6 @@ public class DotMatrixRecordPanel extends JPanel
 		sliderBigSpan.setValue(dmrf.getBigSpan());
 		sliderBigSpan.addChangeListener(cl);
 
-		checkboxUpperLed.removeChangeListener(cl);
-		checkboxBottomLed.removeChangeListener(cl);
-
 		switch (dmrf.getAttachment())
 		{
 		case BOTH:
@@ -318,57 +313,61 @@ public class DotMatrixRecordPanel extends JPanel
 			checkboxBottomLed.setSelected(false);
 			break;
 		case NONE:
+			checkboxUpperLed.setSelected(false);
+			checkboxBottomLed.setSelected(false);
 		default:
 			break;
 		}
 
-		checkboxUpperLed.addChangeListener(cl);
-		checkboxBottomLed.addChangeListener(cl);
-		
 		radiobuttonModes[dmrf.getMode().ordinal()].setSelected(true);
-
+		radiobuttonMenuItemModes[dmrf.getMode().ordinal()].setSelected(true);
+		
 		if (updateString)
 		{
 			textAreaCache.setText(dmrf.getCacheString());
 		}
 	}
 
-	public JMenuItem getMenu()
+	private void initMenu()
 	{
-		JMenu mnEdit = new JMenu("Frame");
-		mnEdit.setMnemonic(KeyEvent.VK_E);
+		menu = new JMenu("Frame");
+		menu.setMnemonic(KeyEvent.VK_E);
+
+		radiobuttonMenuItemModes = new JRadioButtonMenuItem[3];
 
 		ButtonGroup bgMode = new ButtonGroup();
+		int i = 0;
 
 		for (DMMode mode : DMMode.values())
 		{
-			JRadioButtonMenuItem button = new JRadioButtonMenuItem(
+			radiobuttonMenuItemModes[i] = new JRadioButtonMenuItem(
 					mode.toString());
-			button.setActionCommand(mode.toString());
-			button.addActionListener(new ActionListenerMode());
-			bgMode.add(button);
-
-			if (mode.equals(dmrf.getMode()))
-				button.setSelected(true);
-
-			mnEdit.add(button);
+			radiobuttonMenuItemModes[i].setActionCommand(mode.toString());
+			radiobuttonMenuItemModes[i]
+					.addActionListener(new ActionListenerMode());
+			bgMode.add(radiobuttonMenuItemModes[i]);
+			menu.add(radiobuttonMenuItemModes[i]);
+			i++;
 		}
 
-		mnEdit.addSeparator();
+		menu.addSeparator();
 
 		miInLoop = new JCheckBoxMenuItem("loop", true);
 		miInLoop.addActionListener(new ActionListenerInLoop());
-		mnEdit.add(miInLoop);
+		menu.add(miInLoop);
 
 		for (String s : MOVEMENTS)
 		{
 			JMenuItem button = new JMenuItem(s);
 			button.setActionCommand(s);
 			button.addActionListener(new ActionListenerFrameOperation());
-			mnEdit.add(button);
+			menu.add(button);
 		}
+	}
 
-		return mnEdit;
+	public JMenu getMenu()
+	{
+		return menu;
 	}
 
 	public JPanel getPanelFrameOperation()

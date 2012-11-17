@@ -23,14 +23,10 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
@@ -45,18 +41,11 @@ public class DotMatrixRecordPanel extends JPanel
 
 	private JPanel panelController;
 	private JTextArea textAreaCache;
+	private DotMatrixRecordHeaderPanel panelHeader;
 
 	private JCheckBox checkboxInLoop;
 	private JCheckBoxMenuItem miInLoop;
 
-	private JSlider sliderBrightness;
-	private JSlider sliderSmallSpan;
-	private JSlider sliderBigSpan;
-
-	private JCheckBox checkboxUpperLed;
-	private JCheckBox checkboxBottomLed;
-
-	private JRadioButton[] radiobuttonModes;
 	private JRadioButtonMenuItem[] radiobuttonMenuItemModes;
 
 	private static final String[] MOVEMENTS = new String[] { "on", "off", "X+",
@@ -64,7 +53,6 @@ public class DotMatrixRecordPanel extends JPanel
 
 	private boolean inLoop = true;
 	private static Font monoFont;
-	private CL cl;
 
 	private JMenu menu;
 
@@ -93,57 +81,16 @@ public class DotMatrixRecordPanel extends JPanel
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 		panelController.add(textAreaPane);
-
-		cl = new CL();
-
-		sliderBrightness = new JSlider(0, 255, 255);
-		sliderBrightness.setMinorTickSpacing(0x20);
-		sliderBrightness.setPaintTicks(true);
-		sliderBrightness.setSnapToTicks(true);
-		sliderBrightness.addChangeListener(cl);
-
-		sliderSmallSpan = new JSlider(0, 65535, 65535);
-		sliderSmallSpan.setMinorTickSpacing(0x1000);
-		sliderSmallSpan.setSnapToTicks(true);
-		sliderSmallSpan.setPaintTicks(true);
-		sliderSmallSpan.addChangeListener(cl);
-
-		sliderBigSpan = new JSlider(0, 65535, 0);
-		sliderBigSpan.setMinorTickSpacing(0x1000);
-		sliderBigSpan.setSnapToTicks(true);
-		sliderBigSpan.setPaintTicks(true);
-		sliderBigSpan.addChangeListener(cl);
-
-		panelController.add(sliderBrightness);
-		panelController.add(sliderSmallSpan);
-		panelController.add(sliderBigSpan);
-
-		checkboxUpperLed = new JCheckBox("U");
-		checkboxUpperLed.addActionListener(new ActionListenerAttachment());
-		panelController.add(checkboxUpperLed);
-
-		checkboxBottomLed = new JCheckBox("B");
-		checkboxBottomLed.addActionListener(new ActionListenerAttachment());
-		panelController.add(checkboxBottomLed);
-
-		radiobuttonModes = new JRadioButton[3];
-		ButtonGroup bgMode = new ButtonGroup();
-		int i = 0;
-		for (DMMode mode : DMMode.values())
-		{
-			radiobuttonModes[i] = new JRadioButton(mode.toString());
-			radiobuttonModes[i].setActionCommand(mode.toString());
-			radiobuttonModes[i].addActionListener(new ActionListenerMode());
-			bgMode.add(radiobuttonModes[i]);
-			panelController.add(radiobuttonModes[i]);
-			i++;
-		}
+		panelHeader = new DotMatrixRecordHeaderPanel(this);
+		
+		panelController.add(panelHeader);
 
 		this.add(panelController);
 
 		panelDm.requestFocusInWindow();
 
 		this.dmrf = new DotMatrixRecordFrame(0);
+		panelHeader.setDotMatrixRecordFrame(this.dmrf);
 		initMenu();
 	}
 
@@ -151,35 +98,12 @@ public class DotMatrixRecordPanel extends JPanel
 	{
 		this.dmrf = new DotMatrixRecordFrame(dmrf.getIndex());
 		this.dmrf.setData(dmrf.getData());
+		panelHeader.setDotMatrixRecordFrame(this.dmrf);
 	}
 
 	public byte[] getData()
 	{
 		return this.dmrf.getData();
-	}
-
-	private class CL implements ChangeListener
-	{
-		@Override
-		public void stateChanged(ChangeEvent e)
-		{
-			if (e.getSource() instanceof JSlider)
-			{
-				if (e.getSource().equals(sliderBrightness))
-				{
-					dmrf.setBrightness((Integer) sliderBrightness.getValue());
-				}
-				else if (e.getSource().equals(sliderSmallSpan))
-				{
-					dmrf.setSmallSpan((Integer) sliderSmallSpan.getValue());
-				}
-				else if (e.getSource().equals(sliderBigSpan))
-				{
-					dmrf.setBigSpan((Integer) sliderBigSpan.getValue());
-				}
-				refresh(true);
-			}
-		}
 	}
 
 	private class MouseListenerPanelDotMatrix implements MouseListener
@@ -262,23 +186,6 @@ public class DotMatrixRecordPanel extends JPanel
 		}
 	}
 
-	private class ActionListenerAttachment implements ActionListener
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			if (checkboxUpperLed.isSelected() && checkboxBottomLed.isSelected())
-				dmrf.setAttachment(DMAttachment.BOTH);
-			else if (checkboxUpperLed.isSelected())
-				dmrf.setAttachment(DMAttachment.UPPER_LED);
-			else if (checkboxBottomLed.isSelected())
-				dmrf.setAttachment(DMAttachment.BOTTOM_LED);
-			else
-				dmrf.setAttachment(DMAttachment.NONE);
-			refresh(true);
-		}
-	}
-
 	public void refresh(boolean updateString)
 	{
 		panelDm.setMode(dmrf.getMode());
@@ -286,41 +193,8 @@ public class DotMatrixRecordPanel extends JPanel
 		panelDm.update();
 		panelDm.repaint();
 
-		sliderBrightness.removeChangeListener(cl);
-		sliderBrightness.setValue(dmrf.getBrightness());
-		sliderBrightness.addChangeListener(cl);
-
-		sliderSmallSpan.removeChangeListener(cl);
-		sliderSmallSpan.setValue(dmrf.getSmallSpan());
-		sliderSmallSpan.addChangeListener(cl);
-
-		sliderBigSpan.removeChangeListener(cl);
-		sliderBigSpan.setValue(dmrf.getBigSpan());
-		sliderBigSpan.addChangeListener(cl);
-
-		switch (dmrf.getAttachment())
-		{
-		case BOTH:
-			checkboxUpperLed.setSelected(true);
-			checkboxBottomLed.setSelected(true);
-			break;
-		case BOTTOM_LED:
-			checkboxUpperLed.setSelected(false);
-			checkboxBottomLed.setSelected(true);
-			break;
-		case UPPER_LED:
-			checkboxUpperLed.setSelected(true);
-			checkboxBottomLed.setSelected(false);
-			break;
-		case NONE:
-			checkboxUpperLed.setSelected(false);
-			checkboxBottomLed.setSelected(false);
-		default:
-			break;
-		}
-
-		radiobuttonModes[dmrf.getMode().ordinal()].setSelected(true);
 		radiobuttonMenuItemModes[dmrf.getMode().ordinal()].setSelected(true);
+		panelHeader.refresh();		
 		
 		if (updateString)
 		{

@@ -90,20 +90,23 @@ public class DotMatrixRecordPanel extends JPanel
 		panelDm.requestFocusInWindow();
 
 		this.dmrf = new DotMatrixRecordFrame(0);
-		panelHeader.setDotMatrixRecordFrame(this.dmrf);
 		initMenu();
 	}
 
 	public void setFrame(DotMatrixRecordFrame dmrf)
 	{
 		this.dmrf = new DotMatrixRecordFrame(dmrf.getIndex());
-		this.dmrf.setData(dmrf.getData());
-		panelHeader.setDotMatrixRecordFrame(this.dmrf);
+		this.dmrf.setData(dmrf.getData());		
 	}
 
 	public byte[] getData()
 	{
 		return this.dmrf.getData();
+	}
+	
+	public DotMatrixRecordFrame getRecordFrame()
+	{
+		return this.dmrf;
 	}
 
 	private class MouseListenerPanelDotMatrix implements MouseListener

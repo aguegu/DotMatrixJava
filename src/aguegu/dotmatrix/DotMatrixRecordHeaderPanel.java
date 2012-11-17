@@ -21,7 +21,6 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 	private static final long serialVersionUID = 7530602456593370095L;
 
 	private DotMatrixRecordPanel parent;
-	private DotMatrixRecordFrame dmrf;
 
 	private JSlider sliderBrightness;
 	private JSlider sliderSmallSpan;
@@ -119,15 +118,15 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 			{
 				if (e.getSource().equals(sliderBrightness))
 				{
-					dmrf.setBrightness((Integer) sliderBrightness.getValue());
+					parent.getRecordFrame().setBrightness((Integer) sliderBrightness.getValue());
 				}
 				else if (e.getSource().equals(sliderSmallSpan))
 				{
-					dmrf.setSmallSpan((Integer) sliderSmallSpan.getValue());
+					parent.getRecordFrame().setSmallSpan((Integer) sliderSmallSpan.getValue());
 				}
 				else if (e.getSource().equals(sliderBigSpan))
 				{
-					dmrf.setBigSpan((Integer) sliderBigSpan.getValue());
+					parent.getRecordFrame().setBigSpan((Integer) sliderBigSpan.getValue());
 				}
 
 				parent.refresh(true);
@@ -141,20 +140,15 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		public void actionPerformed(ActionEvent e)
 		{
 			if (checkboxUpperLed.isSelected() && checkboxBottomLed.isSelected())
-				dmrf.setAttachment(DMAttachment.BOTH);
+				parent.getRecordFrame().setAttachment(DMAttachment.BOTH);
 			else if (checkboxUpperLed.isSelected())
-				dmrf.setAttachment(DMAttachment.UPPER_LED);
+				parent.getRecordFrame().setAttachment(DMAttachment.UPPER_LED);
 			else if (checkboxBottomLed.isSelected())
-				dmrf.setAttachment(DMAttachment.BOTTOM_LED);
+				parent.getRecordFrame().setAttachment(DMAttachment.BOTTOM_LED);
 			else
-				dmrf.setAttachment(DMAttachment.NONE);
+				parent.getRecordFrame().setAttachment(DMAttachment.NONE);
 			parent.refresh(true);
 		}
-	}
-
-	public void setDotMatrixRecordFrame(DotMatrixRecordFrame dmrf)
-	{
-		this.dmrf = dmrf;
 	}
 
 	private class ActionListenerMode implements ActionListener
@@ -162,7 +156,7 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			dmrf.setMode(DMMode.getMode(e.getActionCommand()));
+			parent.getRecordFrame().setMode(DMMode.getMode(e.getActionCommand()));
 			parent.refresh(true);
 		}
 	}
@@ -170,18 +164,18 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 	public void refresh()
 	{
 		sliderBrightness.removeChangeListener(cl);
-		sliderBrightness.setValue(dmrf.getBrightness());
+		sliderBrightness.setValue(parent.getRecordFrame().getBrightness());
 		sliderBrightness.addChangeListener(cl);
 
 		sliderSmallSpan.removeChangeListener(cl);
-		sliderSmallSpan.setValue(dmrf.getSmallSpan());
+		sliderSmallSpan.setValue(parent.getRecordFrame().getSmallSpan());
 		sliderSmallSpan.addChangeListener(cl);
 
 		sliderBigSpan.removeChangeListener(cl);
-		sliderBigSpan.setValue(dmrf.getBigSpan());
+		sliderBigSpan.setValue(parent.getRecordFrame().getBigSpan());
 		sliderBigSpan.addChangeListener(cl);
 
-		switch (dmrf.getAttachment())
+		switch (parent.getRecordFrame().getAttachment())
 		{
 		case BOTH:
 			checkboxUpperLed.setSelected(true);
@@ -202,7 +196,7 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 			break;
 		}
 
-		radiobuttonModes[dmrf.getMode().ordinal()].setSelected(true);
+		radiobuttonModes[parent.getRecordFrame().getMode().ordinal()].setSelected(true);
 	}
 
 }

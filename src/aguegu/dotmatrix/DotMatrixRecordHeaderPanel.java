@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
@@ -40,7 +41,6 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		this.setBorder(new EmptyBorder(new Insets(0, 4, 0, 0)));
 		
 		JPanel panelMode = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		//panelMode.add(new JLabel("Mode:"));
 		
 		radiobuttonModes = new JRadioButton[3];
 		ButtonGroup bgMode = new ButtonGroup();
@@ -71,6 +71,7 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		JPanel panelModeAndAttachment = new JPanel();
 		panelModeAndAttachment.setLayout(new BoxLayout(panelModeAndAttachment,
 				BoxLayout.Y_AXIS));
+		panelModeAndAttachment.add(new JLabel("Mode:"));
 		panelModeAndAttachment.add(panelMode);
 		panelModeAndAttachment.add(panelAttachment);
 
@@ -100,7 +101,9 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 
 		JPanel panelSliders = new JPanel();
 		panelSliders.setLayout(new BoxLayout(panelSliders, BoxLayout.Y_AXIS));
+		panelSliders.add(new JLabel("Brightness:"));
 		panelSliders.add(sliderBrightness);
+		panelSliders.add(new JLabel("Time Span:"));
 		panelSliders.add(sliderSmallSpan);
 		panelSliders.add(sliderBigSpan);
 

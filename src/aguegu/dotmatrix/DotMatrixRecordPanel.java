@@ -49,13 +49,14 @@ public class DotMatrixRecordPanel extends JPanel
 
 	private JRadioButtonMenuItem[] radiobuttonMenuItemModes;
 
-	private static final String[] MOVEMENTS = new String[] { "on", "off", "X+",
-			"X-", "Y+", "Y-", "Z+", "Z-" };
+	private static final String[] FRAME_OPERATIONS = new String[] { "on",
+			"off", "X+", "X-", "Y+", "Y-", "Z+", "Z-" };
 
 	private boolean inLoop = true;
 	private static Font monoFont;
 
 	private JMenu menu;
+	private JPanel panelFrameOperation;
 
 	public DotMatrixRecordPanel()
 	{
@@ -92,6 +93,7 @@ public class DotMatrixRecordPanel extends JPanel
 
 		this.dmrf = new DotMatrixRecordFrame(0);
 		initMenu();
+		initFrameOperationPanel();
 	}
 
 	public void setFrame(DotMatrixRecordFrame dmrf)
@@ -234,7 +236,7 @@ public class DotMatrixRecordPanel extends JPanel
 		miInLoop.addActionListener(new ActionListenerInLoop());
 		menu.add(miInLoop);
 
-		for (String s : MOVEMENTS)
+		for (String s : FRAME_OPERATIONS)
 		{
 			JMenuItem button = new JMenuItem(s);
 			button.setActionCommand(s);
@@ -248,13 +250,13 @@ public class DotMatrixRecordPanel extends JPanel
 		return menu;
 	}
 
-	public JPanel getPanelFrameOperation()
+	public void initFrameOperationPanel()
 	{
-		JPanel panelMove = new JPanel();
-		panelMove.setLayout(new BoxLayout(panelMove, BoxLayout.Y_AXIS));
-		panelMove.setBorder(BorderFactory.createEmptyBorder(13, 5, 13, 5));
+		panelFrameOperation = new JPanel();
+		panelFrameOperation.setLayout(new BoxLayout(panelFrameOperation, BoxLayout.Y_AXIS));
+		panelFrameOperation.setBorder(BorderFactory.createEmptyBorder(13, 5, 13, 5));
 
-		for (String s : MOVEMENTS)
+		for (String s : FRAME_OPERATIONS)
 		{
 			JButton button = new JButton();
 
@@ -265,17 +267,20 @@ public class DotMatrixRecordPanel extends JPanel
 					s.concat(".png"))));
 
 			button.setMargin(new Insets(1, 1, 1, 1));
-			panelMove.add(button);
-			panelMove.add(Box.createRigidArea(new Dimension(0, 2)));
+			panelFrameOperation.add(button);
+			panelFrameOperation.add(Box.createRigidArea(new Dimension(0, 2)));
 		}
 
 		checkboxInLoop = new JCheckBox("", inLoop);
 		checkboxInLoop.addActionListener(new ActionListenerInLoop());
-		panelMove.add(checkboxInLoop);
-
-		return panelMove;
+		panelFrameOperation.add(checkboxInLoop);		
 	}
 
+	public JPanel getFrameOperationPanel()
+	{
+		return panelFrameOperation;
+	}
+	
 	private class ActionListenerFrameOperation implements ActionListener
 	{
 		@Override

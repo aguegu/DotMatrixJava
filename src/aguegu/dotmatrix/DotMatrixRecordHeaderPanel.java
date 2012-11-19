@@ -1,6 +1,5 @@
 package aguegu.dotmatrix;
 
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -9,7 +8,6 @@ import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
@@ -81,7 +79,6 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		sliderBrightness = new JSlider(0, 255, 255);
 		sliderBrightness.setMinorTickSpacing(0x20);
 		sliderBrightness.setMajorTickSpacing(0x40);
-		//sliderBrightness.setPaintLabels(true);
 		sliderBrightness.setPaintTicks(true);
 		sliderBrightness.setSnapToTicks(true);
 		sliderBrightness.addChangeListener(cl);

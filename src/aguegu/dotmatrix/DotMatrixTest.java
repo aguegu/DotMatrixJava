@@ -70,7 +70,7 @@ public class DotMatrixTest extends JFrame
 
 		this.getContentPane().add(BorderLayout.CENTER, panelRecord);
 		this.getContentPane().add(BorderLayout.WEST,
-				panelRecord.getPanelFrameOperation());
+				panelRecord.getFrameOperationPanel());
 
 		labelStatus = new JLabel(message);
 		labelStatus.setBorder(BorderFactory
@@ -96,7 +96,7 @@ public class DotMatrixTest extends JFrame
 
 		begin();
 		refreshFrame();
-		
+
 		this.setLocation(100, 100);
 		this.pack();
 		this.setResizable(false);

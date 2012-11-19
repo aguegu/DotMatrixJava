@@ -47,7 +47,9 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		int i = 0;
 		for (DMMode mode : DMMode.values())
 		{
-			radiobuttonModes[i] = new JRadioButton(mode.toString());
+			radiobuttonModes[i] = new JRadioButton("<html><img src=file:"
+					+ getClass().getResource(mode.toString().concat(".png")).getPath()
+					+ "/></html>");
 			radiobuttonModes[i].setActionCommand(mode.toString());
 			radiobuttonModes[i].addActionListener(new ActionListenerMode());
 			bgMode.add(radiobuttonModes[i]);
@@ -104,9 +106,6 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		panelSpan.setAlignmentX(LEFT_ALIGNMENT);
 
 		this.add(panelSpan);
-
-		// System.out.println(sliderBrightness.getPreferredSize());
-
 	}
 
 	private class CL implements ChangeListener
@@ -118,15 +117,18 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 			{
 				if (e.getSource().equals(sliderBrightness))
 				{
-					parent.getRecordFrame().setBrightness((Integer) sliderBrightness.getValue());
+					parent.getRecordFrame().setBrightness(
+							(Integer) sliderBrightness.getValue());
 				}
 				else if (e.getSource().equals(sliderSmallSpan))
 				{
-					parent.getRecordFrame().setSmallSpan((Integer) sliderSmallSpan.getValue());
+					parent.getRecordFrame().setSmallSpan(
+							(Integer) sliderSmallSpan.getValue());
 				}
 				else if (e.getSource().equals(sliderBigSpan))
 				{
-					parent.getRecordFrame().setBigSpan((Integer) sliderBigSpan.getValue());
+					parent.getRecordFrame().setBigSpan(
+							(Integer) sliderBigSpan.getValue());
 				}
 
 				parent.refresh(true);
@@ -156,7 +158,8 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			parent.getRecordFrame().setMode(DMMode.getMode(e.getActionCommand()));
+			parent.getRecordFrame().setMode(
+					DMMode.getMode(e.getActionCommand()));
 			parent.refresh(true);
 		}
 	}
@@ -196,7 +199,8 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 			break;
 		}
 
-		radiobuttonModes[parent.getRecordFrame().getMode().ordinal()].setSelected(true);
+		radiobuttonModes[parent.getRecordFrame().getMode().ordinal()]
+				.setSelected(true);
 	}
 
 }

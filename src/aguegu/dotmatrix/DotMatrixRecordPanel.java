@@ -257,19 +257,19 @@ public class DotMatrixRecordPanel extends JPanel
 		for (String s : MOVEMENTS)
 		{
 			JButton button = new JButton();
-			
+
 			button.setActionCommand(s);
 			button.addActionListener(new ActionListenerFrameOperation());
-			
+
 			button.setIcon(new ImageIcon(getClass().getResource(
 					s.concat(".png"))));
-			
-			button.setMargin(new Insets(1,1,1,1));
+
+			button.setMargin(new Insets(1, 1, 1, 1));
 			panelMove.add(button);
 			panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
 		}
 
-		checkboxInLoop = new JCheckBox("lp", inLoop);
+		checkboxInLoop = new JCheckBox("", inLoop);
 		checkboxInLoop.addActionListener(new ActionListenerInLoop());
 		panelMove.add(checkboxInLoop);
 

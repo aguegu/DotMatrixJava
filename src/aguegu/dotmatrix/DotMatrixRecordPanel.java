@@ -266,7 +266,7 @@ public class DotMatrixRecordPanel extends JPanel
 
 			button.setMargin(new Insets(1, 1, 1, 1));
 			panelMove.add(button);
-			panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
+			panelMove.add(Box.createRigidArea(new Dimension(0, 2)));
 		}
 
 		checkboxInLoop = new JCheckBox("", inLoop);

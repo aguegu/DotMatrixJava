@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
@@ -37,19 +38,20 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 	{
 		parent = dmrp;
 
-		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		this.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.setBorder(new EmptyBorder(new Insets(0, 4, 0, 0)));
-		// this.setAlignmentX(LEFT_ALIGNMENT);
-
+		
 		JPanel panelMode = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		//panelMode.add(new JLabel("Mode:"));
+		
 		radiobuttonModes = new JRadioButton[3];
 		ButtonGroup bgMode = new ButtonGroup();
 		int i = 0;
 		for (DMMode mode : DMMode.values())
 		{
 			radiobuttonModes[i] = new JRadioButton("<html><img src=file:"
-					+ getClass().getResource(mode.toString().concat(".png")).getPath()
-					+ "/></html>");
+					+ getClass().getResource(mode.toString().concat(".png"))
+							.getPath() + "/></html>");
 			radiobuttonModes[i].setActionCommand(mode.toString());
 			radiobuttonModes[i].addActionListener(new ActionListenerMode());
 			bgMode.add(radiobuttonModes[i]);
@@ -57,7 +59,6 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 			i++;
 		}
 		panelMode.setAlignmentX(LEFT_ALIGNMENT);
-		this.add(panelMode);
 
 		JPanel panelAttachment = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		checkboxUpperLed = new JCheckBox("Upper Led");
@@ -67,45 +68,47 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		checkboxBottomLed = new JCheckBox("Bottom Led");
 		checkboxBottomLed.addActionListener(new ActionListenerAttachment());
 		panelAttachment.add(checkboxBottomLed);
-
 		panelAttachment.setAlignmentX(LEFT_ALIGNMENT);
-		this.add(panelAttachment);
+		
+		JPanel panelModeAndAttachment = new JPanel();
+		panelModeAndAttachment.setLayout(new BoxLayout(panelModeAndAttachment,
+				BoxLayout.Y_AXIS));
+		panelModeAndAttachment.add(panelMode);
+		panelModeAndAttachment.add(panelAttachment);
 
 		cl = new CL();
 
 		sliderBrightness = new JSlider(0, 255, 255);
 		sliderBrightness.setMinorTickSpacing(0x20);
-		sliderBrightness.setMaximumSize(new Dimension(180, 0));
+		sliderBrightness.setMajorTickSpacing(0x40);
+		//sliderBrightness.setPaintLabels(true);
 		sliderBrightness.setPaintTicks(true);
 		sliderBrightness.setSnapToTicks(true);
 		sliderBrightness.addChangeListener(cl);
-
-		JPanel panelBrightness = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panelBrightness.add(sliderBrightness);
-		panelBrightness.setAlignmentX(LEFT_ALIGNMENT);
-		this.add(panelBrightness);
+		sliderBrightness.setAlignmentX(LEFT_ALIGNMENT);
 
 		sliderSmallSpan = new JSlider(0, 65535, 65535);
 		sliderSmallSpan.setMinorTickSpacing(0x1000);
-		sliderSmallSpan.setMaximumSize(new Dimension(180, 0));
 		sliderSmallSpan.setSnapToTicks(true);
 		sliderSmallSpan.setPaintTicks(true);
 		sliderSmallSpan.addChangeListener(cl);
+		sliderSmallSpan.setAlignmentX(LEFT_ALIGNMENT);
 
 		sliderBigSpan = new JSlider(0, 65535, 0);
 		sliderBigSpan.setMinorTickSpacing(0x1000);
-		sliderBigSpan.setMaximumSize(new Dimension(180, 0));
 		sliderBigSpan.setSnapToTicks(true);
 		sliderBigSpan.setPaintTicks(true);
 		sliderBigSpan.addChangeListener(cl);
+		sliderBigSpan.setAlignmentX(LEFT_ALIGNMENT);
 
-		JPanel panelSpan = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel panelSliders = new JPanel();
+		panelSliders.setLayout(new BoxLayout(panelSliders, BoxLayout.Y_AXIS));
+		panelSliders.add(sliderBrightness);
+		panelSliders.add(sliderSmallSpan);
+		panelSliders.add(sliderBigSpan);
 
-		panelSpan.add(sliderSmallSpan);
-		panelSpan.add(sliderBigSpan);
-		panelSpan.setAlignmentX(LEFT_ALIGNMENT);
-
-		this.add(panelSpan);
+		this.add(panelModeAndAttachment);
+		this.add(panelSliders);
 	}
 
 	private class CL implements ChangeListener

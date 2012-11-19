@@ -3,6 +3,7 @@ package aguegu.dotmatrix;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -82,7 +83,7 @@ public class DotMatrixRecordPanel extends JPanel
 
 		panelController.add(textAreaPane);
 		panelHeader = new DotMatrixRecordHeaderPanel(this);
-		
+
 		panelController.add(panelHeader);
 
 		this.add(panelController);
@@ -96,14 +97,14 @@ public class DotMatrixRecordPanel extends JPanel
 	public void setFrame(DotMatrixRecordFrame dmrf)
 	{
 		this.dmrf = new DotMatrixRecordFrame(dmrf.getIndex());
-		this.dmrf.setData(dmrf.getData());		
+		this.dmrf.setData(dmrf.getData());
 	}
 
 	public byte[] getData()
 	{
 		return this.dmrf.getData();
 	}
-	
+
 	public DotMatrixRecordFrame getRecordFrame()
 	{
 		return this.dmrf;
@@ -255,23 +256,20 @@ public class DotMatrixRecordPanel extends JPanel
 
 		for (String s : MOVEMENTS)
 		{
-			JButton button = new JButton(s);
-			button.setFont(monoFont);
+			JButton button = new JButton();
+			
 			button.setActionCommand(s);
 			button.addActionListener(new ActionListenerFrameOperation());
-
-			if (s.equals("on") || s.equals("off"))
-			{
-				button.setText(null);
-				button.setIcon(new ImageIcon(getClass().getResource(
-						s.concat(".png"))));
-			}
-
+			
+			button.setIcon(new ImageIcon(getClass().getResource(
+					s.concat(".png"))));
+			
+			button.setMargin(new Insets(1,1,1,1));
 			panelMove.add(button);
 			panelMove.add(Box.createRigidArea(new Dimension(0, 5)));
 		}
 
-		checkboxInLoop = new JCheckBox("loop", inLoop);
+		checkboxInLoop = new JCheckBox("lp", inLoop);
 		checkboxInLoop.addActionListener(new ActionListenerInLoop());
 		panelMove.add(checkboxInLoop);
 

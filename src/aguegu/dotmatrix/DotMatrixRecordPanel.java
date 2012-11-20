@@ -50,7 +50,7 @@ public class DotMatrixRecordPanel extends JPanel
 	private JRadioButtonMenuItem[] radiobuttonMenuItemModes;
 
 	private static final String[] FRAME_OPERATIONS = new String[] { "on",
-			"off", "X+", "X-", "Y+", "Y-", "Z+", "Z-" };
+			"off", "X+", "X-", "Y+", "Y-", "Z+", "Z-", "4C", "3C", "2C", "1C", "1A", "2A", "3A", "4A", "R" };
 
 	private boolean inLoop = true;
 	private static Font monoFont;

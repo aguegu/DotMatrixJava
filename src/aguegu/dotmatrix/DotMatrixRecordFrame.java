@@ -18,6 +18,8 @@ public class DotMatrixRecordFrame
 		mode = DMMode.XYZ;
 		brightness = (byte) 0xff;
 		attachment = DMAttachment.NONE;
+		smallSpan = 0x0000;
+		bigSpan = 0x00c0;
 	}
 
 	public void setData(byte[] data)

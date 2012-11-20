@@ -92,8 +92,8 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		sliderSmallSpan.addChangeListener(cl);
 		sliderSmallSpan.setAlignmentX(LEFT_ALIGNMENT);
 
-		sliderBigSpan = new JSlider(0, 65535, 0);
-		sliderBigSpan.setMinorTickSpacing(0x1000);
+		sliderBigSpan = new JSlider(0, 0x400, 0);
+		sliderBigSpan.setMinorTickSpacing(0x10);
 		sliderBigSpan.setSnapToTicks(true);
 		sliderBigSpan.setPaintTicks(true);
 		sliderBigSpan.addChangeListener(cl);
@@ -138,7 +138,7 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 			}
 		}
 	}
-
+ 
 	private class ActionListenerAttachment implements ActionListener
 	{
 		@Override

@@ -55,6 +55,12 @@ public class DotMatrix
 		}
 	}
 
+	public void reverse()
+	{
+		for (int i = 0; i < dot.length; i++)  
+			dot[i] = !dot[i];
+	}
+
 	public byte[] getCache()
 	{
 		byte[] cache = new byte[CACHE_LENGTH];
@@ -86,7 +92,7 @@ public class DotMatrix
 	{
 		int i = ((int) c + 256) % 256;
 		return i;
-	}	
+	}
 
 	public String cacheString()
 	{

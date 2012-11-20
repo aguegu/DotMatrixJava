@@ -43,7 +43,7 @@ public class DotMatrixTest extends JFrame
 	private static final String[] FILE_OPERATIONS_COMMAND = { "new", "open",
 			"save", "saveAs", "exit" };
 	private static final String[] RECORD_OPERACTIONS = new String[] { "Append",
-			"Insert", "Update", "Delete" };
+			"Insert", "Update", "Delete", "Set Span" };
 
 	private static final String PROGRAME_NAME = new String("dot-matrix (Java)");
 

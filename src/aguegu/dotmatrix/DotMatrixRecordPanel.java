@@ -13,8 +13,6 @@ import java.awt.event.MouseListener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -50,7 +48,8 @@ public class DotMatrixRecordPanel extends JPanel
 	private JRadioButtonMenuItem[] radiobuttonMenuItemModes;
 
 	private static final String[] FRAME_OPERATIONS = new String[] { "on",
-			"off", "X+", "X-", "Y+", "Y-", "Z+", "Z-", "4C", "3C", "2C", "1C", "1A", "2A", "3A", "4A", "R" };
+			"off", "X+", "X-", "Y+", "Y-", "Z+", "Z-", "4C", "4A", "3C", "3A",
+			"2C", "2A", "1C", "1A", "R" };
 
 	private boolean inLoop = true;
 	private static Font monoFont;
@@ -253,8 +252,10 @@ public class DotMatrixRecordPanel extends JPanel
 	public void initFrameOperationPanel()
 	{
 		panelFrameOperation = new JPanel();
-		panelFrameOperation.setLayout(new BoxLayout(panelFrameOperation, BoxLayout.Y_AXIS));
-		panelFrameOperation.setBorder(BorderFactory.createEmptyBorder(13, 5, 13, 5));
+		panelFrameOperation.setPreferredSize(new Dimension(64, 0));
+		panelFrameOperation.setLayout(new FlowLayout(FlowLayout.LEFT));
+		// panelFrameOperation.setBorder(BorderFactory.createEmptyBorder(13, 5,
+		// 13, 5));
 
 		for (String s : FRAME_OPERATIONS)
 		{
@@ -267,20 +268,21 @@ public class DotMatrixRecordPanel extends JPanel
 					s.concat(".png"))));
 
 			button.setMargin(new Insets(1, 1, 1, 1));
+
 			panelFrameOperation.add(button);
-			panelFrameOperation.add(Box.createRigidArea(new Dimension(0, 2)));
 		}
 
 		checkboxInLoop = new JCheckBox("", inLoop);
 		checkboxInLoop.addActionListener(new ActionListenerInLoop());
-		panelFrameOperation.add(checkboxInLoop);		
+		panelFrameOperation.add(checkboxInLoop);
+
 	}
 
 	public JPanel getFrameOperationPanel()
 	{
 		return panelFrameOperation;
 	}
-	
+
 	private class ActionListenerFrameOperation implements ActionListener
 	{
 		@Override
@@ -314,6 +316,9 @@ public class DotMatrixRecordPanel extends JPanel
 				break;
 			case "Z-":
 				dm.move(DotMatrix.Direction.Z_NEGA, recycle);
+				break;
+			case "R":
+				dm.reverse();
 				break;
 			}
 			refresh(true);

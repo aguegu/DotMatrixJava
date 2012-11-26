@@ -151,9 +151,9 @@ public class DotMatrixRecordPanel extends JPanel
 
 			String s = textAreaCache.getText();
 
-			if (s.matches("(0[x|X][a-f0-9A-Z]{2},[\\s]+){72}"))
+			if (s.matches("(0[x|X][\\p{XDigit}]{2},[\\s]+){72}"))
 			{
-				Pattern pattern = Pattern.compile("0[x|X][a-f0-9A-Z]{2}");
+				Pattern pattern = Pattern.compile("0[x|X][\\p{XDigit}]{2}");
 				Matcher matcher = pattern.matcher(s);
 
 				byte[] data = new byte[72];

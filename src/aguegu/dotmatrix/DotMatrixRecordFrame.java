@@ -7,8 +7,8 @@ public class DotMatrixRecordFrame
 	private int brightness;
 	private DMAttachment attachment;
 	private int index;
-	private int smallSpan;
-	private int bigSpan;
+	private int minorSpan;
+	private int majorSpan;
 
 	public DotMatrixRecordFrame(int index)
 	{
@@ -18,8 +18,8 @@ public class DotMatrixRecordFrame
 		mode = DMMode.XYZ;
 		brightness = (byte) 0xff;
 		attachment = DMAttachment.NONE;
-		smallSpan = 0x0000;
-		bigSpan = 0x00c0;
+		minorSpan = 0x0000;
+		majorSpan = 0x00c0;
 	}
 
 	public void setData(byte[] data)
@@ -27,9 +27,9 @@ public class DotMatrixRecordFrame
 		mode = DMMode.getMode(data[1]);
 		brightness = DotMatrix.byteToInt(data[2]);
 		attachment = DMAttachment.getDMAttachment(data[3]);
-		smallSpan = (DotMatrix.byteToInt(data[4]) << 8)
+		minorSpan = (DotMatrix.byteToInt(data[4]) << 8)
 				| DotMatrix.byteToInt(data[5]);
-		bigSpan = (DotMatrix.byteToInt(data[6]) << 8)
+		majorSpan = (DotMatrix.byteToInt(data[6]) << 8)
 				| DotMatrix.byteToInt(data[7]);
 
 		dm.setCache(data, 8);
@@ -75,30 +75,30 @@ public class DotMatrixRecordFrame
 	{
 		this.attachment = attachment;
 	}
-	
+
 	public DMAttachment getAttachment()
 	{
 		return this.attachment;
 	}
 
-	public void setSmallSpan(int smallSpan)
+	public void setMinorSpan(int minorSpan)
 	{
-		this.smallSpan = smallSpan % 65536;
+		this.minorSpan = minorSpan % 65536;
 	}
 
-	public int getSmallSpan()
+	public int getMinorSpan()
 	{
-		return smallSpan;
+		return minorSpan;
 	}
 
-	public void setBigSpan(int bigSpan)
+	public void setMajorSpan(int majorSpan)
 	{
-		this.bigSpan = bigSpan % 65536;
+		this.majorSpan = majorSpan % 65536;
 	}
 
-	public int getBigSpan()
+	public int getMajorSpan()
 	{
-		return bigSpan;
+		return majorSpan;
 	}
 
 	public byte[] getData()
@@ -109,10 +109,10 @@ public class DotMatrixRecordFrame
 		data[1] = mode.value();
 		data[2] = (byte) brightness;
 		data[3] = attachment.value();
-		data[4] = (byte) (smallSpan >> 8);
-		data[5] = (byte) (smallSpan & 0xff);
-		data[6] = (byte) (bigSpan >> 8);
-		data[7] = (byte) (bigSpan & 0xff);
+		data[4] = (byte) (minorSpan >> 8);
+		data[5] = (byte) (minorSpan & 0xff);
+		data[6] = (byte) (majorSpan >> 8);
+		data[7] = (byte) (majorSpan & 0xff);
 		System.arraycopy(dm.getCache(), 0, data, 8, DotMatrix.CACHE_LENGTH);
 
 		return data;

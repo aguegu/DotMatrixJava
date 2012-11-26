@@ -54,7 +54,7 @@ public class DotMatrixRecord
 			FileInputStream fis = new FileInputStream(file);
 			DataInputStream dis = new DataInputStream(fis);
 
-			record.clear();			
+			record.clear();
 			int index = 0;
 			byte[] val = new byte[72];
 
@@ -152,6 +152,38 @@ public class DotMatrixRecord
 	public void clear()
 	{
 		record.clear();
+	}
+
+	public void setBrightness(int brightness)
+	{
+		for (DotMatrixRecordFrame dmrf : record)
+		{
+			dmrf.setBrightness(brightness);
+		}
+	}
+
+	public void setMode(DMMode mode)
+	{
+		for (DotMatrixRecordFrame dmrf : record)
+		{
+			dmrf.setMode(mode);
+		}
+	}
+
+	public void setMajorSpan(int majorSpan)
+	{
+		for (DotMatrixRecordFrame dmrf : record)
+		{
+			dmrf.setMajorSpan(majorSpan);
+		}
+	}
+	
+	public void setMinorSpan(int minorSpan)
+	{
+		for (DotMatrixRecordFrame dmrf : record)
+		{
+			dmrf.setMinorSpan(minorSpan);
+		}
 	}
 
 	private void sortRecord()

@@ -39,9 +39,9 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 
 		this.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.setBorder(new EmptyBorder(new Insets(0, 4, 0, 0)));
-		
+
 		JPanel panelMode = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		
+
 		radiobuttonModes = new JRadioButton[3];
 		ButtonGroup bgMode = new ButtonGroup();
 		int i = 0;
@@ -67,7 +67,7 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		checkboxBottomLed.addActionListener(new ActionListenerAttachment());
 		panelAttachment.add(checkboxBottomLed);
 		panelAttachment.setAlignmentX(LEFT_ALIGNMENT);
-		
+
 		JPanel panelModeAndAttachment = new JPanel();
 		panelModeAndAttachment.setLayout(new BoxLayout(panelModeAndAttachment,
 				BoxLayout.Y_AXIS));
@@ -125,12 +125,12 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 				}
 				else if (e.getSource().equals(sliderSmallSpan))
 				{
-					parent.getRecordFrame().setSmallSpan(
+					parent.getRecordFrame().setMinorSpan(
 							(Integer) sliderSmallSpan.getValue());
 				}
 				else if (e.getSource().equals(sliderBigSpan))
 				{
-					parent.getRecordFrame().setBigSpan(
+					parent.getRecordFrame().setMajorSpan(
 							(Integer) sliderBigSpan.getValue());
 				}
 
@@ -138,7 +138,7 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 			}
 		}
 	}
- 
+
 	private class ActionListenerAttachment implements ActionListener
 	{
 		@Override
@@ -174,11 +174,11 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		sliderBrightness.addChangeListener(cl);
 
 		sliderSmallSpan.removeChangeListener(cl);
-		sliderSmallSpan.setValue(parent.getRecordFrame().getSmallSpan());
+		sliderSmallSpan.setValue(parent.getRecordFrame().getMinorSpan());
 		sliderSmallSpan.addChangeListener(cl);
 
 		sliderBigSpan.removeChangeListener(cl);
-		sliderBigSpan.setValue(parent.getRecordFrame().getBigSpan());
+		sliderBigSpan.setValue(parent.getRecordFrame().getMajorSpan());
 		sliderBigSpan.addChangeListener(cl);
 
 		switch (parent.getRecordFrame().getAttachment())

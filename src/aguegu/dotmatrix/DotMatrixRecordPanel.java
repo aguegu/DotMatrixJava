@@ -48,8 +48,8 @@ public class DotMatrixRecordPanel extends JPanel
 	private JRadioButtonMenuItem[] radiobuttonMenuItemModes;
 
 	private static final String[] FRAME_OPERATIONS = new String[] { "on",
-			"off", "X+", "X-", "Y+", "Y-", "Z+", "Z-", "4C", "4A", "3C", "3A",
-			"2C", "2A", "1C", "1A", "R" };
+			"off", "X+", "X-", "Y+", "Y-", "Z+", "Z-", "3C", "3A", "2C", "2A",
+			"1C", "1A", "0C", "0A", "R" };
 
 	private boolean inLoop = true;
 	private static Font monoFont;
@@ -319,6 +319,30 @@ public class DotMatrixRecordPanel extends JPanel
 				break;
 			case "R":
 				dm.reverse();
+				break;
+			case "3C":
+				dm.rotate(3, true, recycle);
+				break;
+			case "2C":
+				dm.rotate(2, true, recycle);
+				break;
+			case "1C":
+				dm.rotate(1, true, recycle);
+				break;
+			case "0C":
+				dm.rotate(0, true, recycle);
+				break;
+			case "3A":
+				dm.rotate(3, false, recycle);
+				break;
+			case "2A":
+				dm.rotate(2, false, recycle);
+				break;
+			case "1A":
+				dm.rotate(1, false, recycle);
+				break;
+			case "0A":
+				dm.rotate(0, false, recycle);
 				break;
 			}
 			refresh(true);

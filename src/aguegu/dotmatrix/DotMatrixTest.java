@@ -399,11 +399,15 @@ public class DotMatrixTest extends JFrame
 				.getMenuComponent(
 						Arrays.asList(RECORD_OPERACTIONS).indexOf("Update"))
 				.setEnabled(selectedIndex != -1);
+		
+		((JToolBar)panelToolbar.getComponent(1)).getComponent(2).setEnabled(fileRecord != null);
+		
 
 		bar.getMenu(2)
 				.getMenuComponent(
 						Arrays.asList(RECORD_OPERACTIONS).indexOf("Delete"))
 				.setEnabled(selectedIndex != -1);
+		((JToolBar)panelToolbar.getComponent(1)).getComponent(3).setEnabled(fileRecord != null);
 
 		labelStatus.setText(message);
 

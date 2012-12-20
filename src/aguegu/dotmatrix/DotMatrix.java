@@ -4,6 +4,15 @@ public class DotMatrix
 {
 	public static final int DOT_LENGTH = 512;
 	public static final int CACHE_LENGTH = 64;
+
+	private static final int circle[][] = {
+			{ 27, 28, 36, 35 },
+			{ 18, 19, 20, 21, 29, 37, 45, 44, 43, 42, 34, 26 },
+			{ 9, 10, 11, 12, 13, 14, 22, 30, 38, 46, 54, 53, 52, 51, 50, 49,
+					41, 33, 25, 17 },
+			{ 0, 1, 2, 3, 4, 5, 6, 7, 15, 23, 31, 39, 47, 55, 63, 62, 61, 60,
+					59, 58, 57, 56, 48, 40, 32, 24, 16, 8 } };
+
 	private boolean[] dot;
 
 	public static enum Direction
@@ -57,7 +66,7 @@ public class DotMatrix
 
 	public void reverse()
 	{
-		for (int i = 0; i < dot.length; i++)  
+		for (int i = 0; i < dot.length; i++)
 			dot[i] = !dot[i];
 	}
 
@@ -162,6 +171,47 @@ public class DotMatrix
 	private int getIndex(int x, int y, int z)
 	{
 		return (64 * z + 8 * y + x);
+	}
+
+	public void rotate(int r, boolean clockwise, boolean recycle)
+	{
+		r %= 4;
+
+		int[] p = circle[r];
+		int length = p.length;
+
+		for (int z = 0; z < 8; z++)
+		{
+			if (clockwise)
+			{
+				boolean tmp = dot[getIndex(p[0] % 8, p[0] / 8, z)];
+
+				for (int i = 0; i < p.length - 1; i++)
+				{
+					dot[getIndex(p[i] % 8, p[i] / 8, z)] = dot[getIndex(
+							p[i + 1] % 8, p[i + 1] / 8, z)];
+				}
+
+				dot[getIndex(p[p.length - 1] % 8, p[p.length - 1] / 8, z)] = recycle ? tmp
+						: false;
+			}
+			else
+			{
+				boolean tmp = dot[getIndex(p[p.length - 1] % 8,
+						p[p.length - 1] / 8, z)];
+
+				for (int i = length - 1; i > 0; i--)
+				{
+					dot[getIndex(p[i] % 8, p[i] / 8, z)] = dot[getIndex(
+							p[i - 1] % 8, p[i - 1] / 8, z)];
+				}
+
+				dot[getIndex(p[0] % 8, p[0] / 8, z)] = recycle ? tmp
+						: false;
+			}
+		}
+
+		System.out.println(length);
 	}
 
 	public void move(Direction direction, boolean recycle)

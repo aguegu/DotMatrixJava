@@ -180,38 +180,66 @@ public class DotMatrix
 		int[] p = circle[r];
 		int length = p.length;
 
-		for (int z = 0; z < 8; z++)
+		if (clockwise)
 		{
-			if (clockwise)
+			boolean[] tmp = new boolean[8];
+
+			int x_begin = p[0] % 8;
+			int y_begin = p[0] / 8;
+
+			for (int z = 0; z < 8; z++)
+				tmp[z] = dot[getIndex(x_begin, y_begin, z)];
+
+			for (int i = 0; i < p.length - 1; i++)
 			{
-				boolean tmp = dot[getIndex(p[0] % 8, p[0] / 8, z)];
+				int x_dest = p[i] % 8;
+				int y_dest = p[i] / 8;
+				int x_src = p[i + 1] % 8;
+				int y_src = p[i + 1] / 8;
 
-				for (int i = 0; i < p.length - 1; i++)
+				for (int z = 0; z < 8; z++)
 				{
-					dot[getIndex(p[i] % 8, p[i] / 8, z)] = dot[getIndex(
-							p[i + 1] % 8, p[i + 1] / 8, z)];
+					dot[getIndex(x_dest, y_dest, z)] = dot[getIndex(x_src,
+							y_src, z)];
 				}
-
-				dot[getIndex(p[p.length - 1] % 8, p[p.length - 1] / 8, z)] = recycle ? tmp
-						: false;
 			}
-			else
-			{
-				boolean tmp = dot[getIndex(p[p.length - 1] % 8,
-						p[p.length - 1] / 8, z)];
 
-				for (int i = length - 1; i > 0; i--)
-				{
-					dot[getIndex(p[i] % 8, p[i] / 8, z)] = dot[getIndex(
-							p[i - 1] % 8, p[i - 1] / 8, z)];
-				}
+			int x_end = p[p.length - 1] % 8;
+			int y_end = p[p.length - 1] / 8;
 
-				dot[getIndex(p[0] % 8, p[0] / 8, z)] = recycle ? tmp
-						: false;
-			}
+			for (int z = 0; z < 8; z++)
+				dot[getIndex(x_end, y_end, z)] = recycle ? tmp[z] : false;
+
 		}
+		else
+		{
+			boolean[] tmp = new boolean[8];
 
-		System.out.println(length);
+			int x_end = p[p.length - 1] % 8;
+			int y_end = p[p.length - 1] / 8;
+
+			for (int z = 0; z < 8; z++)
+				tmp[z] = dot[getIndex(x_end, y_end, z)];
+
+			for (int i = length - 1; i > 0; i--)
+			{
+				int x_dest = p[i] % 8;
+				int y_dest = p[i] / 8;
+				int x_src = p[i - 1] % 8;
+				int y_src = p[i - 1] / 8;
+
+				for (int z = 0; z < 8; z++)
+				{
+					dot[getIndex(x_dest, y_dest, z)] = dot[getIndex(x_src,
+							y_src, z)];
+				}
+			}
+
+			int x_begin = p[0] % 8;
+			int y_begin = p[0] / 8;
+			for (int z = 0; z < 8; z++)
+				dot[getIndex(x_begin, y_begin, z)] = recycle ? tmp[z] : false;
+		}
 	}
 
 	public void move(Direction direction, boolean recycle)

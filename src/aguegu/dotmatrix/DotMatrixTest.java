@@ -400,14 +400,14 @@ public class DotMatrixTest extends JFrame
 						Arrays.asList(RECORD_OPERACTIONS).indexOf("Update"))
 				.setEnabled(selectedIndex != -1);
 		
-		((JToolBar)panelToolbar.getComponent(1)).getComponent(2).setEnabled(fileRecord != null);
+		((JToolBar)panelToolbar.getComponent(1)).getComponent(2).setEnabled(selectedIndex != -1);
 		
 
 		bar.getMenu(2)
 				.getMenuComponent(
 						Arrays.asList(RECORD_OPERACTIONS).indexOf("Delete"))
 				.setEnabled(selectedIndex != -1);
-		((JToolBar)panelToolbar.getComponent(1)).getComponent(3).setEnabled(fileRecord != null);
+		((JToolBar)panelToolbar.getComponent(1)).getComponent(3).setEnabled(selectedIndex != -1);
 
 		labelStatus.setText(message);
 
@@ -473,7 +473,7 @@ public class DotMatrixTest extends JFrame
 
 		ImageIcon iconUpdate = new ImageIcon(getClass().getResource("update.png"));		
 		JButton buttonUpdate= new JButton(iconUpdate);
-		buttonUpdate.setActionCommand("Delete");
+		buttonUpdate.setActionCommand("Update");
 		buttonUpdate.addActionListener(new ActionListenerRocordOperation());
 		toolbarReord.add(buttonUpdate);
 		

@@ -7,10 +7,11 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSlider;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
@@ -29,7 +30,7 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 	private JCheckBox checkboxUpperLed;
 	private JCheckBox checkboxBottomLed;
 
-	private JRadioButton[] radiobuttonModes;
+	private JRadioButtonMenuItem[] radiobuttonModes;
 
 	private CL cl;
 
@@ -42,14 +43,15 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 
 		JPanel panelMode = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-		radiobuttonModes = new JRadioButton[3];
+		radiobuttonModes = new JRadioButtonMenuItem[3];
 		ButtonGroup bgMode = new ButtonGroup();
 		int i = 0;
 		for (DMMode mode : DMMode.values())
 		{
-			radiobuttonModes[i] = new JRadioButton("<html><img src=file:"
-					+ getClass().getResource(mode.toString().concat(".png"))
-							.getPath() + "/></html>");
+			
+			radiobuttonModes[i] = new JRadioButtonMenuItem(new ImageIcon(getClass().getResource(
+					mode.toString().concat(".png"))));
+			
 			radiobuttonModes[i].setActionCommand(mode.toString());
 			radiobuttonModes[i].addActionListener(new ActionListenerMode());
 			bgMode.add(radiobuttonModes[i]);

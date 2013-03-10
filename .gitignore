@@ -2,7 +2,6 @@
 
 # Package Files #
 bin/
-*.jar
 *.war
 *.ear
 *.dat

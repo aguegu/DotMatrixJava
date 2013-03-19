@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,9 +57,12 @@ public class DotMatrixRecordPanel extends JPanel
 
 	private JMenu menu;
 	private JPanel panelFrameOperation;
+	
+	private ResourceBundle res;
 
-	public DotMatrixRecordPanel()
-	{
+	public DotMatrixRecordPanel(ResourceBundle res)
+	{		
+		this.res = res;
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		panelController = new JPanel();
@@ -82,7 +86,7 @@ public class DotMatrixRecordPanel extends JPanel
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 		panelController.add(textAreaPane);
-		panelHeader = new DotMatrixRecordHeaderPanel(this);
+		panelHeader = new DotMatrixRecordHeaderPanel(this, res);
 
 		panelController.add(panelHeader);
 
@@ -209,7 +213,7 @@ public class DotMatrixRecordPanel extends JPanel
 
 	private void initMenu()
 	{
-		menu = new JMenu("Frame");
+		menu = new JMenu(res.getString("frame"));
 		menu.setMnemonic(KeyEvent.VK_E);
 
 		radiobuttonMenuItemModes = new JRadioButtonMenuItem[3];

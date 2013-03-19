@@ -4,6 +4,7 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ResourceBundle;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -34,10 +35,10 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 
 	private CL cl;
 
-	public DotMatrixRecordHeaderPanel(DotMatrixRecordPanel dmrp)
+	public DotMatrixRecordHeaderPanel(DotMatrixRecordPanel dmrp,
+			ResourceBundle res)
 	{
 		parent = dmrp;
-
 		this.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.setBorder(new EmptyBorder(new Insets(0, 4, 0, 0)));
 
@@ -48,10 +49,9 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		int i = 0;
 		for (DMMode mode : DMMode.values())
 		{
-			
-			radiobuttonModes[i] = new JRadioButtonMenuItem(new ImageIcon(getClass().getResource(
-					mode.toString().concat(".png"))));
-			
+			radiobuttonModes[i] = new JRadioButtonMenuItem(new ImageIcon(
+					getClass().getResource(mode.toString().concat(".png"))));
+
 			radiobuttonModes[i].setActionCommand(mode.toString());
 			radiobuttonModes[i].addActionListener(new ActionListenerMode());
 			bgMode.add(radiobuttonModes[i]);
@@ -61,11 +61,11 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		panelMode.setAlignmentX(LEFT_ALIGNMENT);
 
 		JPanel panelAttachment = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		checkboxUpperLed = new JCheckBox("Upper Led");
+		checkboxUpperLed = new JCheckBox(res.getString("upper_led"));
 		checkboxUpperLed.addActionListener(new ActionListenerAttachment());
 		panelAttachment.add(checkboxUpperLed);
 
-		checkboxBottomLed = new JCheckBox("Bottom Led");
+		checkboxBottomLed = new JCheckBox(res.getString("bottom_led"));
 		checkboxBottomLed.addActionListener(new ActionListenerAttachment());
 		panelAttachment.add(checkboxBottomLed);
 		panelAttachment.setAlignmentX(LEFT_ALIGNMENT);
@@ -73,7 +73,7 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 		JPanel panelModeAndAttachment = new JPanel();
 		panelModeAndAttachment.setLayout(new BoxLayout(panelModeAndAttachment,
 				BoxLayout.Y_AXIS));
-		panelModeAndAttachment.add(new JLabel("Mode:"));
+		panelModeAndAttachment.add(new JLabel(res.getString("mode") + ":"));
 		panelModeAndAttachment.add(panelMode);
 		panelModeAndAttachment.add(panelAttachment);
 
@@ -103,9 +103,9 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 
 		JPanel panelSliders = new JPanel();
 		panelSliders.setLayout(new BoxLayout(panelSliders, BoxLayout.Y_AXIS));
-		panelSliders.add(new JLabel("Brightness:"));
+		panelSliders.add(new JLabel(res.getString("brightness") + ":"));
 		panelSliders.add(sliderBrightness);
-		panelSliders.add(new JLabel("Time Span:"));
+		panelSliders.add(new JLabel(res.getString("time_span") + ":"));
 		panelSliders.add(sliderSmallSpan);
 		panelSliders.add(sliderBigSpan);
 

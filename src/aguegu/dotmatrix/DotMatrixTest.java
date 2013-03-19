@@ -9,6 +9,8 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 
 import java.util.Arrays;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -36,7 +38,6 @@ public class DotMatrixTest extends JFrame
 
 	private DotMatrixRecord dmr;
 	private DotMatrixRecordList listFrame;
-
 	
 	DotMatrixRecordPanel panelRecord;
 	DotMatrixTestMenuBar bar;
@@ -44,16 +45,16 @@ public class DotMatrixTest extends JFrame
 	private JPanel panelToolbar;
 	private JLabel labelStatus;
 
-	// Menu
-	private static final String[] FILE_OPERATIONS_LABEL = { "New", "Open...",
-			"Save", "Save As...", "Exit" };
 	private static final String[] FILE_OPERATIONS_COMMAND = { "new", "open",
-			"save", "saveAs", "exit" };
-	private static final String[] RECORD_OPERACTIONS = new String[] { "Append",
-			"Insert", "Update", "Delete", "-", "Mode", "Brightness",
-			"Major Span", "Minor Span" };
+			"save", "save_as", "exit" };
+	private static final String[] RECORD_OPERACTIONS = new String[] { "append",
+			"insert", "update", "delete", "-", "mode", "brightness",
+			"major_span", "minor_span" };
 
 	private static final String PROGRAME_NAME = new String("dot-matrix (Java)");
+	
+	private Locale locale = Locale.CHINESE;
+	private ResourceBundle res;
 
 	// Status
 
@@ -69,11 +70,13 @@ public class DotMatrixTest extends JFrame
 	}
 
 	public void init()
-	{
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	{		
+		res = ResourceBundle.getBundle("aguegu.dotmatrix.DotMatrixTest", locale);
+		 
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
 
 		dmrf = new DotMatrixRecordFrame(0);
-		panelRecord = new DotMatrixRecordPanel();
+		panelRecord = new DotMatrixRecordPanel(res);
 		panelRecord.setFrame(dmrf);
 
 		panelToolbar = panelToolBar();
@@ -102,8 +105,7 @@ public class DotMatrixTest extends JFrame
 		bar = new DotMatrixTestMenuBar();
 		this.setJMenuBar(bar);
 
-		message = "http://aGuegu.net";
-
+		message = res.getString("message");
 		begin();
 		refreshFrame();
 
@@ -165,7 +167,7 @@ public class DotMatrixTest extends JFrame
 			case "save":
 				save();
 				break;
-			case "saveAs":
+			case "save_as":
 				fs.setSelectedFile(new File("record.dat"));
 				result = fs.showSaveDialog(null);
 				file = fs.getSelectedFile();
@@ -205,30 +207,30 @@ public class DotMatrixTest extends JFrame
 
 			switch (e.getActionCommand())
 			{
-			case "Insert":
+			case "insert":
 				dmr.insert(panelRecord.getData(), index);
 				listFrame.syncToReocrd();
 				listFrame.setSelectedIndex(index);
 				break;
-			case "Append":
+			case "append":
 				dmr.append(panelRecord.getData(), index);
 				listFrame.syncToReocrd();
 				listFrame.setSelectedIndex(index + 1);
 				break;
-			case "Update":
+			case "update":
 				if (index == -1)
 					break;
 				dmr.update(panelRecord.getData(), index);
 				break;
-			case "Delete":
+			case "delete":
 				if (index == -1)
 					break;
 				dmr.remove(index);
 				listFrame.syncToReocrd();
 				break;
-			case "Mode":
+			case "mode":
 				String sMode = JOptionPane.showInputDialog(
-						"Mode for All Frames: (0-2)", "0");
+						res.getString("mode_prompt"), "0");
 
 				if (sMode != null && sMode.matches("[012]"))
 				{
@@ -236,7 +238,7 @@ public class DotMatrixTest extends JFrame
 							.byteValue()));
 				}
 				break;
-			case "Brightness":
+			case "brightness":
 				String sBrightness = JOptionPane.showInputDialog(
 						"Brightnes for All Frames: (0x00-0xff)", "0xff");
 
@@ -247,9 +249,9 @@ public class DotMatrixTest extends JFrame
 					dmr.setBrightness(brightness);
 				}
 				break;
-			case "Major Span":
+			case "major_span":
 				String sMajorSpan = JOptionPane.showInputDialog(
-						"Major Span for All Frames: (0x0000-0xffff)", "0x00c0");
+						res.getString("major_span_prompt"), "0x00c0");
 
 				if (sMajorSpan != null
 						&& sMajorSpan.matches("0[x|x][\\p{XDigit}]{4}"))
@@ -258,9 +260,9 @@ public class DotMatrixTest extends JFrame
 					dmr.setMajorSpan(majorSpan);
 				}
 				break;
-			case "Minor Span":
+			case "minor_span":
 				String sMinorSpan = JOptionPane.showInputDialog(
-						"Minor Span for All Frames: (0x0000-0xffff)", "0x0000");
+						res.getString("minor_span_prompt"), "0x0000");
 
 				if (sMinorSpan != null
 						&& sMinorSpan.matches("0[x|x][\\p{XDigit}]{4}"))
@@ -305,25 +307,22 @@ public class DotMatrixTest extends JFrame
 
 		public DotMatrixTestMenuBar()
 		{
-			JMenu mnFile = new JMenu("File");
-
-			JMenu mnRecord = new JMenu("Record");
-			JMenu mnHelp = new JMenu("Help");
-
+			JMenu mnFile = new JMenu(res.getString("file"));
 			mnFile.setMnemonic(KeyEvent.VK_F);
-
-			mnRecord.setMnemonic(KeyEvent.VK_R);
-			mnHelp.setMnemonic(KeyEvent.VK_H);
-
-			for (String s : FILE_OPERATIONS_LABEL)
+			
+			for (String s : FILE_OPERATIONS_COMMAND)
 			{
-				JMenuItem button = new JMenuItem(s);
-				button.setActionCommand(FILE_OPERATIONS_COMMAND[Arrays.asList(
-						FILE_OPERATIONS_LABEL).indexOf(s)]);
+				JMenuItem button = new JMenuItem(res.getString(s));
+				button.setActionCommand(s);
 				button.addActionListener(new ActionListenerFileOperation());
 				mnFile.add(button);
 			}
 
+			//////////////
+			
+			JMenu mnRecord = new JMenu(res.getString("record"));
+			mnRecord.setMnemonic(KeyEvent.VK_R);
+						
 			for (String s : RECORD_OPERACTIONS)
 			{
 				if (s.equals("-"))
@@ -332,21 +331,37 @@ public class DotMatrixTest extends JFrame
 					continue;
 				}
 
-				JMenuItem button = new JMenuItem(s);
+				JMenuItem button = new JMenuItem(res.getString(s));
 
 				button.setActionCommand(s);
 				button.addActionListener(new ActionListenerRocordOperation());
 				mnRecord.add(button);
 			}
 
-			JMenuItem miAbout = new JMenuItem("About");
-			miAbout.setActionCommand("About");
+			//////////////
+			JMenu mnHelp = new JMenu(res.getString("help"));		
+			mnHelp.setMnemonic(KeyEvent.VK_H);
+			
+			JMenuItem miAbout = new JMenuItem(res.getString("about"));
+			miAbout.setActionCommand("about");
 			miAbout.addActionListener(this);
 			mnHelp.add(miAbout);
-
+			
+			JMenu mnLanguage = new JMenu(res.getString("language"));
+			JMenuItem miEnglish = new JMenuItem(res.getString("english"));
+			miEnglish.setActionCommand("english");
+			miEnglish.addActionListener(this);
+			mnLanguage.add(miEnglish);
+			
+			JMenuItem miChinese = new JMenuItem(res.getString("chinese"));
+			miChinese.setActionCommand("chinese");
+			miChinese.addActionListener(this);
+			mnLanguage.add(miChinese);
+			
 			this.add(mnFile);
 			this.add(panelRecord.getMenu());
 			this.add(mnRecord);
+			this.add(mnLanguage);
 			this.add(mnHelp);
 		}
 
@@ -355,12 +370,20 @@ public class DotMatrixTest extends JFrame
 		{
 			switch (e.getActionCommand())
 			{
-			case "About":
+			case "about":
 				JOptionPane
 						.showMessageDialog(this,
 								"For more info, check\nhttp://aguegu.net",
-								"About", JOptionPane.OK_OPTION
+								res.getString("about"), JOptionPane.OK_OPTION
 										| JOptionPane.INFORMATION_MESSAGE);
+				break;
+			case "chinese":
+				locale = Locale.CHINESE;
+				init();
+				break;
+			case "english":
+				locale = Locale.ENGLISH;
+				init();
 				break;
 			}
 		}
@@ -388,7 +411,7 @@ public class DotMatrixTest extends JFrame
 	{
 		bar.getMenu(0)
 				.getMenuComponent(
-						Arrays.asList(FILE_OPERATIONS_LABEL).indexOf("Save"))
+						Arrays.asList(FILE_OPERATIONS_COMMAND).indexOf("save"))
 				.setEnabled(fileRecord != null);
 		
 		((JToolBar)panelToolbar.getComponent(0)).getComponent(2).setEnabled(fileRecord != null);		
@@ -397,7 +420,7 @@ public class DotMatrixTest extends JFrame
 
 		bar.getMenu(2)
 				.getMenuComponent(
-						Arrays.asList(RECORD_OPERACTIONS).indexOf("Update"))
+						Arrays.asList(RECORD_OPERACTIONS).indexOf("update"))
 				.setEnabled(selectedIndex != -1);
 		
 		((JToolBar)panelToolbar.getComponent(1)).getComponent(2).setEnabled(selectedIndex != -1);
@@ -405,7 +428,7 @@ public class DotMatrixTest extends JFrame
 
 		bar.getMenu(2)
 				.getMenuComponent(
-						Arrays.asList(RECORD_OPERACTIONS).indexOf("Delete"))
+						Arrays.asList(RECORD_OPERACTIONS).indexOf("delete"))
 				.setEnabled(selectedIndex != -1);
 		((JToolBar)panelToolbar.getComponent(1)).getComponent(3).setEnabled(selectedIndex != -1);
 
@@ -432,55 +455,62 @@ public class DotMatrixTest extends JFrame
 		JButton buttonNew = new JButton(iconNew);
 		buttonNew.setActionCommand("new");
 		buttonNew.addActionListener(new ActionListenerFileOperation());
-		buttonNew.setToolTipText("New");
+		buttonNew.setToolTipText(res.getString("new"));
 		toolbarFile.add(buttonNew);
 		
 		ImageIcon iconOpen = new ImageIcon(getClass().getResource("document-open.png"));		
 		JButton buttonOpen = new JButton(iconOpen);
 		buttonOpen.setActionCommand("open");
 		buttonOpen.addActionListener(new ActionListenerFileOperation());
-		buttonOpen.setToolTipText("Open");
+		buttonOpen.setToolTipText(res.getString("open"));
 		toolbarFile.add(buttonOpen);
 		
 		ImageIcon iconSave = new ImageIcon(getClass().getResource("document-save.png"));		
 		JButton buttonSave = new JButton(iconSave);
 		buttonSave.setActionCommand("save");
 		buttonSave.addActionListener(new ActionListenerFileOperation());
+		buttonSave.setToolTipText(res.getString("save"));
+		
 		toolbarFile.add(buttonSave);		
 		
 		ImageIcon iconSaveAs = new ImageIcon(getClass().getResource("document-save-as.png"));		
 		JButton buttonSaveAs = new JButton(iconSaveAs);
-		buttonSaveAs.setActionCommand("saveAs");
+		buttonSaveAs.setActionCommand("save_as");
 		buttonSaveAs.addActionListener(new ActionListenerFileOperation());
+		buttonSaveAs.setToolTipText(res.getString("save_as"));
 		toolbarFile.add(buttonSaveAs);	
 		
 		panel.add(toolbarFile);		
-		
 		
 		JToolBar toolbarReord = new JToolBar();
 		
 		ImageIcon iconAppend = new ImageIcon(getClass().getResource("append.png"));		
 		JButton buttonAppend = new JButton(iconAppend);
-		buttonAppend.setActionCommand("Append");
+		buttonAppend.setActionCommand("append");
 		buttonAppend.addActionListener(new ActionListenerRocordOperation());
+		buttonAppend.setToolTipText(res.getString("append"));
 		toolbarReord.add(buttonAppend);
 		
 		ImageIcon iconInsert = new ImageIcon(getClass().getResource("insert.png"));		
 		JButton buttonInsert = new JButton(iconInsert);
-		buttonInsert.setActionCommand("Insert");
+		buttonInsert.setActionCommand("insert");
 		buttonInsert.addActionListener(new ActionListenerRocordOperation());
+		buttonInsert.setToolTipText(res.getString("insert"));
 		toolbarReord.add(buttonInsert);
 
 		ImageIcon iconUpdate = new ImageIcon(getClass().getResource("update.png"));		
 		JButton buttonUpdate= new JButton(iconUpdate);
-		buttonUpdate.setActionCommand("Update");
+		buttonUpdate.setActionCommand("update");
 		buttonUpdate.addActionListener(new ActionListenerRocordOperation());
+		buttonUpdate.setToolTipText(res.getString("update"));
 		toolbarReord.add(buttonUpdate);
 		
 		ImageIcon iconDelete = new ImageIcon(getClass().getResource("delete.png"));		
 		JButton buttonDelete= new JButton(iconDelete);
-		buttonDelete.setActionCommand("Delete");
+		buttonDelete.setActionCommand("delete");
 		buttonDelete.addActionListener(new ActionListenerRocordOperation());
+		buttonDelete.setToolTipText(res.getString("delete"));
+		
 		toolbarReord.add(buttonDelete);
 				
 		panel.add(toolbarReord);

@@ -71,9 +71,11 @@ public class DotMatrixTest extends JFrame
 
 	public void init()
 	{		
-		res = ResourceBundle.getBundle("aguegu.dotmatrix.DotMatrixTest", locale);
-		 
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
+		res = ResourceBundle.getBundle("aguegu.dotmatrix.DotMatrixTest", locale);		
+		
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		this.getContentPane().removeAll();
 
 		dmrf = new DotMatrixRecordFrame(0);
 		panelRecord = new DotMatrixRecordPanel(res);
@@ -84,18 +86,19 @@ public class DotMatrixTest extends JFrame
 		this.getContentPane().add(BorderLayout.CENTER, panelRecord);
 		this.getContentPane().add(BorderLayout.WEST,
 				panelRecord.getFrameOperationPanel());
-
-		labelStatus = new JLabel(message);
+	
+		labelStatus = new JLabel();
 		labelStatus.setBorder(BorderFactory
 				.createBevelBorder(BevelBorder.LOWERED));
-		this.add(BorderLayout.SOUTH, labelStatus);
+		this.remove(labelStatus);
+		this.getContentPane().add(BorderLayout.SOUTH, labelStatus);
 
 		dmr = new DotMatrixRecord();
 		listFrame = new DotMatrixRecordList(dmr);
 
 		listFrame
 				.addListSelectionListener(new ListSelectionListenerListFrame());
-
+				
 		JScrollPane listFramePane = new JScrollPane(listFrame,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -104,8 +107,9 @@ public class DotMatrixTest extends JFrame
 
 		bar = new DotMatrixTestMenuBar();
 		this.setJMenuBar(bar);
-
+		
 		message = res.getString("message");
+		
 		begin();
 		refreshFrame();
 
@@ -378,12 +382,14 @@ public class DotMatrixTest extends JFrame
 										| JOptionPane.INFORMATION_MESSAGE);
 				break;
 			case "chinese":
-				locale = Locale.CHINESE;
+				locale = Locale.CHINESE;				
 				init();
+				repaint();
 				break;
 			case "english":
-				locale = Locale.ENGLISH;
+				locale = Locale.ENGLISH;				
 				init();
+				repaint();
 				break;
 			}
 		}
@@ -425,14 +431,13 @@ public class DotMatrixTest extends JFrame
 		
 		((JToolBar)panelToolbar.getComponent(1)).getComponent(2).setEnabled(selectedIndex != -1);
 		
-
 		bar.getMenu(2)
 				.getMenuComponent(
 						Arrays.asList(RECORD_OPERACTIONS).indexOf("delete"))
 				.setEnabled(selectedIndex != -1);
 		((JToolBar)panelToolbar.getComponent(1)).getComponent(3).setEnabled(selectedIndex != -1);
 
-		labelStatus.setText(message);
+		labelStatus.setText(message);		
 
 		if (fileRecord == null)
 		{
@@ -443,10 +448,12 @@ public class DotMatrixTest extends JFrame
 			this.setTitle(PROGRAME_NAME + " | " + fileRecord.getName() + " "
 					+ (isSaved ? "" : "*"));
 		}
+		
+		repaint();
 	}
 
 	private JPanel panelToolBar()
-	{
+	{		
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		
 		JToolBar toolbarFile = new JToolBar();

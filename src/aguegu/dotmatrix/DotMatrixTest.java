@@ -233,7 +233,7 @@ public class DotMatrixTest extends JFrame {
 			res.getString("brightness_prompt"), "0xff");
 
 		if (sBrightness != null
-			&& sBrightness.matches("0[x|x][\\p{XDigit}]{2}")) {
+			&& sBrightness.matches("0[x|X][\\p{XDigit}]{2}")) {
 		    int brightness = Integer.decode(sBrightness);
 		    dmr.setBrightness(brightness);
 		}
@@ -243,7 +243,7 @@ public class DotMatrixTest extends JFrame {
 			res.getString("major_span_prompt"), "0x00c0");
 
 		if (sMajorSpan != null
-			&& sMajorSpan.matches("0[x|x][\\p{XDigit}]{4}")) {
+			&& sMajorSpan.matches("0[x|X][\\p{XDigit}]{4}")) {
 		    int majorSpan = Integer.decode(sMajorSpan);
 		    dmr.setMajorSpan(majorSpan);
 		}
@@ -253,7 +253,7 @@ public class DotMatrixTest extends JFrame {
 			res.getString("minor_span_prompt"), "0x0000");
 
 		if (sMinorSpan != null
-			&& sMinorSpan.matches("0[x|x][\\p{XDigit}]{4}")) {
+			&& sMinorSpan.matches("0[x|X][\\p{XDigit}]{4}")) {
 		    int minorSpan = Integer.decode(sMinorSpan);
 		    dmr.setMinorSpan(minorSpan);
 		}
@@ -416,8 +416,6 @@ public class DotMatrixTest extends JFrame {
 
 	    this.setTitle(PROGRAME_NAME + " | " + fileRecord.getName() + " "
 		    + (isSaved ? "" : "*"));
-
-	// repaint();
     }
 
     private JPanel panelToolBar() {

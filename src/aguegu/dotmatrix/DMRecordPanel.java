@@ -47,9 +47,9 @@ public class DMRecordPanel extends JPanel {
 
     private JRadioButtonMenuItem[] radiobuttonMenuItemModes;
 
-    private static final String[] FRAME_OPERATIONS = new String[] { "on",
-	    "off", "X+", "X-", "Y+", "Y-", "Z+", "Z-", "3C", "3A", "2C", "2A",
-	    "1C", "1A", "0C", "0A", "R" };
+    private static final String[] FRAME_OPERATION_COMMANDS = new String[] { "on",
+	    "off", "x+", "x-", "y+", "y-", "z+", "z-", "3c", "3a", "2c", "2a",
+	    "1c", "1a", "0c", "0a", "r" };
 
     private boolean inLoop = true;
     private static Font monoFont;
@@ -212,13 +212,13 @@ public class DMRecordPanel extends JPanel {
 
 	menu.addSeparator();
 
-	miInLoop = new JCheckBoxMenuItem("loop", true);
+	miInLoop = new JCheckBoxMenuItem(res.getString("loop"), true);
 	miInLoop.addActionListener(new ActionListenerInLoop());
 	menu.add(miInLoop);
 
-	for (String s : FRAME_OPERATIONS) {
-	    JMenuItem button = new JMenuItem(s);
-	    button.setActionCommand(s);
+	for (String s : FRAME_OPERATION_COMMANDS) {
+	    JMenuItem button = new JMenuItem(res.getString(s));
+	    button.setActionCommand(s);	    
 	    button.addActionListener(new ActionListenerFrameOperation());
 	    menu.add(button);
 	}
@@ -235,7 +235,7 @@ public class DMRecordPanel extends JPanel {
 	// panelFrameOperation.setBorder(BorderFactory.createEmptyBorder(13, 5,
 	// 13, 5));
 
-	for (String s : FRAME_OPERATIONS) {
+	for (String s : FRAME_OPERATION_COMMANDS) {
 	    JButton button = new JButton();
 
 	    button.setActionCommand(s);
@@ -243,6 +243,7 @@ public class DMRecordPanel extends JPanel {
 
 	    button.setIcon(new ImageIcon(getClass().getResource(
 		    "/image/" + s + ".png")));
+	    button.setToolTipText(res.getString(s));
 
 	    button.setMargin(new Insets(1, 1, 1, 1));
 
@@ -251,6 +252,7 @@ public class DMRecordPanel extends JPanel {
 
 	checkboxInLoop = new JCheckBox("", inLoop);
 	checkboxInLoop.addActionListener(new ActionListenerInLoop());
+	checkboxInLoop.setToolTipText(res.getString("loop"));
 	panelFrameOperation.add(checkboxInLoop);
 
     }
@@ -272,49 +274,49 @@ public class DMRecordPanel extends JPanel {
 	    case "off":
 		dm.clear(false);
 		break;
-	    case "X+":
+	    case "x+":
 		dm.move(DotMatrix.Direction.X_POSI, recycle);
 		break;
-	    case "X-":
+	    case "x-":
 		dm.move(DotMatrix.Direction.X_NEGA, recycle);
 		break;
-	    case "Y+":
+	    case "y+":
 		dm.move(DotMatrix.Direction.Y_POSI, recycle);
 		break;
-	    case "Y-":
+	    case "y-":
 		dm.move(DotMatrix.Direction.Y_NEGA, recycle);
 		break;
-	    case "Z+":
+	    case "z+":
 		dm.move(DotMatrix.Direction.Z_POSI, recycle);
 		break;
-	    case "Z-":
+	    case "z-":
 		dm.move(DotMatrix.Direction.Z_NEGA, recycle);
 		break;
-	    case "R":
+	    case "r":
 		dm.reverse();
 		break;
-	    case "3C":
+	    case "3c":
 		dm.rotate(3, true, recycle);
 		break;
-	    case "2C":
+	    case "2c":
 		dm.rotate(2, true, recycle);
 		break;
-	    case "1C":
+	    case "1c":
 		dm.rotate(1, true, recycle);
 		break;
-	    case "0C":
+	    case "0c":
 		dm.rotate(0, true, recycle);
 		break;
-	    case "3A":
+	    case "3a":
 		dm.rotate(3, false, recycle);
 		break;
-	    case "2A":
+	    case "2a":
 		dm.rotate(2, false, recycle);
 		break;
-	    case "1A":
+	    case "1a":
 		dm.rotate(1, false, recycle);
 		break;
-	    case "0A":
+	    case "0a":
 		dm.rotate(0, false, recycle);
 		break;
 	    }

@@ -47,8 +47,8 @@ public class DMRecordHeaderPanel extends JPanel {
 	for (DMMode mode : DMMode.values()) {
 	    radiobuttonModes[i] = new JRadioButtonMenuItem(new ImageIcon(
 		    getClass()
-			    .getResource("/image/" + mode.toString() + ".png")));
-
+			    .getResource("/image/" + mode.toString().toLowerCase() + ".png")));
+	    	    
 	    radiobuttonModes[i].setActionCommand(mode.toString());
 	    radiobuttonModes[i].addActionListener(new ActionListenerMode());
 	    bgMode.add(radiobuttonModes[i]);

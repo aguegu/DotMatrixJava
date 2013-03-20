@@ -268,8 +268,7 @@ public class DMRecordPanel extends JPanel
 			button.setActionCommand(s);
 			button.addActionListener(new ActionListenerFrameOperation());
 
-			button.setIcon(new ImageIcon(getClass().getResource(
-					s.concat(".png"))));
+			button.setIcon(new ImageIcon(getClass().getResource("/image/" + s + ".png")));
 
 			button.setMargin(new Insets(1, 1, 1, 1));
 

@@ -56,8 +56,6 @@ public class DotMatrixTest extends JFrame
 	private Locale locale = Locale.CHINESE;
 	private ResourceBundle res;
 
-	// Status
-
 	private File fileRecord = null;
 	private String message;
 	private boolean isSaved = true;
@@ -458,61 +456,41 @@ public class DotMatrixTest extends JFrame
 		
 		JToolBar toolbarFile = new JToolBar();
 		
-		ImageIcon iconNew = new ImageIcon(getClass().getResource("document-new.png"));		
-		JButton buttonNew = new JButton(iconNew);
-		buttonNew.setActionCommand("new");
-		buttonNew.addActionListener(new ActionListenerFileOperation());
-		buttonNew.setToolTipText(res.getString("new"));
-		toolbarFile.add(buttonNew);
-		
-		ImageIcon iconOpen = new ImageIcon(getClass().getResource("document-open.png"));		
-		JButton buttonOpen = new JButton(iconOpen);
-		buttonOpen.setActionCommand("open");
-		buttonOpen.addActionListener(new ActionListenerFileOperation());
-		buttonOpen.setToolTipText(res.getString("open"));
-		toolbarFile.add(buttonOpen);
-		
-		ImageIcon iconSave = new ImageIcon(getClass().getResource("document-save.png"));		
-		JButton buttonSave = new JButton(iconSave);
-		buttonSave.setActionCommand("save");
-		buttonSave.addActionListener(new ActionListenerFileOperation());
-		buttonSave.setToolTipText(res.getString("save"));
-		
-		toolbarFile.add(buttonSave);		
-		
-		ImageIcon iconSaveAs = new ImageIcon(getClass().getResource("document-save-as.png"));		
-		JButton buttonSaveAs = new JButton(iconSaveAs);
-		buttonSaveAs.setActionCommand("save_as");
-		buttonSaveAs.addActionListener(new ActionListenerFileOperation());
-		buttonSaveAs.setToolTipText(res.getString("save_as"));
-		toolbarFile.add(buttonSaveAs);	
+		for (String s: FILE_OPERATIONS_COMMAND)
+		{			
+			JButton button = new JButton(new ImageIcon(getClass().getResource("/image/document-" + s + ".png")));
+			button.setActionCommand(s);
+			button.addActionListener(new ActionListenerFileOperation());
+			button.setToolTipText(res.getString(s));
+			toolbarFile.add(button);
+		}
 		
 		panel.add(toolbarFile);		
 		
 		JToolBar toolbarReord = new JToolBar();
 		
-		ImageIcon iconAppend = new ImageIcon(getClass().getResource("append.png"));		
+		ImageIcon iconAppend = new ImageIcon(getClass().getResource("/image/append.png"));		
 		JButton buttonAppend = new JButton(iconAppend);
 		buttonAppend.setActionCommand("append");
 		buttonAppend.addActionListener(new ActionListenerRocordOperation());
 		buttonAppend.setToolTipText(res.getString("append"));
 		toolbarReord.add(buttonAppend);
 		
-		ImageIcon iconInsert = new ImageIcon(getClass().getResource("insert.png"));		
+		ImageIcon iconInsert = new ImageIcon(getClass().getResource("/image/insert.png"));		
 		JButton buttonInsert = new JButton(iconInsert);
 		buttonInsert.setActionCommand("insert");
 		buttonInsert.addActionListener(new ActionListenerRocordOperation());
 		buttonInsert.setToolTipText(res.getString("insert"));
 		toolbarReord.add(buttonInsert);
 
-		ImageIcon iconUpdate = new ImageIcon(getClass().getResource("update.png"));		
+		ImageIcon iconUpdate = new ImageIcon(getClass().getResource("/image/update.png"));		
 		JButton buttonUpdate= new JButton(iconUpdate);
 		buttonUpdate.setActionCommand("update");
 		buttonUpdate.addActionListener(new ActionListenerRocordOperation());
 		buttonUpdate.setToolTipText(res.getString("update"));
 		toolbarReord.add(buttonUpdate);
 		
-		ImageIcon iconDelete = new ImageIcon(getClass().getResource("delete.png"));		
+		ImageIcon iconDelete = new ImageIcon(getClass().getResource("/image/delete.png"));		
 		JButton buttonDelete= new JButton(iconDelete);
 		buttonDelete.setActionCommand("delete");
 		buttonDelete.addActionListener(new ActionListenerRocordOperation());

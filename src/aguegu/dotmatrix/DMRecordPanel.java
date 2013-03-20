@@ -31,17 +31,17 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
-public class DotMatrixRecordPanel extends JPanel
+public class DMRecordPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
-	private DotMatrixRecordFrame dmrf;
+	private DMRecordFrame dmrf;
 
-	private DotMatrixPanel panelDm;
+	private DMPanel panelDm;
 
 	private JPanel panelController;
 	private JTextArea textAreaCache;
-	private DotMatrixRecordHeaderPanel panelHeader;
+	private DMRecordHeaderPanel panelHeader;
 
 	private JCheckBox checkboxInLoop;
 	private JCheckBoxMenuItem miInLoop;
@@ -60,7 +60,7 @@ public class DotMatrixRecordPanel extends JPanel
 	
 	private ResourceBundle res;
 
-	public DotMatrixRecordPanel(ResourceBundle res)
+	public DMRecordPanel(ResourceBundle res)
 	{		
 		this.res = res;
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -68,7 +68,7 @@ public class DotMatrixRecordPanel extends JPanel
 		panelController = new JPanel();
 		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
 
-		panelDm = new DotMatrixPanel();
+		panelDm = new DMPanel();
 		panelDm.addMouseListener(new MouseListenerPanelDotMatrix());
 		this.add(panelDm);
 
@@ -86,7 +86,7 @@ public class DotMatrixRecordPanel extends JPanel
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 		panelController.add(textAreaPane);
-		panelHeader = new DotMatrixRecordHeaderPanel(this, res);
+		panelHeader = new DMRecordHeaderPanel(this, res);
 
 		panelController.add(panelHeader);
 
@@ -94,14 +94,14 @@ public class DotMatrixRecordPanel extends JPanel
 
 		panelDm.requestFocusInWindow();
 
-		this.dmrf = new DotMatrixRecordFrame(0);
+		this.dmrf = new DMRecordFrame(0);
 		initMenu();
 		initFrameOperationPanel();
 	}
 
-	public void setFrame(DotMatrixRecordFrame dmrf)
+	public void setFrame(DMRecordFrame dmrf)
 	{
-		this.dmrf = new DotMatrixRecordFrame(dmrf.getIndex());
+		this.dmrf = new DMRecordFrame(dmrf.getIndex());
 		this.dmrf.setData(dmrf.getData());
 	}
 
@@ -110,7 +110,7 @@ public class DotMatrixRecordPanel extends JPanel
 		return this.dmrf.getData();
 	}
 
-	public DotMatrixRecordFrame getRecordFrame()
+	public DMRecordFrame getRecordFrame()
 	{
 		return this.dmrf;
 	}

@@ -11,19 +11,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class DotMatrixRecord
+public class DMRecord
 {
-	private ArrayList<DotMatrixRecordFrame> record;
+	private ArrayList<DMRecordFrame> record;
 
-	public DotMatrixRecord()
+	public DMRecord()
 	{
-		record = new ArrayList<DotMatrixRecordFrame>();
+		record = new ArrayList<DMRecordFrame>();
 	}
 
-	public DotMatrixRecordFrame[] getFrames()
+	public DMRecordFrame[] getFrames()
 	{
-		return record.toArray((DotMatrixRecordFrame[]) Array.newInstance(
-				DotMatrixRecordFrame.class, record.size()));
+		return record.toArray((DMRecordFrame[]) Array.newInstance(
+				DMRecordFrame.class, record.size()));
 	}
 
 	public void save(File file)
@@ -33,7 +33,7 @@ public class DotMatrixRecord
 			FileOutputStream fos = new FileOutputStream(file);
 			DataOutputStream dos = new DataOutputStream(fos);
 
-			for (DotMatrixRecordFrame f : record)
+			for (DMRecordFrame f : record)
 			{
 				dos.write(f.getData());
 			}
@@ -60,7 +60,7 @@ public class DotMatrixRecord
 
 			while (dis.read(val) != -1)
 			{
-				DotMatrixRecordFrame dmrf = new DotMatrixRecordFrame(index);
+				DMRecordFrame dmrf = new DMRecordFrame(index);
 				dmrf.setData(val);
 				record.add(index, dmrf);
 				index++;
@@ -103,7 +103,7 @@ public class DotMatrixRecord
 			record.get(i).setIndex(i + 1);
 		}
 
-		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(index);
+		DMRecordFrame newFrame = new DMRecordFrame(index);
 		newFrame.setData(cache);
 		record.add(newFrame);
 
@@ -122,7 +122,7 @@ public class DotMatrixRecord
 			record.get(i).setIndex(i + 1);
 		}
 
-		DotMatrixRecordFrame newFrame = new DotMatrixRecordFrame(index + 1);
+		DMRecordFrame newFrame = new DMRecordFrame(index + 1);
 		newFrame.setData(cache);
 		record.add(newFrame);
 
@@ -134,7 +134,7 @@ public class DotMatrixRecord
 		record.get(index).setData(cache);
 	}
 
-	public DotMatrixRecordFrame getFrame(int index)
+	public DMRecordFrame getFrame(int index)
 	{
 		return record.get(index);
 	}
@@ -156,7 +156,7 @@ public class DotMatrixRecord
 
 	public void setBrightness(int brightness)
 	{
-		for (DotMatrixRecordFrame dmrf : record)
+		for (DMRecordFrame dmrf : record)
 		{
 			dmrf.setBrightness(brightness);
 		}
@@ -164,7 +164,7 @@ public class DotMatrixRecord
 
 	public void setMode(DMMode mode)
 	{
-		for (DotMatrixRecordFrame dmrf : record)
+		for (DMRecordFrame dmrf : record)
 		{
 			dmrf.setMode(mode);
 		}
@@ -172,7 +172,7 @@ public class DotMatrixRecord
 
 	public void setMajorSpan(int majorSpan)
 	{
-		for (DotMatrixRecordFrame dmrf : record)
+		for (DMRecordFrame dmrf : record)
 		{
 			dmrf.setMajorSpan(majorSpan);
 		}
@@ -180,7 +180,7 @@ public class DotMatrixRecord
 	
 	public void setMinorSpan(int minorSpan)
 	{
-		for (DotMatrixRecordFrame dmrf : record)
+		for (DMRecordFrame dmrf : record)
 		{
 			dmrf.setMinorSpan(minorSpan);
 		}
@@ -191,10 +191,10 @@ public class DotMatrixRecord
 		Collections.sort(record, new FrameComparator());
 	}
 
-	public class FrameComparator implements Comparator<DotMatrixRecordFrame>
+	public class FrameComparator implements Comparator<DMRecordFrame>
 	{
 		@Override
-		public int compare(DotMatrixRecordFrame o1, DotMatrixRecordFrame o2)
+		public int compare(DMRecordFrame o1, DMRecordFrame o2)
 		{
 			return o1.getIndex() - o2.getIndex();
 

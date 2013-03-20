@@ -9,26 +9,26 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-class DotMatrixPanel extends JPanel implements MouseListener 
+class DMPanel extends JPanel implements MouseListener 
 {
 	private static final long serialVersionUID = -2531292225634588108L;
 	private DotMatrix dm;
-	private DotMatrixImage[] dmi;
+	private DMImage[] dmi;
 	private DMMode mode;
 
-	public DotMatrixPanel()
+	public DMPanel()
 	{
-		this.setSize(DotMatrixImage.getBlockWidth() * (9 * 8 + 1),
-				DotMatrixImage.getBlockWidth() * (9 * 3 + 1));
+		this.setSize(DMImage.getBlockWidth() * (9 * 8 + 1),
+				DMImage.getBlockWidth() * (9 * 3 + 1));
 
-		this.setPreferredSize(new Dimension(DotMatrixImage.getBlockWidth()
-				* (9 * 8 + 1), DotMatrixImage.getBlockWidth() * (9 * 3 + 1)));
+		this.setPreferredSize(new Dimension(DMImage.getBlockWidth()
+				* (9 * 8 + 1), DMImage.getBlockWidth() * (9 * 3 + 1)));
 		
 		dm = new DotMatrix();
-		dmi = new DotMatrixImage[24];
+		dmi = new DMImage[24];
 		for (int i = 0; i < dmi.length; i++)
 		{
-			dmi[i] = new DotMatrixImage();
+			dmi[i] = new DMImage();
 		}
 
 		mode = DMMode.XYZ;
@@ -139,7 +139,7 @@ class DotMatrixPanel extends JPanel implements MouseListener
 			dmi[16 + z].setDot((7 - y) * 8 + x, val);
 		}
 
-		for (DotMatrixImage image : dmi)
+		for (DMImage image : dmi)
 		{
 			image.update();
 		}
@@ -153,10 +153,10 @@ class DotMatrixPanel extends JPanel implements MouseListener
 		g2d.setBackground(Color.lightGray);
 		g2d.clearRect(0, 0, this.getWidth(), this.getHeight());
 
-		for (int r = 0, y = DotMatrixImage.getBlockWidth(); r < 3; r++, y += DotMatrixImage
+		for (int r = 0, y = DMImage.getBlockWidth(); r < 3; r++, y += DMImage
 				.getBlockWidth() * 9)
 		{
-			for (int c = 0, x = DotMatrixImage.getBlockWidth(); c < 8; c++, x += DotMatrixImage
+			for (int c = 0, x = DMImage.getBlockWidth(); c < 8; c++, x += DMImage
 					.getBlockWidth() * 9)
 			{
 				int index = r * 8 + c;
@@ -181,8 +181,8 @@ class DotMatrixPanel extends JPanel implements MouseListener
 	{
 		if (e.getButton() == MouseEvent.BUTTON1)
 		{
-			int blockX = e.getX() / DotMatrixImage.getBlockWidth();
-			int blockY = e.getY() / DotMatrixImage.getBlockWidth();
+			int blockX = e.getX() / DMImage.getBlockWidth();
+			int blockY = e.getY() / DMImage.getBlockWidth();
 
 			int blockID = blockX / 9;
 			int blockC = blockX % 9 - 1;

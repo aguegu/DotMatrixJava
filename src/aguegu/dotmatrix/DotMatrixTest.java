@@ -36,10 +36,10 @@ public class DotMatrixTest extends JFrame
 {
 	private static final long serialVersionUID = 5805285424717739698L;
 
-	private DotMatrixRecord dmr;
-	private DotMatrixRecordList listFrame;
+	private DMRecord dmr;
+	private DMRecordList listFrame;
 	
-	DotMatrixRecordPanel panelRecord;
+	DMRecordPanel panelRecord;
 	DotMatrixTestMenuBar bar;
 
 	private JPanel panelToolbar;
@@ -61,7 +61,7 @@ public class DotMatrixTest extends JFrame
 	private File fileRecord = null;
 	private String message;
 	private boolean isSaved = true;
-	private DotMatrixRecordFrame dmrf;
+	private DMRecordFrame dmrf;
 
 	public static void main(String[] args)
 	{
@@ -77,8 +77,8 @@ public class DotMatrixTest extends JFrame
 		
 		this.getContentPane().removeAll();
 
-		dmrf = new DotMatrixRecordFrame(0);
-		panelRecord = new DotMatrixRecordPanel(res);
+		dmrf = new DMRecordFrame(0);
+		panelRecord = new DMRecordPanel(res);
 		panelRecord.setFrame(dmrf);
 
 		panelToolbar = panelToolBar();
@@ -93,8 +93,8 @@ public class DotMatrixTest extends JFrame
 		this.remove(labelStatus);
 		this.getContentPane().add(BorderLayout.SOUTH, labelStatus);
 
-		dmr = new DotMatrixRecord();
-		listFrame = new DotMatrixRecordList(dmr);
+		dmr = new DMRecord();
+		listFrame = new DMRecordList(dmr);
 
 		listFrame
 				.addListSelectionListener(new ListSelectionListenerListFrame());

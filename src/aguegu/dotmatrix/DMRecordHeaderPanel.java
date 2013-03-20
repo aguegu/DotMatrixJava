@@ -18,11 +18,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class DotMatrixRecordHeaderPanel extends JPanel
+public class DMRecordHeaderPanel extends JPanel
 {
 	private static final long serialVersionUID = 7530602456593370095L;
 
-	private DotMatrixRecordPanel parent;
+	private DMRecordPanel parent;
 
 	private JSlider sliderBrightness;
 	private JSlider sliderSmallSpan;
@@ -35,7 +35,7 @@ public class DotMatrixRecordHeaderPanel extends JPanel
 
 	private CL cl;
 
-	public DotMatrixRecordHeaderPanel(DotMatrixRecordPanel dmrp,
+	public DMRecordHeaderPanel(DMRecordPanel dmrp,
 			ResourceBundle res)
 	{
 		parent = dmrp;

@@ -9,16 +9,16 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 
-public class DotMatrixRecordList extends JList<DotMatrixRecordFrame>
+public class DMRecordList extends JList<DMRecordFrame>
 {
 	private static final long serialVersionUID = -8408932545525051039L;
-	private DotMatrixRecord dmr;
-	private DefaultListModel<DotMatrixRecordFrame> lm;
+	private DMRecord dmr;
+	private DefaultListModel<DMRecordFrame> lm;
 
-	public DotMatrixRecordList(DotMatrixRecord dmr)
+	public DMRecordList(DMRecord dmr)
 	{
 		this.dmr = dmr;
-		this.lm = new DefaultListModel<DotMatrixRecordFrame>();
+		this.lm = new DefaultListModel<DMRecordFrame>();
 		
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -31,14 +31,14 @@ public class DotMatrixRecordList extends JList<DotMatrixRecordFrame>
 	public void syncToReocrd()
 	{
 		lm.clear();		
-		for (DotMatrixRecordFrame dmrf : this.dmr.getFrames())
+		for (DMRecordFrame dmrf : this.dmr.getFrames())
 		{
 			lm.addElement(dmrf);			
 		}
 	}
 
 	class DotMatrixRecordCellRender extends JLabel implements
-			ListCellRenderer<DotMatrixRecordFrame>
+			ListCellRenderer<DMRecordFrame>
 	{
 		private static final long serialVersionUID = 6448688964390706942L;
 
@@ -49,11 +49,11 @@ public class DotMatrixRecordList extends JList<DotMatrixRecordFrame>
 
 		@Override
 		public Component getListCellRendererComponent(
-				JList<? extends DotMatrixRecordFrame> list,
-				DotMatrixRecordFrame value, int index, boolean isSelected,
+				JList<? extends DMRecordFrame> list,
+				DMRecordFrame value, int index, boolean isSelected,
 				boolean cellHasFocus)
 		{
-			DotMatrixRecordFrame entry = (DotMatrixRecordFrame) value;
+			DMRecordFrame entry = (DMRecordFrame) value;
 			this.setText(Integer.toString(entry.getIndex()));
 
 			if (isSelected)

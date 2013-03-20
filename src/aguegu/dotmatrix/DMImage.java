@@ -5,7 +5,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-public class DotMatrixImage extends BufferedImage
+public class DMImage extends BufferedImage
 {
 	private static int blockWidth = 13;
 	private static Color backgroundColor = Color.lightGray;
@@ -16,7 +16,7 @@ public class DotMatrixImage extends BufferedImage
 	private Graphics2D g2d;
 	private boolean[] dot;
 
-	public DotMatrixImage()
+	public DMImage()
 	{
 		super(blockWidth * 8, blockWidth * 8, BufferedImage.TYPE_BYTE_GRAY);
 

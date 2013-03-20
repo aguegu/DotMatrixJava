@@ -1,6 +1,6 @@
 package aguegu.dotmatrix;
 
-public class DotMatrixRecordFrame
+public class DMRecordFrame
 {
 	private DotMatrix dm;
 	private DMMode mode;
@@ -10,7 +10,7 @@ public class DotMatrixRecordFrame
 	private int minorSpan;
 	private int majorSpan;
 
-	public DotMatrixRecordFrame(int index)
+	public DMRecordFrame(int index)
 	{
 		this.index = index;
 

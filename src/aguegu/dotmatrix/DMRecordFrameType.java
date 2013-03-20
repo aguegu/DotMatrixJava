@@ -1,18 +1,15 @@
 package aguegu.dotmatrix;
 
-public enum DMRecordFrameType
-{
-	ALL(0xf0), BATCH(0xf2);
+public enum DMRecordFrameType {
+    ALL(0xf0), BATCH(0xf2);
 
-	private final byte val;
+    private final byte val;
 
-	DMRecordFrameType(int val)
-	{
-		this.val = (byte) val;
-	}
+    DMRecordFrameType(int val) {
+	this.val = (byte) val;
+    }
 
-	byte value()
-	{
-		return val;
-	}
+    byte value() {
+	return val;
+    }
 }

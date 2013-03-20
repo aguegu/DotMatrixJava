@@ -31,343 +31,308 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
-public class DMRecordPanel extends JPanel
-{
-	private static final long serialVersionUID = 1L;
+public class DMRecordPanel extends JPanel {
+    private static final long serialVersionUID = 1L;
 
-	private DMRecordFrame dmrf;
+    private DMRecordFrame dmrf;
 
-	private DMPanel panelDm;
+    private DMPanel panelDm;
 
-	private JPanel panelController;
-	private JTextArea textAreaCache;
-	private DMRecordHeaderPanel panelHeader;
+    private JPanel panelController;
+    private JTextArea textAreaCache;
+    private DMRecordHeaderPanel panelHeader;
 
-	private JCheckBox checkboxInLoop;
-	private JCheckBoxMenuItem miInLoop;
+    private JCheckBox checkboxInLoop;
+    private JCheckBoxMenuItem miInLoop;
 
-	private JRadioButtonMenuItem[] radiobuttonMenuItemModes;
+    private JRadioButtonMenuItem[] radiobuttonMenuItemModes;
 
-	private static final String[] FRAME_OPERATIONS = new String[] { "on",
-			"off", "X+", "X-", "Y+", "Y-", "Z+", "Z-", "3C", "3A", "2C", "2A",
-			"1C", "1A", "0C", "0A", "R" };
+    private static final String[] FRAME_OPERATIONS = new String[] { "on",
+	    "off", "X+", "X-", "Y+", "Y-", "Z+", "Z-", "3C", "3A", "2C", "2A",
+	    "1C", "1A", "0C", "0A", "R" };
 
-	private boolean inLoop = true;
-	private static Font monoFont;
+    private boolean inLoop = true;
+    private static Font monoFont;
 
-	private JMenu menu;
-	private JPanel panelFrameOperation;
-	
-	private ResourceBundle res;
+    private JMenu menu;
+    private JPanel panelFrameOperation;
 
-	public DMRecordPanel(ResourceBundle res)
-	{		
-		this.res = res;
-		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    private ResourceBundle res;
 
-		panelController = new JPanel();
-		panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
+    public DMRecordPanel(ResourceBundle res) {
+	this.res = res;
+	this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		panelDm = new DMPanel();
-		panelDm.addMouseListener(new MouseListenerPanelDotMatrix());
-		this.add(panelDm);
+	panelController = new JPanel();
+	panelController.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
 
-		monoFont = new Font("monospaced", Font.PLAIN, 12);
+	panelDm = new DMPanel();
+	panelDm.addMouseListener(new MouseListenerPanelDotMatrix());
+	this.add(panelDm);
 
-		textAreaCache = new JTextArea(9, 51);
-		textAreaCache.setLineWrap(true);
-		textAreaCache.setFont(monoFont);
+	monoFont = new Font("monospaced", Font.PLAIN, 12);
 
-		Document doc = textAreaCache.getDocument();
-		doc.addDocumentListener(new DocumentListeneDotMatrixTextArea());
+	textAreaCache = new JTextArea(9, 51);
+	textAreaCache.setLineWrap(true);
+	textAreaCache.setFont(monoFont);
 
-		JScrollPane textAreaPane = new JScrollPane(textAreaCache,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+	Document doc = textAreaCache.getDocument();
+	doc.addDocumentListener(new DocumentListeneDotMatrixTextArea());
 
-		panelController.add(textAreaPane);
-		panelHeader = new DMRecordHeaderPanel(this, res);
+	JScrollPane textAreaPane = new JScrollPane(textAreaCache,
+		ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-		panelController.add(panelHeader);
+	panelController.add(textAreaPane);
+	panelHeader = new DMRecordHeaderPanel(this, res);
 
-		this.add(panelController);
+	panelController.add(panelHeader);
 
-		panelDm.requestFocusInWindow();
+	this.add(panelController);
 
-		this.dmrf = new DMRecordFrame(0);
-		initMenu();
-		initFrameOperationPanel();
+	panelDm.requestFocusInWindow();
+
+	this.dmrf = new DMRecordFrame(0);
+	initMenu();
+	initFrameOperationPanel();
+    }
+
+    public void setFrame(DMRecordFrame dmrf) {
+	this.dmrf = new DMRecordFrame(dmrf.getIndex());
+	this.dmrf.setData(dmrf.getData());
+    }
+
+    public byte[] getData() {
+	return this.dmrf.getData();
+    }
+
+    public DMRecordFrame getRecordFrame() {
+	return this.dmrf;
+    }
+
+    private class MouseListenerPanelDotMatrix implements MouseListener {
+	@Override
+	public void mouseClicked(MouseEvent e) {
 	}
 
-	public void setFrame(DMRecordFrame dmrf)
-	{
-		this.dmrf = new DMRecordFrame(dmrf.getIndex());
-		this.dmrf.setData(dmrf.getData());
+	@Override
+	public void mousePressed(MouseEvent e) {
+	    textAreaCache.setText(dmrf.getCacheString());
+	    panelDm.requestFocusInWindow();
 	}
 
-	public byte[] getData()
-	{
-		return this.dmrf.getData();
+	@Override
+	public void mouseReleased(MouseEvent e) {
 	}
 
-	public DMRecordFrame getRecordFrame()
-	{
-		return this.dmrf;
+	@Override
+	public void mouseEntered(MouseEvent e) {
 	}
 
-	private class MouseListenerPanelDotMatrix implements MouseListener
-	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
+	@Override
+	public void mouseExited(MouseEvent e) {
+	}
+    }
+
+    private class DocumentListeneDotMatrixTextArea implements DocumentListener {
+	@Override
+	public void insertUpdate(DocumentEvent e) {
+	    if (!textAreaCache.isFocusOwner())
+		return;
+
+	    String s = textAreaCache.getText();
+
+	    if (s.matches("(0[x|X][\\p{XDigit}]{2},[\\s]+){72}")) {
+		Pattern pattern = Pattern.compile("0[x|X][\\p{XDigit}]{2}");
+		Matcher matcher = pattern.matcher(s);
+
+		byte[] data = new byte[72];
+
+		for (int i = 0; i < data.length && matcher.find(); i++) {
+		    String match = matcher.group();
+		    int t = Integer.decode(match);
+		    data[i] = (byte) t;
 		}
 
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-			textAreaCache.setText(dmrf.getCacheString());
-			panelDm.requestFocusInWindow();
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
+		dmrf.setData(data);
+		refresh(false);
+	    }
 	}
 
-	private class DocumentListeneDotMatrixTextArea implements DocumentListener
-	{
-		@Override
-		public void insertUpdate(DocumentEvent e)
-		{
-			if (!textAreaCache.isFocusOwner())
-				return;
-
-			String s = textAreaCache.getText();
-
-			if (s.matches("(0[x|X][\\p{XDigit}]{2},[\\s]+){72}"))
-			{
-				Pattern pattern = Pattern.compile("0[x|X][\\p{XDigit}]{2}");
-				Matcher matcher = pattern.matcher(s);
-
-				byte[] data = new byte[72];
-
-				for (int i = 0; i < data.length && matcher.find(); i++)
-				{
-					String match = matcher.group();
-					int t = Integer.decode(match);
-					data[i] = (byte) t;
-				}
-
-				dmrf.setData(data);
-				refresh(false);
-			}
-		}
-
-		@Override
-		public void removeUpdate(DocumentEvent e)
-		{
-		}
-
-		@Override
-		public void changedUpdate(DocumentEvent e)
-		{
-		}
+	@Override
+	public void removeUpdate(DocumentEvent e) {
 	}
 
-	private class ActionListenerMode implements ActionListener
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			dmrf.setMode(DMMode.getMode(e.getActionCommand()));
-			refresh(true);
-		}
+	@Override
+	public void changedUpdate(DocumentEvent e) {
+	}
+    }
+
+    private class ActionListenerMode implements ActionListener {
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    dmrf.setMode(DMMode.getMode(e.getActionCommand()));
+	    refresh(true);
+	}
+    }
+
+    public void refresh(boolean updateString) {
+	panelDm.setMode(dmrf.getMode());
+	panelDm.setDotMatrix(dmrf.getDotMatrix());
+	panelDm.update();
+	panelDm.repaint();
+
+	radiobuttonMenuItemModes[dmrf.getMode().ordinal()].setSelected(true);
+	panelHeader.refresh();
+
+	if (updateString) {
+	    textAreaCache.setText(dmrf.getCacheString());
+	}
+    }
+
+    private void initMenu() {
+	menu = new JMenu(res.getString("frame"));
+	menu.setMnemonic(KeyEvent.VK_E);
+
+	radiobuttonMenuItemModes = new JRadioButtonMenuItem[3];
+
+	ButtonGroup bgMode = new ButtonGroup();
+	int i = 0;
+
+	for (DMMode mode : DMMode.values()) {
+	    radiobuttonMenuItemModes[i] = new JRadioButtonMenuItem(
+		    mode.toString());
+	    radiobuttonMenuItemModes[i].setActionCommand(mode.toString());
+	    radiobuttonMenuItemModes[i]
+		    .addActionListener(new ActionListenerMode());
+	    bgMode.add(radiobuttonMenuItemModes[i]);
+	    menu.add(radiobuttonMenuItemModes[i]);
+	    i++;
 	}
 
-	public void refresh(boolean updateString)
-	{
-		panelDm.setMode(dmrf.getMode());
-		panelDm.setDotMatrix(dmrf.getDotMatrix());
-		panelDm.update();
-		panelDm.repaint();
+	menu.addSeparator();
 
-		radiobuttonMenuItemModes[dmrf.getMode().ordinal()].setSelected(true);
-		panelHeader.refresh();
+	miInLoop = new JCheckBoxMenuItem("loop", true);
+	miInLoop.addActionListener(new ActionListenerInLoop());
+	menu.add(miInLoop);
 
-		if (updateString)
-		{
-			textAreaCache.setText(dmrf.getCacheString());
-		}
+	for (String s : FRAME_OPERATIONS) {
+	    JMenuItem button = new JMenuItem(s);
+	    button.setActionCommand(s);
+	    button.addActionListener(new ActionListenerFrameOperation());
+	    menu.add(button);
+	}
+    }
+
+    public JMenu getMenu() {
+	return menu;
+    }
+
+    public void initFrameOperationPanel() {
+	panelFrameOperation = new JPanel();
+	panelFrameOperation.setPreferredSize(new Dimension(64, 0));
+	panelFrameOperation.setLayout(new FlowLayout(FlowLayout.LEFT));
+	// panelFrameOperation.setBorder(BorderFactory.createEmptyBorder(13, 5,
+	// 13, 5));
+
+	for (String s : FRAME_OPERATIONS) {
+	    JButton button = new JButton();
+
+	    button.setActionCommand(s);
+	    button.addActionListener(new ActionListenerFrameOperation());
+
+	    button.setIcon(new ImageIcon(getClass().getResource(
+		    "/image/" + s + ".png")));
+
+	    button.setMargin(new Insets(1, 1, 1, 1));
+
+	    panelFrameOperation.add(button);
 	}
 
-	private void initMenu()
-	{
-		menu = new JMenu(res.getString("frame"));
-		menu.setMnemonic(KeyEvent.VK_E);
+	checkboxInLoop = new JCheckBox("", inLoop);
+	checkboxInLoop.addActionListener(new ActionListenerInLoop());
+	panelFrameOperation.add(checkboxInLoop);
 
-		radiobuttonMenuItemModes = new JRadioButtonMenuItem[3];
+    }
 
-		ButtonGroup bgMode = new ButtonGroup();
-		int i = 0;
+    public JPanel getFrameOperationPanel() {
+	return panelFrameOperation;
+    }
 
-		for (DMMode mode : DMMode.values())
-		{
-			radiobuttonMenuItemModes[i] = new JRadioButtonMenuItem(
-					mode.toString());
-			radiobuttonMenuItemModes[i].setActionCommand(mode.toString());
-			radiobuttonMenuItemModes[i]
-					.addActionListener(new ActionListenerMode());
-			bgMode.add(radiobuttonMenuItemModes[i]);
-			menu.add(radiobuttonMenuItemModes[i]);
-			i++;
-		}
+    private class ActionListenerFrameOperation implements ActionListener {
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    boolean recycle = inLoop;
 
-		menu.addSeparator();
-
-		miInLoop = new JCheckBoxMenuItem("loop", true);
-		miInLoop.addActionListener(new ActionListenerInLoop());
-		menu.add(miInLoop);
-
-		for (String s : FRAME_OPERATIONS)
-		{
-			JMenuItem button = new JMenuItem(s);
-			button.setActionCommand(s);
-			button.addActionListener(new ActionListenerFrameOperation());
-			menu.add(button);
-		}
+	    DotMatrix dm = dmrf.getDotMatrix();
+	    switch (e.getActionCommand()) {
+	    case "on":
+		dm.clear(true);
+		break;
+	    case "off":
+		dm.clear(false);
+		break;
+	    case "X+":
+		dm.move(DotMatrix.Direction.X_POSI, recycle);
+		break;
+	    case "X-":
+		dm.move(DotMatrix.Direction.X_NEGA, recycle);
+		break;
+	    case "Y+":
+		dm.move(DotMatrix.Direction.Y_POSI, recycle);
+		break;
+	    case "Y-":
+		dm.move(DotMatrix.Direction.Y_NEGA, recycle);
+		break;
+	    case "Z+":
+		dm.move(DotMatrix.Direction.Z_POSI, recycle);
+		break;
+	    case "Z-":
+		dm.move(DotMatrix.Direction.Z_NEGA, recycle);
+		break;
+	    case "R":
+		dm.reverse();
+		break;
+	    case "3C":
+		dm.rotate(3, true, recycle);
+		break;
+	    case "2C":
+		dm.rotate(2, true, recycle);
+		break;
+	    case "1C":
+		dm.rotate(1, true, recycle);
+		break;
+	    case "0C":
+		dm.rotate(0, true, recycle);
+		break;
+	    case "3A":
+		dm.rotate(3, false, recycle);
+		break;
+	    case "2A":
+		dm.rotate(2, false, recycle);
+		break;
+	    case "1A":
+		dm.rotate(1, false, recycle);
+		break;
+	    case "0A":
+		dm.rotate(0, false, recycle);
+		break;
+	    }
+	    refresh(true);
 	}
+    }
 
-	public JMenu getMenu()
-	{
-		return menu;
+    private class ActionListenerInLoop implements ActionListener {
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    if (e.getSource() instanceof JCheckBox) {
+		inLoop = ((JCheckBox) e.getSource()).isSelected();
+	    } else if (e.getSource() instanceof JCheckBoxMenuItem) {
+		inLoop = ((JCheckBoxMenuItem) e.getSource()).isSelected();
+	    }
+
+	    checkboxInLoop.setSelected(inLoop);
+	    miInLoop.setSelected(inLoop);
 	}
-
-	public void initFrameOperationPanel()
-	{
-		panelFrameOperation = new JPanel();
-		panelFrameOperation.setPreferredSize(new Dimension(64, 0));
-		panelFrameOperation.setLayout(new FlowLayout(FlowLayout.LEFT));
-		// panelFrameOperation.setBorder(BorderFactory.createEmptyBorder(13, 5,
-		// 13, 5));
-
-		for (String s : FRAME_OPERATIONS)
-		{
-			JButton button = new JButton();
-
-			button.setActionCommand(s);
-			button.addActionListener(new ActionListenerFrameOperation());
-
-			button.setIcon(new ImageIcon(getClass().getResource("/image/" + s + ".png")));
-
-			button.setMargin(new Insets(1, 1, 1, 1));
-
-			panelFrameOperation.add(button);
-		}
-
-		checkboxInLoop = new JCheckBox("", inLoop);
-		checkboxInLoop.addActionListener(new ActionListenerInLoop());
-		panelFrameOperation.add(checkboxInLoop);
-
-	}
-
-	public JPanel getFrameOperationPanel()
-	{
-		return panelFrameOperation;
-	}
-
-	private class ActionListenerFrameOperation implements ActionListener
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			boolean recycle = inLoop;
-
-			DotMatrix dm = dmrf.getDotMatrix();
-			switch (e.getActionCommand())
-			{
-			case "on":
-				dm.clear(true);
-				break;
-			case "off":
-				dm.clear(false);
-				break;
-			case "X+":
-				dm.move(DotMatrix.Direction.X_POSI, recycle);
-				break;
-			case "X-":
-				dm.move(DotMatrix.Direction.X_NEGA, recycle);
-				break;
-			case "Y+":
-				dm.move(DotMatrix.Direction.Y_POSI, recycle);
-				break;
-			case "Y-":
-				dm.move(DotMatrix.Direction.Y_NEGA, recycle);
-				break;
-			case "Z+":
-				dm.move(DotMatrix.Direction.Z_POSI, recycle);
-				break;
-			case "Z-":
-				dm.move(DotMatrix.Direction.Z_NEGA, recycle);
-				break;
-			case "R":
-				dm.reverse();
-				break;
-			case "3C":
-				dm.rotate(3, true, recycle);
-				break;
-			case "2C":
-				dm.rotate(2, true, recycle);
-				break;
-			case "1C":
-				dm.rotate(1, true, recycle);
-				break;
-			case "0C":
-				dm.rotate(0, true, recycle);
-				break;
-			case "3A":
-				dm.rotate(3, false, recycle);
-				break;
-			case "2A":
-				dm.rotate(2, false, recycle);
-				break;
-			case "1A":
-				dm.rotate(1, false, recycle);
-				break;
-			case "0A":
-				dm.rotate(0, false, recycle);
-				break;
-			}
-			refresh(true);
-		}
-	}
-
-	private class ActionListenerInLoop implements ActionListener
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			if (e.getSource() instanceof JCheckBox)
-			{
-				inLoop = ((JCheckBox) e.getSource()).isSelected();
-			}
-			else if (e.getSource() instanceof JCheckBoxMenuItem)
-			{
-				inLoop = ((JCheckBoxMenuItem) e.getSource()).isSelected();
-			}
-
-			checkboxInLoop.setSelected(inLoop);
-			miInLoop.setSelected(inLoop);
-		}
-	}
+    }
 }

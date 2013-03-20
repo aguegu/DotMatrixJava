@@ -89,7 +89,6 @@ public class DotMatrixTest extends JFrame {
 	labelStatus = new JLabel();
 	labelStatus.setBorder(BorderFactory
 		.createBevelBorder(BevelBorder.LOWERED));
-	this.remove(labelStatus);
 	this.getContentPane().add(BorderLayout.SOUTH, labelStatus);
 
 	if (dmr == null)

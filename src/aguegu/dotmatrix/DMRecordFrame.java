@@ -6,8 +6,7 @@ public class DMRecordFrame {
     private int brightness;
     private DMAttachment attachment;
     private int index;
-    private int minorSpan;
-    private int majorSpan;
+    private int span;
 
     public DMRecordFrame(int index) {
 	this.index = index;
@@ -16,21 +15,17 @@ public class DMRecordFrame {
 	mode = DMMode.XYZ;
 	brightness = (byte) 0xff;
 	attachment = DMAttachment.NONE;
-	minorSpan = 0x0000;
-	majorSpan = 0x00c0;
+	span = 0x0080;
     }
 
     public void setData(byte[] data) {
 	mode = DMMode.getMode(data[1]);
 	brightness = DotMatrix.byteToInt(data[2]);
 	attachment = DMAttachment.getDMAttachment(data[3]);
-	minorSpan = (DotMatrix.byteToInt(data[4]) << 8)
-		| DotMatrix.byteToInt(data[5]);
-	majorSpan = (DotMatrix.byteToInt(data[6]) << 8)
+	span = (DotMatrix.byteToInt(data[6]) << 8)
 		| DotMatrix.byteToInt(data[7]);
 
 	dm.setCache(data, 8);
-
     }
 
     public int getIndex() {
@@ -69,20 +64,12 @@ public class DMRecordFrame {
 	return this.attachment;
     }
 
-    public void setMinorSpan(int minorSpan) {
-	this.minorSpan = minorSpan % 65536;
+    public void setSpan(int span) {
+	this.span = span % 65536;
     }
 
-    public int getMinorSpan() {
-	return minorSpan;
-    }
-
-    public void setMajorSpan(int majorSpan) {
-	this.majorSpan = majorSpan % 65536;
-    }
-
-    public int getMajorSpan() {
-	return majorSpan;
+    public int getSpan() {
+	return span;
     }
 
     public byte[] getData() {
@@ -92,10 +79,8 @@ public class DMRecordFrame {
 	data[1] = mode.value();
 	data[2] = (byte) brightness;
 	data[3] = attachment.value();
-	data[4] = (byte) (minorSpan >> 8);
-	data[5] = (byte) (minorSpan & 0xff);
-	data[6] = (byte) (majorSpan >> 8);
-	data[7] = (byte) (majorSpan & 0xff);
+	data[6] = (byte) (span >> 8);
+	data[7] = (byte) (span & 0xff);
 	System.arraycopy(dm.getCache(), 0, data, 8, DotMatrix.CACHE_LENGTH);
 
 	return data;

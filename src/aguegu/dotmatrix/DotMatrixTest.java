@@ -49,7 +49,7 @@ public class DotMatrixTest extends JFrame {
 	    "save", "save_as", "exit" };
     private static final String[] RECORD_OPERATION_COMMANDS = new String[] {
 	    "append", "insert", "update", "delete", "-", "mode", "brightness",
-	    "major_span", "minor_span" };
+	    "span"};
 
     private static final String PROGRAME_NAME = new String(
 	    "3D8 TF Animation Editor");
@@ -238,24 +238,14 @@ public class DotMatrixTest extends JFrame {
 		    dmr.setBrightness(brightness);
 		}
 		break;
-	    case "major_span":
-		String sMajorSpan = JOptionPane.showInputDialog(
-			res.getString("major_span_prompt"), "0x00c0");
+	    case "span":
+		String sSpan = JOptionPane.showInputDialog(
+			res.getString("span_prompt"), "0x0080");
 
-		if (sMajorSpan != null
-			&& sMajorSpan.matches("0[x|X][\\p{XDigit}]{4}")) {
-		    int majorSpan = Integer.decode(sMajorSpan);
-		    dmr.setMajorSpan(majorSpan);
-		}
-		break;
-	    case "minor_span":
-		String sMinorSpan = JOptionPane.showInputDialog(
-			res.getString("minor_span_prompt"), "0x0000");
-
-		if (sMinorSpan != null
-			&& sMinorSpan.matches("0[x|X][\\p{XDigit}]{4}")) {
-		    int minorSpan = Integer.decode(sMinorSpan);
-		    dmr.setMinorSpan(minorSpan);
+		if (sSpan != null
+			&& sSpan.matches("0[x|X][\\p{XDigit}]{4}")) {
+		    int span = Integer.decode(sSpan);
+		    dmr.setSpan(span);
 		}
 		break;
 	    }

@@ -40,7 +40,7 @@ void sendAnimation(byte *data)
 		Serial.write(data[i]);
 	}
 
-	delay(makeWord(data[4], data[5]));	
+	delay(makeWord(data[6], data[7]));	
 }
 
 void readAnimation(File & file)

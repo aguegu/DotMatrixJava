@@ -24,8 +24,7 @@ public class DMRecordHeaderPanel extends JPanel {
     private DMRecordPanel parent;
 
     private JSlider sliderBrightness;
-    private JSlider sliderSmallSpan;
-    private JSlider sliderBigSpan;
+    private JSlider sliderSpan;
 
     private JCheckBox checkboxUpperLed;
     private JCheckBox checkboxBottomLed;
@@ -84,28 +83,20 @@ public class DMRecordHeaderPanel extends JPanel {
 	sliderBrightness.addChangeListener(cl);
 	sliderBrightness.setAlignmentX(LEFT_ALIGNMENT);
 
-	sliderSmallSpan = new JSlider(0, 65535, 65535);
-	sliderSmallSpan.setMinorTickSpacing(0x1000);
-	sliderSmallSpan.setSnapToTicks(true);
-	sliderSmallSpan.setPaintTicks(true);
-	sliderSmallSpan.addChangeListener(cl);
-	sliderSmallSpan.setAlignmentX(LEFT_ALIGNMENT);
-
-	sliderBigSpan = new JSlider(0, 0x400, 0);
-	sliderBigSpan.setMinorTickSpacing(0x10);
-	sliderBigSpan.setSnapToTicks(true);
-	sliderBigSpan.setPaintTicks(true);
-	sliderBigSpan.addChangeListener(cl);
-	sliderBigSpan.setAlignmentX(LEFT_ALIGNMENT);
+	sliderSpan = new JSlider(0, 0x0800, 0x0080);
+	sliderSpan.setMinorTickSpacing(0x10);
+	sliderSpan.setSnapToTicks(true);
+	sliderSpan.setPaintTicks(true);
+	sliderSpan.addChangeListener(cl);
+	sliderSpan.setAlignmentX(LEFT_ALIGNMENT);
 
 	JPanel panelSliders = new JPanel();
 	panelSliders.setLayout(new BoxLayout(panelSliders, BoxLayout.Y_AXIS));
 	panelSliders.add(new JLabel(res.getString("brightness") + ":"));
 	panelSliders.add(sliderBrightness);
 	panelSliders.add(new JLabel(res.getString("time_span") + ":"));
-	panelSliders.add(sliderSmallSpan);
-	panelSliders.add(sliderBigSpan);
-
+	panelSliders.add(sliderSpan);
+	
 	this.add(panelModeAndAttachment);
 	this.add(panelSliders);
     }
@@ -117,12 +108,9 @@ public class DMRecordHeaderPanel extends JPanel {
 		if (e.getSource().equals(sliderBrightness)) {
 		    parent.getRecordFrame().setBrightness(
 			    (Integer) sliderBrightness.getValue());
-		} else if (e.getSource().equals(sliderSmallSpan)) {
-		    parent.getRecordFrame().setMinorSpan(
-			    (Integer) sliderSmallSpan.getValue());
-		} else if (e.getSource().equals(sliderBigSpan)) {
-		    parent.getRecordFrame().setMajorSpan(
-			    (Integer) sliderBigSpan.getValue());
+		} else if (e.getSource().equals(sliderSpan)) {
+		    parent.getRecordFrame().setSpan(
+			    (Integer) sliderSpan.getValue());
 		}
 
 		parent.refresh(true);
@@ -159,13 +147,9 @@ public class DMRecordHeaderPanel extends JPanel {
 	sliderBrightness.setValue(parent.getRecordFrame().getBrightness());
 	sliderBrightness.addChangeListener(cl);
 
-	sliderSmallSpan.removeChangeListener(cl);
-	sliderSmallSpan.setValue(parent.getRecordFrame().getMinorSpan());
-	sliderSmallSpan.addChangeListener(cl);
-
-	sliderBigSpan.removeChangeListener(cl);
-	sliderBigSpan.setValue(parent.getRecordFrame().getMajorSpan());
-	sliderBigSpan.addChangeListener(cl);
+	sliderSpan.removeChangeListener(cl);
+	sliderSpan.setValue(parent.getRecordFrame().getSpan());
+	sliderSpan.addChangeListener(cl);
 
 	switch (parent.getRecordFrame().getAttachment()) {
 	case BOTH:

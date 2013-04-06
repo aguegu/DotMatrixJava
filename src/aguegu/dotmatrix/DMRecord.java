@@ -139,15 +139,9 @@ public class DMRecord {
 	}
     }
 
-    public void setMajorSpan(int majorSpan) {
+    public void setSpan(int span) {
 	for (DMRecordFrame dmrf : record) {
-	    dmrf.setMajorSpan(majorSpan);
-	}
-    }
-
-    public void setMinorSpan(int minorSpan) {
-	for (DMRecordFrame dmrf : record) {
-	    dmrf.setMinorSpan(minorSpan);
+	    dmrf.setSpan(span);
 	}
     }
 

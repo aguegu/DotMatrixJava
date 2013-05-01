@@ -49,7 +49,7 @@ public class DMRecordPanel extends JPanel {
 
 	private static final String[] FRAME_OPERATION_COMMANDS = new String[] {
 			"on", "off", "x+", "x-", "y+", "y-", "z+", "z-", "3c", "3a", "2c",
-			"2a", "1c", "1a", "0c", "0a", "r" };
+			"2a", "1c", "1a", "0c", "0a", "xf", "yf", "zf", "r" };
 
 	private boolean inLoop = true;
 	private static Font monoFont;
@@ -318,6 +318,15 @@ public class DMRecordPanel extends JPanel {
 				break;
 			case "0a":
 				dm.rotate(0, false, recycle);
+				break;
+			case "xf":
+				dm.flip(DotMatrix.Direction.X_POSI);
+				break;
+			case "yf":
+				dm.flip(DotMatrix.Direction.Y_POSI);
+				break;
+			case "zf":
+				dm.flip(DotMatrix.Direction.Z_POSI);
 				break;
 			}
 			refresh(true);

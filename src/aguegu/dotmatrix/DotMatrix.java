@@ -11,13 +11,9 @@ public class DotMatrix {
 					41, 33, 25, 17 },
 			{ 0, 1, 2, 3, 4, 5, 6, 7, 15, 23, 31, 39, 47, 55, 63, 62, 61, 60,
 					59, 58, 57, 56, 48, 40, 32, 24, 16, 8 } };
-	
-	private static final byte BYTE_REVERSE[] = {
-		0x00, 0x08, 0x04, 0x0c,
-		0x02, 0x0a, 0x06, 0x0e,
-		0x01, 0x09, 0x05, 0x0d,
-		0x03, 0x0b, 0x07, 0x0f
-	};
+
+	private static final byte BYTE_REVERSE[] = { 0x00, 0x08, 0x04, 0x0c, 0x02,
+			0x0a, 0x06, 0x0e, 0x01, 0x09, 0x05, 0x0d, 0x03, 0x0b, 0x07, 0x0f };
 
 	private boolean[] dot;
 
@@ -59,7 +55,7 @@ public class DotMatrix {
 		for (int i = 0; i < dot.length; i++)
 			dot[i] = !dot[i];
 	}
-	
+
 	public static byte flipeByte(byte c) {
 		return (byte) ((BYTE_REVERSE[c & 0x0f] << 4) ^ (BYTE_REVERSE[(c >> 4) & 0x0f] & 0x0f));
 	}
@@ -251,6 +247,44 @@ public class DotMatrix {
 					for (; z > 0; z--)
 						dot[getIndex(x, y, z)] = dot[getIndex(x, y, z - 1)];
 					dot[getIndex(x, y, z)] = recycle ? temp : false;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+
+	public void flip(Direction direction) {
+		for (int x = 0; x < 8; x++) {
+			for (int y = 0; y < 8; y++) {
+
+				boolean temp;
+
+				switch (direction) {
+				case X_POSI:
+				case X_NEGA:
+					for (int z = 0; z < 4; z++) {
+						temp = dot[getIndex(z, x, y)];
+						dot[getIndex(z, x, y)] = dot[getIndex(7 - z, x, y)];
+						dot[getIndex(7 - z, x, y)] = temp;
+					}
+					break;
+				case Y_NEGA:
+				case Y_POSI:
+					for (int z = 0; z < 4; z++) {
+						temp = dot[getIndex(x, z, y)];
+						dot[getIndex(x, z, y)] = dot[getIndex(x, 7 - z, y)];
+						dot[getIndex(x, 7 - z, y)] = temp;
+					}					
+					break;
+				case Z_NEGA:
+				case Z_POSI:
+					for (int z = 0; z < 4; z++) {
+						temp = dot[getIndex(x, y, z)];
+						dot[getIndex(x, y, z)] = dot[getIndex(x, y, 7 - z)];
+						dot[getIndex(x, y, 7 - z)] = temp;
+					}
 					break;
 				default:
 					break;

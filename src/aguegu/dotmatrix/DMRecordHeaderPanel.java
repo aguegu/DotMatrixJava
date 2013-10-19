@@ -59,11 +59,11 @@ public class DMRecordHeaderPanel extends JPanel {
 		JPanel panelAttachment = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		checkboxUpperLed = new JCheckBox(res.getString("upper_led"));
 		checkboxUpperLed.addActionListener(new ActionListenerAttachment());
-		panelAttachment.add(checkboxUpperLed);
+		//panelAttachment.add(checkboxUpperLed);
 
 		checkboxBottomLed = new JCheckBox(res.getString("bottom_led"));
 		checkboxBottomLed.addActionListener(new ActionListenerAttachment());
-		panelAttachment.add(checkboxBottomLed);
+		//panelAttachment.add(checkboxBottomLed);
 		panelAttachment.setAlignmentX(LEFT_ALIGNMENT);
 
 		JPanel panelModeAndAttachment = new JPanel();

@@ -32,6 +32,10 @@ public class DMRecordList extends JList<DMRecordFrame> {
 			lm.addElement(dmrf);
 		}
 	}
+	
+	public int getNumFrames() {
+		return lm.getSize();
+	}
 
 	class DotMatrixRecordCellRender extends JLabel implements
 			ListCellRenderer<DMRecordFrame> {

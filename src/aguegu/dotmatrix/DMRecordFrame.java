@@ -85,6 +85,15 @@ public class DMRecordFrame {
 
 		return data;
 	}
+	
+	public byte[] getSimpleData() {
+		byte[] data = new byte[65];
+
+		data[0] = (byte) 0xf2;
+		System.arraycopy(dm.getCache(), 0, data, 1, DotMatrix.CACHE_LENGTH);
+
+		return data;
+	}
 
 	public String getCacheString() {
 		return DotMatrix.cacheString(getData());

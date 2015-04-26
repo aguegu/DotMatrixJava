@@ -1,6 +1,9 @@
 8x8x8 Led Cube control program
 ---------
 
+PC control program for generic 8x8x8 3D LED Cube found on eBay
+(e.g. 3D LightSquared 8x8x8 LED Cube DIY kit, ideasoft, etc.)
+
 ![Program view](/help/program_view.png)
 
 * Written in Java

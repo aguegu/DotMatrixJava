@@ -34,3 +34,6 @@ F2
 * next 64 bytes - (8x8x8 bits) of LED light states
   * one byte - controls a LED row (8 LEDs)
   * can be any value in range: 00-FF (i.e. 00 - all 8 LEDs in row are off, FF - all 8 LEDs are on)
+  * a single line (e.g. 00 00 00 00 00 00 00 FF) denotes a 64 LED layer
+
+`Implementation note:` to save energy/current consumption only a single layer (64 LEDs) in a LED cube is ON at one time. This is done for all layers and so fast (using a hardware timer), that the human eye does not recognize this. This hack allows to view the cube (all layers) as fully lit. 

@@ -7,9 +7,9 @@ void setup()
 {
 	Serial.begin(9600);
 
-	pinMode(10, OUTPUT); // change this to 53 on a mega
+	pinMode(10, OUTPUT); // SS pin must be output, change this to 53 on a mega
 
-	bool sd_ok = SD.begin(9);
+	bool sd_ok = SD.begin(9); // chip select pin
 
 	if (!sd_ok)
 	{
@@ -49,7 +49,7 @@ void loop(void)
 		char *p = file.name();
 		char *p_dot = strchr(p, '.');
 
-		if (p_dot != NULL && strcmp(p_dot, ".DAT") == 0)
+		if (p_dot != NULL && strcmp(p_dot, ".dat") == 0)
 		{
 			readAnimation(file);
 		}

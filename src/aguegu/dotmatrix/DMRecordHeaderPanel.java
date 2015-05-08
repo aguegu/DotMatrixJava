@@ -204,13 +204,13 @@ public class DMRecordHeaderPanel extends JPanel {
 	public List<String> enumeratePorts() {
 		// scan available COM ports
 		List<String> ports = new ArrayList<String>();
+		System.out.println("enumerate serial ports");
 		
 		try {
 			Enumeration<?> port_list = CommPortIdentifier.getPortIdentifiers();
 			
 		    while (port_list.hasMoreElements()) {
 		    	CommPortIdentifier port_id = (CommPortIdentifier) port_list.nextElement();
-		        
 		        if (port_id.getPortType() == CommPortIdentifier.PORT_SERIAL) {
 		        	ports.add(port_id.getName());
 		        }
@@ -218,25 +218,37 @@ public class DMRecordHeaderPanel extends JPanel {
 		} catch (UnsatisfiedLinkError e) {
 			JOptionPane.showMessageDialog(null, "Error initializing serial port:\n" + e.getMessage(), "Serial error", JOptionPane.ERROR_MESSAGE);
 		} finally {
+			System.out.println(ports.size()+" ports found: " + ports);
 			if (ports.isEmpty()) {
 				ports.add("No ports found!"); // default
 			}
 		}
+		
 		return ports;
 	}
 	
 	public boolean openSerial(String name) {
 		try {
+			System.out.println("open serial: " + name);
+			
 		    Enumeration<?> port_list = CommPortIdentifier.getPortIdentifiers();
+		    boolean found = false;
 		
 		    while (port_list.hasMoreElements()) {
 		        // Get the list of ports
 		        CommPortIdentifier port_id = (CommPortIdentifier) port_list.nextElement();
 		        
 		        if (port_id.getPortType() == CommPortIdentifier.PORT_SERIAL && port_id.getName().equals(name)) {
+		        	found = true;
+		        	
 		            try {
 		            	// attempt to open
 		                port = (SerialPort) port_id.open("PortListOpen", 20);
+		                if (port == null) {
+		                	throw new Exception("Cannot open port: " + name);
+		                }
+		                
+		                System.out.println("serial port opened: " + name);
 		  
 	                    int baudRate = Integer.parseInt((String)baudBox.getSelectedItem());
 	                    port.setSerialPortParams(
@@ -250,23 +262,30 @@ public class DMRecordHeaderPanel extends JPanel {
 	                    return true;
 	                } catch (UnsupportedCommOperationException e) {
 	                    JOptionPane.showMessageDialog(null, "Invalid serial parameters:\n" + e.getMessage(), "Serial error", JOptionPane.ERROR_MESSAGE);
-	                } catch (IOException e) {
-	                	JOptionPane.showMessageDialog(null, "I/O error:\n" + e.getMessage(), "Serial error", JOptionPane.ERROR_MESSAGE);
 	                } catch (PortInUseException e) {
 	                	String owner = port_id.getCurrentOwner();
 	                	JOptionPane.showMessageDialog(null, "The port is already in use! Owner: " + (owner != null ? owner : "unknown"), 
 	                			"Serial error", JOptionPane.ERROR_MESSAGE);
+	                } catch (Exception e) {
+	                	JOptionPane.showMessageDialog(null, "I/O error:\n" + e.getMessage(), "Serial error", JOptionPane.ERROR_MESSAGE);
 	                }
 	            }
+		    }
+		    
+		    // not found
+		    if (!found) {
+		    	JOptionPane.showMessageDialog(null, "Serial port not found: " + name, "Serial error", JOptionPane.ERROR_MESSAGE);
 		    }
 		} catch (UnsatisfiedLinkError e) {
 			JOptionPane.showMessageDialog(null, "Error initializing serial port:\n" + e.getMessage(), "Serial error", JOptionPane.ERROR_MESSAGE);
 		}
+		
 	    return false;
     }
 	
 	private void closeSerial() {
 		if (port != null) {
+			System.out.println("closing serial port");
 			port.close();
 		}
 		port = null;

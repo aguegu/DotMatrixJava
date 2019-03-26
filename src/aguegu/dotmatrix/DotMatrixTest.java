@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
-
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -26,7 +25,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
-
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -54,12 +52,14 @@ public class DotMatrixTest extends JFrame {
 	private static final String PROGRAME_NAME = new String(
 			"3D8 TF Animation Editor");
 
-	private Locale locale = Locale.CHINESE;
+	private Locale locale = Locale.ENGLISH;
 	private ResourceBundle res;
 
 	private File fileRecord = null;
 	private String message;
 	private boolean isSaved = true;
+	private boolean firstInit = true;
+	private JFileChooser fs = new JFileChooser();
 
 	public static void main(String[] args) {
 		DotMatrixTest dmt = new DotMatrixTest();
@@ -74,10 +74,9 @@ public class DotMatrixTest extends JFrame {
 
 		this.getContentPane().removeAll();
 
-		if (dmrf == null)
-			dmrf = new DMRecordFrame(0);
+		dmrf = new DMRecordFrame(0);
 
-		panelRecord = new DMRecordPanel(res);
+		panelRecord = new DMRecordPanel(this, panelRecord, res);
 		panelRecord.setFrame(dmrf);
 
 		panelToolbar = panelToolBar();
@@ -91,14 +90,10 @@ public class DotMatrixTest extends JFrame {
 				.createBevelBorder(BevelBorder.LOWERED));
 		this.getContentPane().add(BorderLayout.SOUTH, labelStatus);
 
-		if (dmr == null)
-			dmr = new DMRecord();
+		dmr = new DMRecord();
 
-		if (listFrame == null) {
-			listFrame = new DMRecordList(dmr);
-			listFrame
-					.addListSelectionListener(new ListSelectionListenerListFrame());
-		}
+		listFrame = new DMRecordList(dmr);
+		listFrame.addListSelectionListener(new ListSelectionListenerListFrame());
 
 		JScrollPane listFramePane = new JScrollPane(listFrame,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -114,7 +109,10 @@ public class DotMatrixTest extends JFrame {
 		begin();
 		refreshFrame();
 
-		this.setLocation(100, 100);
+		if (firstInit) {
+			firstInit = false;
+			this.setLocation(100, 100);
+		}
 		this.pack();
 		this.setResizable(false);
 
@@ -124,7 +122,6 @@ public class DotMatrixTest extends JFrame {
 	private class ActionListenerFileOperation implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JFileChooser fs = new JFileChooser();
 			FileNameExtensionFilter filter = new FileNameExtensionFilter(
 					"3D8 animation record (*.dat)", "dat");
 			fs.setFileFilter(filter);
@@ -141,13 +138,16 @@ public class DotMatrixTest extends JFrame {
 					if (result == JOptionPane.YES_OPTION)
 						save();
 				}
-				begin();
+				init(); //begin
 				break;
 			case "open":
 				result = fs.showOpenDialog(null);
 				file = fs.getSelectedFile();
+
 				if (file == null || result != JFileChooser.APPROVE_OPTION)
 					break;
+				
+				fs.setCurrentDirectory(file); // save old directory
 
 				fileRecord = file;
 				dmr.readRecord(fileRecord);
@@ -192,7 +192,7 @@ public class DotMatrixTest extends JFrame {
 		}
 	}
 
-	private class ActionListenerRecordOperation implements ActionListener {
+    private class ActionListenerRocordOperation implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			int index = listFrame.getSelectedIndex();
@@ -242,7 +242,8 @@ public class DotMatrixTest extends JFrame {
 				String sSpan = JOptionPane.showInputDialog(
 						res.getString("span_prompt"), "0x0080");
 
-				if (sSpan != null && sSpan.matches("0[x|X][\\p{XDigit}]{4}")) {
+		if (sSpan != null
+			&& sSpan.matches("0[x|X][\\p{XDigit}]{4}")) {
 					int span = Integer.decode(sSpan);
 					dmr.setSpan(span);
 				}
@@ -266,11 +267,19 @@ public class DotMatrixTest extends JFrame {
 			if (index == -1)
 				return;
 
-			dmrf = dmr.getFrame(index);
-			panelRecord.setFrame(dmrf);
-			panelRecord.refresh(true);
-			refreshFrame();
+			setActiveFrame(index);
 		}
+	}
+	
+	public void setActiveFrame(int index) {
+		dmrf = dmr.getFrame(index);
+		panelRecord.setFrame(dmrf);
+		panelRecord.refresh(true);
+		refreshFrame();
+	}
+	
+	public int getNumFrames() {
+		return listFrame.getNumFrames();
 	}
 
 	private class DotMatrixTestMenuBar extends JMenuBar implements
@@ -302,7 +311,7 @@ public class DotMatrixTest extends JFrame {
 				JMenuItem button = new JMenuItem(res.getString(s));
 
 				button.setActionCommand(s);
-				button.addActionListener(new ActionListenerRecordOperation());
+		button.addActionListener(new ActionListenerRocordOperation());
 				mnRecord.add(button);
 			}
 
@@ -338,7 +347,7 @@ public class DotMatrixTest extends JFrame {
 			switch (e.getActionCommand()) {
 			case "about":
 				JOptionPane.showMessageDialog(this,
-						"For more info, check\nhttp://aguegu.net",
+						"For more info, check\nhttp://aguegu.net\nhttp://www.wzona.info",
 						res.getString("about"), JOptionPane.OK_OPTION
 								| JOptionPane.INFORMATION_MESSAGE);
 				break;
@@ -431,7 +440,7 @@ public class DotMatrixTest extends JFrame {
 			JButton button = new JButton(new ImageIcon(getClass().getResource(
 					"/image/" + s + ".png")));
 			button.setActionCommand(s);
-			button.addActionListener(new ActionListenerRecordOperation());
+	    button.addActionListener(new ActionListenerRocordOperation());
 			button.setToolTipText(res.getString(s));
 			toolbarReord.add(button);
 		}

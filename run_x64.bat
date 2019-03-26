@@ -1,0 +1,1 @@
+java -Djava.library.path=./runtime/x64 -jar dotmatrixjava.jar

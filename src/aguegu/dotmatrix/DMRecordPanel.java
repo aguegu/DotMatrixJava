@@ -49,7 +49,7 @@ public class DMRecordPanel extends JPanel {
 
 	private static final String[] FRAME_OPERATION_COMMANDS = new String[] {
 			"on", "off", "x+", "x-", "y+", "y-", "z+", "z-", "3c", "3a", "2c",
-			"2a", "1c", "1a", "0c", "0a", "xf", "yf", "zf", "r" };
+			"2a", "1c", "1a", "0c", "0a", "r" };
 
 	private boolean inLoop = true;
 	private static Font monoFont;
@@ -58,9 +58,11 @@ public class DMRecordPanel extends JPanel {
 	private JPanel panelFrameOperation;
 
 	private ResourceBundle res;
+	private DotMatrixTest parent;
 
-	public DMRecordPanel(ResourceBundle res) {
+	public DMRecordPanel(DotMatrixTest parent, DMRecordPanel prev, ResourceBundle res) {
 		this.res = res;
+		this.parent = parent;
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		panelController = new JPanel();
@@ -84,8 +86,9 @@ public class DMRecordPanel extends JPanel {
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 		panelController.add(textAreaPane);
-		panelHeader = new DMRecordHeaderPanel(this, res);
-
+		
+		panelHeader = (prev != null) ? prev.getHeader() : new DMRecordHeaderPanel(this, res);
+		panelHeader.updateParent(this);
 		panelController.add(panelHeader);
 
 		this.add(panelController);
@@ -95,6 +98,18 @@ public class DMRecordPanel extends JPanel {
 		this.dmrf = new DMRecordFrame(0);
 		initMenu();
 		initFrameOperationPanel();
+	}
+	
+	public DMRecordHeaderPanel getHeader() {
+		return panelHeader;
+	}
+	
+	public void setFrame(int index) {
+		parent.setActiveFrame(index);
+	}
+	
+	public int getNumFrames() {
+		return parent.getNumFrames();
 	}
 
 	public void setFrame(DMRecordFrame dmrf) {
@@ -250,7 +265,7 @@ public class DMRecordPanel extends JPanel {
 			panelFrameOperation.add(button);
 		}
 
-		checkboxInLoop = new JCheckBox("", inLoop);
+		checkboxInLoop = new JCheckBox(res.getString("loop"), inLoop);
 		checkboxInLoop.addActionListener(new ActionListenerInLoop());
 		checkboxInLoop.setToolTipText(res.getString("loop"));
 		panelFrameOperation.add(checkboxInLoop);
@@ -318,15 +333,6 @@ public class DMRecordPanel extends JPanel {
 				break;
 			case "0a":
 				dm.rotate(0, false, recycle);
-				break;
-			case "xf":
-				dm.flip(DotMatrix.Direction.X_POSI);
-				break;
-			case "yf":
-				dm.flip(DotMatrix.Direction.Y_POSI);
-				break;
-			case "zf":
-				dm.flip(DotMatrix.Direction.Z_POSI);
 				break;
 			}
 			refresh(true);

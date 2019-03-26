@@ -1,18 +1,15 @@
 #include "SD.h"
 #include "string.h"
 
-Sd2Card card;
-SdVolume volume;
-const int chipSelect = 4;
 File root;
 
 void setup()
 {
-	Serial.begin(57600);
+	Serial.begin(9600);
 
-	pinMode(10, OUTPUT); // change this to 53 on a mega
+	pinMode(10, OUTPUT); // SS pin must be output, change this to 53 on a mega
 
-	bool sd_ok = SD.begin(9);
+	bool sd_ok = SD.begin(9); // chip select pin
 
 	if (!sd_ok)
 	{
@@ -25,22 +22,13 @@ void setup()
 
 void sendAnimation(byte *data)
 {
-	Serial.write(0xf3);
-	Serial.write(data[1]);
-
-	Serial.write(0xf4);
-	Serial.write(data[2]);
-
-	Serial.write(0xf5);
-	Serial.write(data[3]);
-
-	Serial.write(0xf2);
+	Serial.write(0xf2); // batch update supported
 	for (byte i = 8; i < 72; i++)
 	{
 		Serial.write(data[i]);
 	}
 
-	delay(makeWord(data[6], data[7]));	
+	delay(20);	
 }
 
 void readAnimation(File & file)
@@ -61,7 +49,7 @@ void loop(void)
 		char *p = file.name();
 		char *p_dot = strchr(p, '.');
 
-		if (p_dot != NULL && strcmp(p_dot, ".DAT") == 0)
+		if (p_dot != NULL && strcmp(p_dot, ".dat") == 0)
 		{
 			readAnimation(file);
 		}

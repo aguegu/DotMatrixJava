@@ -76,6 +76,8 @@ public class DotMatrix {
 		String s = new String();
 
 		for (int i = 0; i < cache.length; i++) {
+			if (i > 0 && i < 8) continue; // skip irrelevant parameters that we don't use (brightness etc.);
+			
 			if (i % 8 == 0 && i > 0)
 				s = s.concat("\n");
 			s = s.concat(String.format("0x%02x, ", cache[i]));
